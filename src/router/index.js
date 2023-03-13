@@ -66,6 +66,16 @@ export const constantRoutes = [
     component: () => import('../views/travels/Announcement.vue')
   },
   {
+    path: '/routeList',
+    name: 'routeList',
+    component: () => import('../views/route/routeList.vue')
+  },
+  {
+    path: '/routeDetail/:id',
+    name: 'routeDetail',
+    component: () => import('../views/route/Detail.vue')
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,

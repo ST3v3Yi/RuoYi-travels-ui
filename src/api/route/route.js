@@ -42,3 +42,27 @@ export function delRoute(id) {
     method: 'delete'
   })
 }
+
+//提交评论
+export function postComment(commentInfo) {
+  return request({
+    url: '',
+    method: 'post',
+    data: commentInfo
+  })
+}
+
+//分页获取评论
+export function getComment(id, page = 1, limit = 10) {
+  return request({
+    url: '',
+    method: 'get',
+    data: {
+      params: {
+        page,
+        limit,
+        id,
+      }
+    }
+  })
+}

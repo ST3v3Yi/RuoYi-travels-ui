@@ -97,7 +97,7 @@
 
     <el-table v-loading="loading" :data="routeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
+<!--      <el-table-column label="主键" align="center" prop="id" />-->
       <el-table-column label="标题" align="center" prop="title" />
       <el-table-column label="封面图" align="center" prop="coverImg" width="100">
         <template slot-scope="scope">
@@ -115,12 +115,12 @@
       <el-table-column label="用户昵称" align="center" prop="userName" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="修改时间" align="center" prop="updateTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="简介" align="center" prop="introduction" />
@@ -148,7 +148,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -165,9 +165,6 @@
         </el-form-item>
         <el-form-item label="封面图" prop="coverImg">
           <image-upload v-model="form.coverImg"/>
-        </el-form-item>
-        <el-form-item label="收藏数量" prop="counts">
-          <el-input v-model="form.counts" placeholder="请输入收藏数量" />
         </el-form-item>
         <el-form-item label="发布时间" prop="releaseTime">
           <el-date-picker clearable

@@ -1,27 +1,5 @@
 <template>
 <div id="app">
-<!--    <div class="nav-bar">
-        <img src="./assets/logo/logo.png" class="header-logo">
-        <div id="nav">
-            <router-link to="/">主页</router-link>
-            <router-link to="/site">景点信息</router-link>
-            <router-link to="/hotel">民宿信息</router-link>
-            <router-link to="/announcement">通知公告</router-link>
-            <router-link to="/about">关于我们</router-link>
-        </div>
-        <div class="header-user">
-            <el-popover placement="top-start" title="" width="60" trigger="hover" content="">
-            <div class="personal-wrapper" v-if="userName != ''">
-                <div class="personal-item" @click="login()">个人主页</div>
-                <div class="personal-item" @click="logout()">退出账号</div>
-            </div>
-                <a @click="login()" slot="reference">
-                    <img v-if="userProfile" class="login-icon" :src="userProfile" />
-                    <el-avatar v-else class="login-icon" icon="el-icon-user-solid"></el-avatar>
-                </a>
-            </el-popover>
-        </div>
-    </div>-->
     <navbar/>
     <router-view style="padding-top: 60px" />
 </div>
