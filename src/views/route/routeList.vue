@@ -27,6 +27,7 @@
         </el-row>
       </template>
       <el-footer>到底了</el-footer>
+      <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
     </el-container>
 </div>
 </template>
@@ -89,5 +90,14 @@ export default {
 
 .grid-cont-right h2 {
     color: #42b983;
+}
+
+.el-footer {
+  border: none;
+  padding: 0;
+  background-color: #e8e8e8;
+  color: #666666;
+  text-align: center;
+  line-height: 60px;
 }
 </style>

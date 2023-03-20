@@ -1,5 +1,5 @@
 <template>
-  <div class="routeTOC">
+  <div class="routeToc">
     <h1>目录</h1>
   </div>
 </template>

@@ -1,30 +1,21 @@
 <template>
-  <Layout>
-    <div class="routeDetail-container">
-      <routeDetail />
+  <div class="routeDetail">
+    <h1>{{ route.title }}</h1>
+    <div class="aside">
+      <span>日期：{{route.releaseTime}}</span>
+      <span>作者：{{route.userName}}</span>
     </div>
-    <template v-slot="left">
-      <div class="routeToc-container">
-        <routeTOC />
-      </div>
-    </template>
-  </Layout>
+    <image-preview :src="route.coverImg" :width="200" :height="180" style="margin-right: 10px;" />
+    <div class="content" v-html="route.content"></div>
+  </div>
 </template>
 
 <script>
 import { getRoute } from "@/api/route/route";
-import routeDetail from "@/views/components/route/routeDetail.vue";
-import routeToc from "@/views/components/route/routeTOC.vue";
-import Layout from "@/components/Layout";
 export default{
-  component: {
-    Layout,
-    routeDetail,
-    routeToc
-  },
   data( ){
     return{
-      route: {}
+      route: {},
     };
   },
   mounted() {
@@ -34,26 +25,35 @@ export default{
     getRouteDetail() {
       const id = this.$route.query.id;
       getRoute(id).then((res) => {
-        this.route = res;
+        this.route = res.data;
       });
     }
   }
 };
 </script>
 
-<style lang="less" scoped>
-.routeDetail-container {
-  height: 100%;
-  overflow-y: scroll;
-  padding: 20px 15px;
-  box-sizing: border-box;
-}
-
-.routeToc-container {
-  width: 300px;
-  height: 100%;
-  padding: 20px 15px;
-  box-sizing: border-box;
+<style lang="scss" scoped>
+.routeDetail {
+  h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 0px;
+    margin-left: 20px;
+  }
+  .aside {
+    margin-left: 10px;
+    margin-bottom: 20px;
+    span {
+      font-size: 14px;
+      color: #666666;
+      margin-left: 5px;
+    }
+  }
+  p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-left: 20px;
+  }
 }
 
 </style>

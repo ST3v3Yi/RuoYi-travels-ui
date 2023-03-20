@@ -118,7 +118,7 @@ export default {
     background-color: white;
     color: #333;
     text-align: center;
-    line-height: 60px;
+    line-height: 0px;
 }
 
 .el-aside {

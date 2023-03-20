@@ -183,6 +183,9 @@
         <el-form-item label="简介" prop="introduction">
           <el-input v-model="form.introduction" type="textarea" placeholder="请输入内容" />
         </el-form-item>
+        <el-form-item label="内容">
+          <editor v-model="form.content" :min-height="192"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -270,6 +273,7 @@ export default {
         createTime: null,
         updateTime: null,
         introduction: null,
+        content: null,
         status: null,
         isDeleted: null
       };

@@ -1,69 +1,51 @@
 <template>
-  <div class="navbar">
-    <img src="../../assets/logo/logo.png" class="header-logo">
-<!--    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />-->
+  <header class="navbar">
+    <el-row type="flex" justify="space-between" class="main">
+      <!-- logo -->
+      <div class="logo">
+        <img src="../../assets/logo/logo.png" class="header-logo">
+      </div>
 
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
-    <div id="nav">
-      <router-link to="/">主页</router-link>
-      <router-link to="/site">景点信息</router-link>
-      <router-link to="/hotel">旅店信息</router-link>
-      <router-link to="/routeList">路线推荐</router-link>
-      <router-link to="/announcement">通知公告</router-link>
-      <router-link to="/about">关于我们</router-link>
-    </div>
-    <div class="right-menu">
+      <!-- 菜单栏 -->
+      <el-row type="flex" class="nav">
+        <router-link to="/">主页</router-link>
+        <router-link to="/site">景点信息</router-link>
+        <router-link to="/hotel">旅店信息</router-link>
+        <router-link to="/routeList">路线推荐</router-link>
+        <router-link to="/announcement">通知公告</router-link>
+        <router-link to="/about">关于我们</router-link>
+      </el-row>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown">
-          <router-link to="/user/profile">
-            <el-dropdown-item>个人中心</el-dropdown-item>
-          </router-link>
-          <router-link to="/">
-            <el-dropdown-item>我的收藏</el-dropdown-item>
-          </router-link>
-          <router-link to="/">
-            <el-dropdown-item>我的订单</el-dropdown-item>
-          </router-link>
-<!--          <el-dropdown-item @click.native="setting = true">
-            <span>布局设置</span>
-          </el-dropdown-item>-->
-          <el-dropdown-item divided @click.native="logout">
-            <span>退出登录</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </div>
-  </div>
+      <!-- 用户登录信息 -->
+      <div class="right-menu">
+        <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+          <div class="avatar-wrapper">
+            <img :src="avatar" class="user-avatar">
+            <i class="el-icon-caret-bottom" />
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <router-link to="/user/profile">
+              <el-dropdown-item>个人中心</el-dropdown-item>
+            </router-link>
+            <router-link to="/">
+              <el-dropdown-item>我的收藏</el-dropdown-item>
+            </router-link>
+            <router-link to="/">
+              <el-dropdown-item>我的订单</el-dropdown-item>
+            </router-link>
+            <el-dropdown-item divided @click.native="logout">
+              <span>退出登录</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+    </el-row>
+  </header>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from '@/components/TopNav'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/RuoYi/Git'
-import RuoYiDoc from '@/components/RuoYi/Doc'
-
 export default {
-  components: {
-    Breadcrumb,
-    TopNav,
-    Hamburger,
-    Screenfull,
-    SizeSelect,
-    Search,
-    RuoYiGit,
-    RuoYiDoc
-  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -108,37 +90,54 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
-  overflow: hidden;
-  position: relative;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  height: 60px;
+  line-height:60px;
+  background:#fff;
+  border-bottom: 1px #ddd solid;
+  box-shadow:0 3px 0 #f5f5f5;
+  box-sizing: border-box;
 
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+  .main {
+    width:1000px;
+    margin:0 auto;
+  }
 
-    &:hover {
-      background: rgba(0, 0, 0, .025)
+  .logo{
+    width: 50px;
+    padding-top: 5px;
+    img{
+      display: block;
+      width:100%;
     }
   }
 
-  .breadcrumb-container {
-    float: left;
+  .nav{
+    margin: 0px 40px;
+    flex:1;
+    a{
+      display: block;
+      padding: 0 20px;
+      height: 60px;
+      box-sizing: border-box;
+      &:hover,&:focus, &:active {
+        border-bottom: 5px #409eff solid;
+        color:#409eff;
+      }
+    }
+    .route-link-exact-active{
+      background:#409eff;
+      color:#fff!important;
+    }
   }
 
-  .topmenu-container {
-    position: absolute;
-    left: 50px;
-  }
-
-  .errLog-container {
-    display: inline-block;
-    vertical-align: top;
+  .message{
+    height: 36px;
+    line-height:1;
+    cursor:pointer;
+    .el-icon-bell{
+      margin-right:2px;
+      font-size:18px;
+    }
   }
 
   .right-menu {
