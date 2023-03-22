@@ -66,6 +66,11 @@ export const constantRoutes = [
     component: () => import('../views/travels/Announcement.vue')
   },
   {
+    path: '/test',
+    name: 'Test',
+    component: () => import('../views/travels/test.vue')
+  },
+  {
     path: '/routeList',
     name: 'routeList',
     component: () => import('../views/route/routeList.vue')

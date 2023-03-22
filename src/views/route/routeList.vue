@@ -18,6 +18,10 @@
               </div>
               <div class="bottom clearfix" align="left">
                 <time class="time">{{ item.updateTime }}</time>
+                <el-tag class="tag">
+                  <i class="el-icon-date" />
+                  {{item.day}}，￥{{item.cost}}
+                </el-tag>
                 <el-button type="text" class="button">
                   <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">查看详情</router-link>
                 </el-button>
@@ -67,6 +71,11 @@ export default {
 .time {
   font-size: 13px;
   color: #999;
+  margin-left: 10px;
+}
+
+.tag {
+  font-size: 13px;
   margin-left: 10px;
 }
 

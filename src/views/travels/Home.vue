@@ -1,8 +1,8 @@
 <template>
 <div class="home">
-    <img alt="Vue logo" src="../../assets/logo.png" class="home-logo">
+    <img alt="Vue logo" src="../../assets/logo/logo.png" class="home-logo">
     <HomeCarousel cards="visited" />
-    <HomeWelcome msg="欢迎访问搬木乡村旅游站点" msg_en="Welcome to visit Ban Mu Manor" />
+    <HomeWelcome msg="欢迎访问" msg_en="Welcome to visit " />
 </div>
 </template>
 

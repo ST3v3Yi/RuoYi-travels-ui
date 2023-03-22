@@ -14,6 +14,7 @@
         <router-link to="/routeList">路线推荐</router-link>
         <router-link to="/announcement">通知公告</router-link>
         <router-link to="/about">关于我们</router-link>
+        <router-link to="/test">测试页面</router-link>
       </el-row>
 
       <!-- 用户登录信息 -->
@@ -52,7 +53,7 @@ export default {
       'avatar',
       'device'
     ]),
-    setting: {
+    /*setting: {
       get() {
         return this.$store.state.settings.showSettings
       },
@@ -62,7 +63,7 @@ export default {
           value: val
         })
       }
-    },
+    },*/
     topNav: {
       get() {
         return this.$store.state.settings.topNav
@@ -144,6 +145,7 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+    padding-top: 5px;
 
     &:focus {
       outline: none;
