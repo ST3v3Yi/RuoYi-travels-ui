@@ -26,7 +26,7 @@
       <el-col style="width: 500px; height: 105px" class="bg-trans">
         <div class="headRight">
           <a href="/">
-            <img :src="createUser.avatar" class="user-avatar">
+            <img :src="avatarUrl" class="user-avatar">
           </a>
           <a style="margin-left: 10px;">{{ route.userName }}</a>
         </div>
@@ -87,6 +87,11 @@ export default{
     ]),
     iconClass() {
       return this.isFavorite ? 'el-icon-star-on' : 'el-icon-star-off'
+    },
+    avatarUrl() {
+      const serveUrl = process.env.VUE_APP_BASE_API
+      const avatarUrl = this.createUser.avatar
+      return serveUrl + avatarUrl
     }
   },
   data( ){
