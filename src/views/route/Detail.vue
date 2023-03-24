@@ -29,6 +29,8 @@
             <img :src="avatarUrl" class="user-avatar">
           </a>
           <a style="margin-left: 10px;">{{ route.userName }}</a>
+          <span>{{avatarUrl}}</span>
+          <span>{{ route.userId}}</span>
         </div>
       </el-col>
     </el-row>
@@ -89,9 +91,9 @@ export default{
       return this.isFavorite ? 'el-icon-star-on' : 'el-icon-star-off'
     },
     avatarUrl() {
-      const serveUrl = process.env.VUE_APP_BASE_API
-      const avatarUrl = this.createUser.avatar
-      return serveUrl + avatarUrl
+      const serveUrl = process.env.VUE_APP_AVATAR_API
+      const avatarPath = this.createUser.avatar
+      return serveUrl + avatarPath
     }
   },
   data( ){
@@ -110,7 +112,7 @@ export default{
   mounted() {
     this.getRouteDetail();
     this.getUserInfo();
-    this.getUser();
+    this.getUserDetail();
   },
   methods: {
     parseTime,
@@ -125,10 +127,15 @@ export default{
         this.user = res.data;
       })
     },
-    getUser() {
-      const id = this.$route.query.userId;
-      getUser(id).then((res) => {
-        this.createUser = res.data;
+    getUserDetail() {
+      const id = this.route.userId;
+      getUser(this.route.userId).then((res) => {
+        if(res.data){
+          console.log();
+          this.createUser = res.data;
+        }else{
+          console.log('res.data为空！');
+        }
       })
     },
     toggleFavorite() {
