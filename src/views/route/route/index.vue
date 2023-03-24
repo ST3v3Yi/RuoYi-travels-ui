@@ -197,6 +197,7 @@
 
 <script>
 import { listRoute, getRoute, delRoute, addRoute, updateRoute } from "@/api/route/route";
+import { getUserProfile } from "@/api/system/user";
 
 export default {
   name: "Route",
@@ -235,13 +236,23 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      //当前用户信息
+      user: {}
     };
+  },
+  mounted() {
+    this.getUserProfile();
   },
   created() {
     this.getList();
   },
   methods: {
+    getUserProfile() {
+      getUserProfile().then((res) => {
+        this.user = res.data;
+      })
+    },
     /** 查询路线列表 */
     getList() {
       this.loading = true;
@@ -322,6 +333,8 @@ export default {
               this.getList();
             });
           } else {
+            this.form.userId = this.user.userId;
+            this.form.userName = this.user.nickName;
             addRoute(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

@@ -26,9 +26,9 @@
       <el-col style="width: 500px; height: 105px" class="bg-trans">
         <div class="headRight">
           <a href="/">
-            <img :src="avatar" class="user-avatar">
+            <img :src="createUser.avatar" class="user-avatar">
           </a>
-          <a style="margin-left: 10px;">{{ user.nickName }}</a>
+          <a style="margin-left: 10px;">{{ route.userName }}</a>
         </div>
       </el-col>
     </el-row>
@@ -74,6 +74,7 @@
 import { getRoute } from "@/api/route/route";
 import { addRouteRating } from "@/api/routeRating/routeRating";
 import { getUserProfile } from "@/api/system/user";
+import { getUser } from "@/api/system/user";
 import { MessageBox } from "element-ui";
 import { mapGetters } from 'vuex'
 import { parseTime } from "../../utils/ruoyi";
@@ -92,6 +93,7 @@ export default{
     return{
       route: {},
       user: {},
+      createUser: {},
       value: 0,
       isFavorite: false,
       comment: {
@@ -103,6 +105,7 @@ export default{
   mounted() {
     this.getRouteDetail();
     this.getUserInfo();
+    this.getUser();
   },
   methods: {
     parseTime,
@@ -115,6 +118,12 @@ export default{
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
+      })
+    },
+    getUser() {
+      const id = this.$route.query.userId;
+      getUser(id).then((res) => {
+        this.createUser = res.data;
       })
     },
     toggleFavorite() {
