@@ -28,31 +28,81 @@
           <a href="/">
             <img :src="avatar" class="user-avatar">
           </a>
-          <a style="margin-left: 10px;">{{ nickName }}</a>
+          <a style="margin-left: 10px;">{{ user.nickName }}</a>
         </div>
       </el-col>
+    </el-row>
+    <el-row type="flex" class="row-title" justify="center" style="margin-top: 0px;">
+      <el-col style="width: 800px;" class="bg-purple">
+        <div class="routeContent" v-html="route.content"></div>
+      </el-col>
+      <el-col style="width: 250px;" class="bg-purple">
+<!--        <span style="font-size: 22px;">推荐景点</span>
+        <el-divider style="width: 2px;margin: 5px 0;"></el-divider>-->
+        <div style="display: flex; align-items: center;">
+          <div style="margin-right: 20px">
+            <i :class="iconClass" @click="toggleFavorite" style="margin-right: 5px;"/>
+            <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.2);">收藏</span>
+          </div>
+            <el-rate
+              v-model="value"
+              allow-half
+              show-score
+              text-color="#ff9900"
+              :colors="colors"
+              @change="submitRating">
+            </el-rate>
+        </div>
+      </el-col>
+
+    </el-row>
+    <el-row>
+      <div style="margin: 10px auto; width: 1050px;">
+        <span style="font-size: 24px; font-weight: bold; text-align: left;">评论</span>
+        <div style="margin: 5px 0;">
+        <el-input type="textarea" placeholder="请输入评论~" v-model.lazy="comment.message"></el-input>
+        </div>
+        <div style="text-align: right; margin: 5px 0;">
+          <el-button type="primary" @click="submitComment">提交</el-button>
+        </div>
+      </div>
     </el-row>
   </div>
 </template>
 
 <script>
 import { getRoute } from "@/api/route/route";
+import { addRouteRating } from "@/api/routeRating/routeRating";
+import { getUserProfile } from "@/api/system/user";
+import { MessageBox } from "element-ui";
 import { mapGetters } from 'vuex'
-import {parseTime} from "../../utils/ruoyi";
+import { parseTime } from "../../utils/ruoyi";
+import axios from "axios";
 export default{
   computed: {
     ...mapGetters([
       'nickName',
       'avatar',
-    ])
+    ]),
+    iconClass() {
+      return this.isFavorite ? 'el-icon-star-on' : 'el-icon-star-off'
+    }
   },
   data( ){
     return{
       route: {},
+      user: {},
+      value: 0,
+      isFavorite: false,
+      comment: {
+        message: ''
+      },
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     };
   },
   mounted() {
     this.getRouteDetail();
+    this.getUserInfo();
   },
   methods: {
     parseTime,
@@ -62,6 +112,38 @@ export default{
         this.route = res.data;
       });
     },
+    getUserInfo() {
+      getUserProfile().then((res) => {
+        this.user = res.data;
+      })
+    },
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite
+    },
+    submitRating() {
+      const data = {
+        routeId: this.route.id,
+        userId: this.user.userId,
+        rating: this.value
+      }
+      addRouteRating(data).then(res => {
+        MessageBox.alert('评分成功', '提示', {
+          confirmButtonText: '确定'
+        }).then(() => {
+          console.log(res);
+          location.reload();
+        })
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+    submitComment() {
+      axios.post('/api/comment', this.comment).then(res => {
+        console.log(res.data);
+      }).catch(err => {
+        console.log(err);
+      })
+    }
   }
 };
 </script>
@@ -116,7 +198,8 @@ export default{
   text-align: center;
 }
 .bg-purple {
-  background: #d3dce6;
+  background: #FFFFFF;
+  border-radius: 5px;
 }
 .bg-trans {
   background: rgba(255,255,255,0.6);
@@ -141,5 +224,17 @@ export default{
   height: 40px;
   border-radius: 20px;
 }
-
+.el-icon-star-off {
+  transform: scale(1.2);
+}
+.el-icon-star-on {
+  color: #ff9900;
+  transform: scale(1.2);
+}
+.el-rate {
+  transform: scale(1.2);
+}
+.el-rate__item {
+  margin: 0 2px;
+}
 </style>

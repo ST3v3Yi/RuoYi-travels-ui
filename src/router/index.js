@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '../views/travels/Home.vue'
 
 Vue.use(Router)
 
@@ -38,7 +37,7 @@ export const constantRoutes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: () => import('../views/travels/Home.vue')
   },
   {
     path: '/about',
