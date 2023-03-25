@@ -17,6 +17,14 @@ export function getRouteRating(routeId) {
   })
 }
 
+// 查询路线平均分
+export function getRouteAVGRating(routeId) {
+  return request({
+    url: '/routeRating/routeRating/avg/' + routeId,
+    method: 'get'
+  })
+}
+
 // 新增路线评分
 export function addRouteRating(data) {
   return request({

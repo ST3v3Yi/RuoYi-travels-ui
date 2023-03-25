@@ -79,7 +79,7 @@ import { addRouteRating } from "@/api/routeRating/routeRating";
 import { getUserProfile } from "@/api/system/user";
 import { getUser } from "@/api/system/user";
 import { parseTime } from "../../utils/ruoyi";
-import { getRouteRating } from "@/api/routeRating/routeRating";
+import { getRouteAVGRating } from "@/api/routeRating/routeRating";
 import axios from "axios";
 export default{
   data( ){
@@ -133,11 +133,10 @@ export default{
     },
     getRouteRating() {
       const id = this.$route.query.id;
-      getRouteRating(id).then((response) => {
-        const ratings = response.data;
-        const totalRating = ratings.reduce((acc, curr) => acc + curr.rating, 0);
-        this.avgRating = totalRating / ratings.length;
-      });
+      getRouteAVGRating(id).then((res) => {
+        this.avgRating = res.data;
+        console.log(res.data);
+      })
     },
     getUserInfo() {
       getUserProfile().then((res) => {
