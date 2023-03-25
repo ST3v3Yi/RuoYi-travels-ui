@@ -131,21 +131,17 @@ export default{
         }
       })
     },
+    getRouteRating() {
+      const id = this.$route.query.id;
+      getRouteRating(id).then((response) => {
+        const ratings = response.data;
+        const totalRating = ratings.reduce((acc, curr) => acc + curr.rating, 0);
+        this.avgRating = totalRating / ratings.length;
+      });
+    },
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
-      })
-    },
-    getRouteRating() {
-      const id = this.$route.query.id;
-      getRouteRating(id).then((res) => {
-        const ratings = res.data;
-        let totalRating = 0;
-        ratings.forEach(rating => {
-          totalRating += rating.rating;
-        })
-        console.log(totalRating);
-        this.avgRating = totalRating / ratings.length;
       })
     },
     toggleFavorite() {
