@@ -1,13 +1,4 @@
 <template>
-<!--  <div class="routeDetail">
-    <h1>{{ route.title }}</h1>
-    <div class="aside">
-      <span>日期：{{route.releaseTime}}</span>
-      <span>作者：{{route.userName}}</span>
-    </div>
-    <image-preview :src="route.coverImg" :width="200" :height="180" style="margin-left: 20px;" />
-    <div class="routeContent" v-html="route.content"></div>
-  </div>-->
   <div>
     <el-row type="flex" class="row-bg" justify="center">
       <el-col class="bgCol">
@@ -20,7 +11,19 @@
       <el-col style="width: 550px; height: 105px" class="bg-trans">
         <div style="position: relative">
           <span style="margin-left: 15px;margin-top: 25px;">更新时间：{{ parseTime(route.updateTime, '{y}-{m}-{d}') }}</span>
-          <h1 style="margin-left: 15px;font-size: 48px; line-height: 15px;">{{ route.title }}</h1>
+          <div style="display: flex;">
+            <h1 style="margin-left: 15px;font-size: 48px; line-height: 15px;">{{ route.title }}</h1>
+            <el-rate
+              v-model="avgRating"
+              allow-half
+              disabled
+              show-score
+              text-color="#ff9900"
+              :colors="colors"
+              style="margin-left: 35px; margin-top: 40px;"
+              @change="submitRating">
+            </el-rate>
+          </div>
         </div>
       </el-col>
       <el-col style="width: 500px; height: 105px" class="bg-trans">
@@ -29,8 +32,6 @@
             <img :src="avatarUrl" class="user-avatar">
           </a>
           <a style="margin-left: 10px;">{{ route.userName }}</a>
-          <span>{{avatarUrl}}</span>
-          <span>{{ route.userId}}</span>
         </div>
       </el-col>
     </el-row>
@@ -39,28 +40,28 @@
         <div class="routeContent" v-html="route.content"></div>
       </el-col>
       <el-col style="width: 250px;" class="bg-purple">
-<!--        <span style="font-size: 22px;">推荐景点</span>
-        <el-divider style="width: 2px;margin: 5px 0;"></el-divider>-->
-        <div style="display: flex; align-items: center;">
-          <div style="margin-right: 20px">
+          <div style="display: flex; align-items: center; margin-right: 20px;">
             <i :class="iconClass" @click="toggleFavorite" style="margin-right: 5px;"/>
             <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.2);">收藏</span>
-          </div>
             <el-rate
               v-model="value"
               allow-half
               show-score
               text-color="#ff9900"
               :colors="colors"
+              style="margin-left: 35px;"
               @change="submitRating">
             </el-rate>
-        </div>
+          </div>
+        <el-divider></el-divider>
       </el-col>
 
     </el-row>
     <el-row>
       <div style="margin: 10px auto; width: 1050px;">
-        <span style="font-size: 24px; font-weight: bold; text-align: left;">评论</span>
+        <div style="display: flex; align-items: center;">
+          <span style="font-size: 24px; font-weight: bold; text-align: left;">评论</span>
+        </div>
         <div style="margin: 5px 0;">
         <el-input type="textarea" placeholder="请输入评论~" v-model.lazy="comment.message"></el-input>
         </div>
@@ -77,65 +78,74 @@ import { getRoute } from "@/api/route/route";
 import { addRouteRating } from "@/api/routeRating/routeRating";
 import { getUserProfile } from "@/api/system/user";
 import { getUser } from "@/api/system/user";
-import { MessageBox } from "element-ui";
-import { mapGetters } from 'vuex'
 import { parseTime } from "../../utils/ruoyi";
+import { getRouteRating } from "@/api/routeRating/routeRating";
 import axios from "axios";
 export default{
-  computed: {
-    ...mapGetters([
-      'nickName',
-      'avatar',
-    ]),
-    iconClass() {
-      return this.isFavorite ? 'el-icon-star-on' : 'el-icon-star-off'
-    },
-    avatarUrl() {
-      const serveUrl = process.env.VUE_APP_AVATAR_API
-      const avatarPath = this.createUser.avatar
-      return serveUrl + avatarPath
-    }
-  },
   data( ){
     return{
       route: {},
       user: {},
       createUser: {},
+      avgRating: 0,
       value: 0,
       isFavorite: false,
       comment: {
         message: ''
       },
+      userId: null,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     };
+  },
+  computed: {
+    iconClass() {
+      return this.isFavorite ? 'el-icon-star-on' : 'el-icon-star-off'
+    },
+    avatarUrl() {
+      const serveUrl = process.env.VUE_APP_BASE_API
+      const avatarPath = this.createUser.avatar;
+      return serveUrl + avatarPath
+    }
   },
   mounted() {
     this.getRouteDetail();
     this.getUserInfo();
-    this.getUserDetail();
+    this.getRouteRating();
   },
   methods: {
     parseTime,
     getRouteDetail() {
       const id = this.$route.query.id;
+      // GET路线route信息和发布用户信息，
       getRoute(id).then((res) => {
         this.route = res.data;
-      });
+        this.userId = res.data.userId;
+        return this.userId; // 返回一个Promise，使得可以在下一个.then()中使用userId
+      }).then((userId) => {
+        return getUser(userId);
+      }).then((response) => {
+        if (response && response.data) {
+          this.createUser = response.data;
+          // console.log(response.data);
+          // console.log(this.createUser.userId);
+        }
+      })
     },
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
       })
     },
-    getUserDetail() {
-      const id = this.route.userId;
-      getUser(this.route.userId).then((res) => {
-        if(res.data){
-          console.log();
-          this.createUser = res.data;
-        }else{
-          console.log('res.data为空！');
-        }
+    getRouteRating() {
+      const id = this.$route.query.id;
+      getRouteRating(id).then((res) => {
+        const ratings = res.data;
+        let totalRating = 0;
+        ratings.forEach(rating => {
+          totalRating += rating.rating;
+        })
+        console.log(totalRating);
+        this.avgRating = totalRating / ratings.length;
       })
     },
     toggleFavorite() {
@@ -148,13 +158,19 @@ export default{
         rating: this.value
       }
       addRouteRating(data).then(res => {
-        MessageBox.alert('评分成功', '提示', {
-          confirmButtonText: '确定'
-        }).then(() => {
-          console.log(res);
-          location.reload();
-        })
+        this.$notify({
+          title: '成功',
+          message: '评分成功~',
+          type: "success",
+          duration: 2000
+        });
+        console.log(res);
       }).catch(error => {
+        this.$notify.error({
+          title: '错误',
+          message: '您已经评过分了~',
+          duration: 3000
+        });
         console.log(error);
       })
     },
@@ -170,34 +186,6 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-/*.routeDetail {
-  height: auto;
-  h1 {
-    font-size: 48px;
-    font-weight: bold;
-    margin-bottom: 0px;
-    margin-left: 20px;
-  }
-  .aside {
-    margin-left: 10px;
-    margin-bottom: 20px;
-    span {
-      font-size: 14px;
-      color: #666666;
-      margin-left: 5px;
-    }
-  }
-  p {
-    font-size: 18px;
-    line-height: 1.5;
-    margin-left: 20px;
-  }
-  .routeContent {
-    overflow: auto;
-    line-height: 1.5;
-    margin-left: 20px;
-  }
-}*/
 .el-row {
   margin-bottom: 20px;
   &:last-child {
@@ -235,9 +223,8 @@ export default{
   margin-top: -95px;
 }
 .headRight {
-  padding: 15px 0 0 0px;
-  position: relative;
-  margin-left: 300px;
+  margin-left: 330px;
+  margin-top: 40px;
 }
 .user-avatar {
   cursor: pointer;
@@ -253,9 +240,11 @@ export default{
   transform: scale(1.2);
 }
 .el-rate {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
-.el-rate__item {
-  margin: 0 2px;
+.el-divider {
+  margin: 5px 0;
+  height: 2px;
+  background-color: #cccccc;
 }
 </style>
