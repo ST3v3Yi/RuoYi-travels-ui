@@ -53,7 +53,7 @@
               @change="submitRating">
             </el-rate>
           </div>
-        <el-divider></el-divider>
+        <el-divider style="height: 2px;"></el-divider>
       </el-col>
 
     </el-row>
@@ -71,18 +71,24 @@
       </div>
     </el-row>
     <el-row>
-      <div style="margin: 10px auto; width: 1050px;">
-        <el-collapse>
-          <el-collapse-item title="评论列表">
-            <div v-for="comment in comments" :key="comment.id">
-              <el-card>
-                <p>{{ comment.content }}</p>
-                <p>{{ comment.username }}</p>
-                <p>{{ comment.date }}</p>
-              </el-card>
+      <div style="margin: 5px auto; width: 1050px;">
+        <span style="text-align: left; font-size: 20px; font-weight: bold;">评论列表</span>
+        <div v-for="item in commentsList" :key="item.id">
+          <div style="display: flex; margin-top: 20px;">
+            <div style="width: 50px">
+              <img :src="'/dev-api' + item.avatar" class="commentAvatar">
             </div>
-          </el-collapse-item>
-        </el-collapse>
+            <div style="flex: 1; margin-left: 10px;">
+              <div>{{ item.nickName }}</div>
+              <div style="color: #666; margin-top: 5px;">{{ item.content }}</div>
+            </div>
+            <!-- 多级回复 -->
+            <div style="text-align: right; padding: 5px;">
+              <el-button type="text" @click="">回复</el-button>
+            </div>
+          </div>
+          <el-divider style="height: 1px"></el-divider>
+        </div>
       </div>
     </el-row>
   </div>
@@ -110,7 +116,6 @@ export default{
       commentContent: '',
       userId: null,
       commentsList: [],
-      commentUser: {},
       colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     };
   },
@@ -122,7 +127,12 @@ export default{
       const serveUrl = process.env.VUE_APP_BASE_API
       const avatarPath = this.createUser.avatar;
       return serveUrl + avatarPath
-    }
+    },
+/*    commentAvatar() {
+      const serveUrl = process.env.VUE_APP_BASE_API
+      const avatarPath = this.commentsList.avatar;
+      return serveUrl + avatarPath
+    }*/
   },
   mounted() {
     this.getRouteDetail();
@@ -162,8 +172,12 @@ export default{
     },
     getRouteComments() {
       const routeId = this.$route.query.id;
+      this.loading = true;
       getRouteCommentsList(routeId).then(res => {
-
+        this.commentsList = res.data;
+        this.total = res.data.length;
+        this.loading = false;
+        console.log(res.data);
       })
     },
     toggleFavorite() {
@@ -206,6 +220,7 @@ export default{
           duration: 2000
         });
         this.commentContent = '';
+        this.getRouteComments();
       }).catch(error => {
         this.$notify.error({
           title: '错误',
@@ -266,6 +281,12 @@ export default{
   height: 40px;
   border-radius: 20px;
 }
+.commentAvatar {
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  border-radius: 20px;
+}
 .el-icon-star-off {
   transform: scale(1.2);
 }
@@ -278,7 +299,6 @@ export default{
 }
 .el-divider {
   margin: 5px 0;
-  height: 2px;
   background-color: #cccccc;
 }
 </style>
