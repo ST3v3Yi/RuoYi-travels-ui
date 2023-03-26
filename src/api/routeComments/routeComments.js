@@ -17,6 +17,14 @@ export function getRouteComments(id) {
   })
 }
 
+// 查询指定路线的评论列表
+export function getRouteCommentsList(routeId) {
+  return request({
+    url: '/routeComments/routeComments/list/' + routeId,
+    method: 'get'
+  })
+}
+
 // 新增路线评论
 export function addRouteComments(data) {
   return request({

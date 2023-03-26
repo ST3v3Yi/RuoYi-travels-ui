@@ -12,7 +12,7 @@
         <div style="position: relative">
           <span style="margin-left: 15px;margin-top: 25px;">更新时间：{{ parseTime(route.updateTime, '{y}-{m}-{d}') }}</span>
           <div style="display: flex;">
-            <h1 style="margin-left: 15px;font-size: 48px; line-height: 15px;">{{ route.title }}</h1>
+            <h1 style="margin-left: 15px; font-size: 40px; line-height: 50px;">{{ route.title }}</h1>
             <el-rate
               v-model="avgRating"
               allow-half
@@ -20,7 +20,7 @@
               show-score
               text-color="#ff9900"
               :colors="colors"
-              style="margin-left: 35px; margin-top: 40px;"
+              style="margin-left: 35px; margin-top: 53px; transform: scale(1.2);"
               @change="submitRating">
             </el-rate>
           </div>
@@ -63,11 +63,26 @@
           <span style="font-size: 24px; font-weight: bold; text-align: left;">评论</span>
         </div>
         <div style="margin: 5px 0;">
-        <el-input type="textarea" placeholder="请输入评论~" v-model.lazy="comment.message"></el-input>
+        <el-input type="textarea" placeholder="请输入评论~" v-model.lazy="commentContent"></el-input>
         </div>
         <div style="text-align: right; margin: 5px 0;">
           <el-button type="primary" @click="submitComment">提交</el-button>
         </div>
+      </div>
+    </el-row>
+    <el-row>
+      <div style="margin: 10px auto; width: 1050px;">
+        <el-collapse>
+          <el-collapse-item title="评论列表">
+            <div v-for="comment in comments" :key="comment.id">
+              <el-card>
+                <p>{{ comment.content }}</p>
+                <p>{{ comment.username }}</p>
+                <p>{{ comment.date }}</p>
+              </el-card>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
       </div>
     </el-row>
   </div>
@@ -80,7 +95,9 @@ import { getUserProfile } from "@/api/system/user";
 import { getUser } from "@/api/system/user";
 import { parseTime } from "../../utils/ruoyi";
 import { getRouteAVGRating } from "@/api/routeRating/routeRating";
-import axios from "axios";
+import { addRouteComments } from "@/api/routeComments/routeComments";
+import { getRouteCommentsList } from "@/api/routeComments/routeComments";
+
 export default{
   data( ){
     return{
@@ -90,10 +107,10 @@ export default{
       avgRating: 0,
       value: 0,
       isFavorite: false,
-      comment: {
-        message: ''
-      },
+      commentContent: '',
       userId: null,
+      commentsList: [],
+      commentUser: {},
       colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     };
   },
@@ -111,6 +128,7 @@ export default{
     this.getRouteDetail();
     this.getUserInfo();
     this.getRouteRating();
+    this.getRouteComments();
   },
   methods: {
     parseTime,
@@ -135,12 +153,17 @@ export default{
       const id = this.$route.query.id;
       getRouteAVGRating(id).then((res) => {
         this.avgRating = res.data;
-        console.log(res.data);
       })
     },
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
+      })
+    },
+    getRouteComments() {
+      const routeId = this.$route.query.id;
+      getRouteCommentsList(routeId).then(res => {
+
       })
     },
     toggleFavorite() {
@@ -170,10 +193,26 @@ export default{
       })
     },
     submitComment() {
-      axios.post('/api/comment', this.comment).then(res => {
-        console.log(res.data);
-      }).catch(err => {
-        console.log(err);
+      const data = {
+        userId: this.user.userId,
+        routeId: this.route.id,
+        content: this.commentContent
+      }
+      addRouteComments(data).then((res) => {
+        this.$notify({
+          title: '成功',
+          message: '评论提交成功~',
+          type: "success",
+          duration: 2000
+        });
+        this.commentContent = '';
+      }).catch(error => {
+        this.$notify.error({
+          title: '错误',
+          message: '评论失败~',
+          duration: 3000
+        });
+        console.log(error);
       })
     }
   }
