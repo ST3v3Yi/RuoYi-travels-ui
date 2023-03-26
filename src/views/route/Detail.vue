@@ -92,6 +92,22 @@
               <div style="text-align: right;">
                 <el-button type="text" @click="showReplyBox(item.id)">回复</el-button>
               </div>
+              <div v-for="reply in item.replyList" :key="reply.id">
+                <div style="display: flex;">
+                  <div style="width: 50px">
+                    <img :src="'/dev-api' + reply.avatar" class="commentAvatar">
+                  </div>
+                  <div style="flex: 1; margin-left: 10px; margin-bottom: 5px">
+                    <div>
+<!--                      <span style="cursor: pointer" @click="showReplyBox(reply.id)">{{ reply.userName }} 回复 </span>-->
+                      <span>{{ reply.userName }} 回复 </span>
+                      <span style="color: cornflowerblue">@{{ reply.toUserName }}</span>
+                    </div>
+                    <div style="color: #666; margin-top: 5px;">{{ reply.content }}</div>
+                    <div style="color: #999; font-size: 12px; margin-top: 5px;">{{ reply.createTime }}</div>
+                  </div>
+                </div>
+              </div>
               <!-- 回复文本域 -->
               <div v-if="replyInfo.showReplyBox && replyInfo.id == item.id">
                 <el-input type="textarea" placeholder="请输入回复~" v-model.lazy="replyContent"></el-input>
@@ -118,7 +134,7 @@ import { parseTime } from "../../utils/ruoyi";
 import { getRouteAVGRating } from "@/api/routeRating/routeRating";
 import { addRouteComments } from "@/api/routeComments/routeComments";
 import { getRouteCommentsList } from "@/api/routeComments/routeComments";
-import {addRouteReply} from "@/api/routeReply/routeReply";
+import {addRouteReply, getReplyList} from "@/api/routeReply/routeReply";
 
 export default{
   data( ){
@@ -156,7 +172,6 @@ export default{
     this.getUserInfo();
     this.getRouteRating();
     this.getRouteComments();
-    this.getRouteReply();
   },
   methods: {
     parseTime,
@@ -186,7 +201,6 @@ export default{
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
-        console.log(res.data);
       })
     },
     getRouteComments() {
@@ -196,11 +210,13 @@ export default{
         this.commentsList = res.data;
         this.total = res.data.length;
         this.loading = false;
-        console.log(res.data);
+        this.commentsList.forEach(comment => {
+          getReplyList(comment.id).then(response => {
+            comment.replyList = response.data;
+            // console.log(response.data);
+          })
+        })
       })
-    },
-    getRouteReply() {
-
     },
     showReplyBox(id) {
       this.replyInfo.id = id;
@@ -277,6 +293,7 @@ export default{
           duration: 3000
         });
         this.replyContent = '';
+        this.getRouteComments();
       }).catch(error => {
         this.$notify.error({
           title: '错误',

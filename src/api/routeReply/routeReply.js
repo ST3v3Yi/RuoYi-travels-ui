@@ -17,6 +17,13 @@ export function getRouteReply(id) {
   })
 }
 
+export function getReplyList(commentId) {
+  return request({
+    url: '/routeReply/routeReply/list/' + commentId,
+    method: 'get'
+  })
+}
+
 // 新增路线回复
 export function addRouteReply(data) {
   return request({
