@@ -145,6 +145,12 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['route:route:remove']"
           >删除</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-view"
+            @click="handleView(scope.row)"
+          >详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -353,6 +359,11 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
+    },
+    /** 详情按钮操作 */
+    handleView(row) {
+      const id = row.id;
+      this.$router.push({ path: '/routeDetail/:id', query: { id: id }});
     },
     /** 导出按钮操作 */
     handleExport() {

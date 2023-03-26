@@ -1,5 +1,10 @@
 <template>
   <div>
+    <el-breadcrumb separator-class="el-icon-arrow-right" style="font-size: 16px; margin-left: 430px; margin-top: 20px">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/routeList' }">路线推荐</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ route.title }}</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-row type="flex" class="row-bg" justify="center">
       <el-col class="bgCol">
         <div class="coverImg-container bg-purple">
@@ -73,7 +78,8 @@
     <el-row>
       <div style="margin: 5px auto; width: 1050px;">
         <span style="text-align: left; font-size: 20px; font-weight: bold;">评论列表</span>
-        <div v-for="item in commentsList" :key="item.id">
+        <div v-if="commentsList.length == 0" style="text-align: left; font-size: 16px; font-weight: bold; margin-left: 20px; margin-top: 20px;">暂无评论，期待您的评论~</div>
+        <div v-else v-for="item in commentsList" :key="item.id">
           <div style="display: flex; margin-top: 20px;">
             <div style="width: 50px">
               <img :src="'/dev-api' + item.avatar" class="commentAvatar">
@@ -81,10 +87,19 @@
             <div style="flex: 1; margin-left: 10px;">
               <div>{{ item.nickName }}</div>
               <div style="color: #666; margin-top: 5px;">{{ item.content }}</div>
-            </div>
-            <!-- 多级回复 -->
-            <div style="text-align: right; padding: 5px;">
-              <el-button type="text" @click="">回复</el-button>
+              <div style="color: #999; font-size: 12px; margin-top: 5px;">{{ item.createTime }}</div>
+              <!-- 多级回复 -->
+              <div style="text-align: right;">
+                <el-button type="text" @click="showReplyBox(item.id)">回复</el-button>
+              </div>
+              <!-- 回复文本域 -->
+              <div v-if="replyInfo.showReplyBox && replyInfo.id == item.id">
+                <el-input type="textarea" placeholder="请输入回复~" v-model.lazy="replyContent"></el-input>
+                <div style="text-align: right; margin: 5px 0;">
+                  <el-button type="primary" @click="shutReplyBox">取消</el-button>
+                  <el-button type="primary" @click="submitReply(item.id, item.userId)">提交</el-button>
+                </div>
+              </div>
             </div>
           </div>
           <el-divider style="height: 1px"></el-divider>
@@ -103,6 +118,7 @@ import { parseTime } from "../../utils/ruoyi";
 import { getRouteAVGRating } from "@/api/routeRating/routeRating";
 import { addRouteComments } from "@/api/routeComments/routeComments";
 import { getRouteCommentsList } from "@/api/routeComments/routeComments";
+import {addRouteReply} from "@/api/routeReply/routeReply";
 
 export default{
   data( ){
@@ -114,8 +130,14 @@ export default{
       value: 0,
       isFavorite: false,
       commentContent: '',
+      replyContent: '',
+      isShowReplyBox: false,
       userId: null,
       commentsList: [],
+      replyInfo: {
+        id: null,
+        showReplyBox: false
+      },
       colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     };
   },
@@ -127,18 +149,14 @@ export default{
       const serveUrl = process.env.VUE_APP_BASE_API
       const avatarPath = this.createUser.avatar;
       return serveUrl + avatarPath
-    },
-/*    commentAvatar() {
-      const serveUrl = process.env.VUE_APP_BASE_API
-      const avatarPath = this.commentsList.avatar;
-      return serveUrl + avatarPath
-    }*/
+    }
   },
   mounted() {
     this.getRouteDetail();
     this.getUserInfo();
     this.getRouteRating();
     this.getRouteComments();
+    this.getRouteReply();
   },
   methods: {
     parseTime,
@@ -168,6 +186,7 @@ export default{
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
+        console.log(res.data);
       })
     },
     getRouteComments() {
@@ -179,6 +198,17 @@ export default{
         this.loading = false;
         console.log(res.data);
       })
+    },
+    getRouteReply() {
+
+    },
+    showReplyBox(id) {
+      this.replyInfo.id = id;
+      this.replyInfo.showReplyBox = true;
+    },
+    shutReplyBox() {
+      this.replyInfo.showReplyBox = false;
+      this.replyContent = '';
     },
     toggleFavorite() {
       this.isFavorite = !this.isFavorite
@@ -194,8 +224,9 @@ export default{
           title: '成功',
           message: '评分成功~',
           type: "success",
-          duration: 2000
+          duration: 3000
         });
+        this.getRouteRating();
         console.log(res);
       }).catch(error => {
         this.$notify.error({
@@ -217,7 +248,7 @@ export default{
           title: '成功',
           message: '评论提交成功~',
           type: "success",
-          duration: 2000
+          duration: 3000
         });
         this.commentContent = '';
         this.getRouteComments();
@@ -225,6 +256,31 @@ export default{
         this.$notify.error({
           title: '错误',
           message: '评论失败~',
+          duration: 3000
+        });
+        console.log(error);
+      })
+    },
+    submitReply(id, toUserId) {
+      const data = {
+        userId: this.user.userId,
+        routeId: this.route.id,
+        commentId: id,
+        toUserId: toUserId,
+        content: this.replyContent
+      }
+      addRouteReply(data).then((res) => {
+        this.$notify({
+          title: '成功',
+          message: '回复提交成功~',
+          type: "success",
+          duration: 3000
+        });
+        this.replyContent = '';
+      }).catch(error => {
+        this.$notify.error({
+          title: '错误',
+          message: '回复失败~',
           duration: 3000
         });
         console.log(error);
@@ -247,6 +303,7 @@ export default{
 .bgCol {
   width: 1050px;
   height: 450px;
+  margin: 0 auto;
 }
 .coverImg-container {
   border-radius: 4px;
@@ -269,7 +326,7 @@ export default{
   background-color: #FFFFFF;
 }
 .row-title {
-  margin-top: -95px;
+  margin-top: -85px;
 }
 .headRight {
   margin-left: 330px;
