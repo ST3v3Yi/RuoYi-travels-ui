@@ -1,44 +1,40 @@
 <template>
-<div class="home">
-    <img alt="Vue logo" src="../../assets/logo/logo.png" class="home-logo">
-    <HomeCarousel cards="visited" />
-    <HomeWelcome msg="欢迎访问" msg_en="Welcome to visit " />
-</div>
+  <div class="carouselContainer">
+    <el-carousel height="600px" :interval="6000" arrow="hover">
+      <el-carousel-item v-for="item in 3" :key="item">
+        <h3 class="medium">{{ item }}</h3>
+      </el-carousel-item>
+    </el-carousel>
+  </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HomeWelcome from '@/components/HomeWelcome.vue'
-import HomeCarousel from '@/components/HomeCarousel.vue'
-
-export default {
-    name: 'Home',
-    components: {
-        HomeCarousel,
-        HomeWelcome
-    }
-}
-</script>
-
 <style>
-body {
-    padding: 0;
-    margin: 0;
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  z-index: 1;
+}
+.el-carousel {
+  position: absolute;
+  top: -60px;
+  left: 0px;
+  width: 100%;
+  height: 600px;
+}
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
 }
 
-html,
-body,
-#app {
-    text-align: left;
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
 }
 
-.home-logo {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    height: 80px;
-}
-
-.home {
-    text-align: center;
+.el-carousel__item:nth-child(2n+1) {
+  background-color: #d3dce6;
 }
 </style>

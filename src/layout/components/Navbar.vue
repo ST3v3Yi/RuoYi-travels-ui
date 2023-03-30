@@ -42,16 +42,18 @@
       </div>
     </el-row>
   </header>-->
-  <div class="menuContainer">
-    <el-menu :router="true" :default-active="activeIndex" mode="horizontal">
-      <el-menu-item index="/" @click="onClick('/')" :class="{ active: activeIndex === '/' }">首页</el-menu-item>
-      <el-menu-item index="/site" @click="onClick('/site')" :class="{ active: activeIndex === '/site' }">景点</el-menu-item>
-      <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
-      <el-menu-item index="/hotel" @click="onClick('/hotel')" :class="{ active: activeIndex === '/hotel' }">订酒店</el-menu-item>
-      <el-menu-item index="/announcement" @click="onClick('/announcement')" :class="{ active: activeIndex === '/announcement' }">通知公告</el-menu-item>
-      <NavbarAvatar class="navbarAvatar" />
-    </el-menu>
-  </div>
+  <el-header>
+    <div class="menuContainer">
+      <el-menu :router="true" :default-active="activeIndex" mode="horizontal">
+        <el-menu-item index="/" @click="onClick('/')" :class="{ active: activeIndex === '/' }">首页</el-menu-item>
+        <el-menu-item index="/site" @click="onClick('/site')" :class="{ active: activeIndex === '/site' }">景点</el-menu-item>
+        <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
+        <el-menu-item index="/hotel" @click="onClick('/hotel')" :class="{ active: activeIndex === '/hotel' }">订酒店</el-menu-item>
+        <el-menu-item index="/announcement" @click="onClick('/announcement')" :class="{ active: activeIndex === '/announcement' }">通知公告</el-menu-item>
+        <NavbarAvatar class="navbarAvatar" />
+      </el-menu>
+    </div>
+  </el-header>
 </template>
 
 <script>
@@ -74,12 +76,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-header {
+  padding: 0 0;
+}
 .menuContainer {
+  width: 100%;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
-  width: 100%;
   z-index: 999;
 }
 .el-menu {
@@ -89,11 +94,13 @@ export default {
 .el-menu-item {
   height: 60px;
   font-size: 16px;
+  color: #2ec4b6;
   display: inline-block;
 }
 .active {
   height: 60px;
   font-size: 18px;
+  font-weight: bold;
   display: inline-block;
 }
 .animated.bounce {
