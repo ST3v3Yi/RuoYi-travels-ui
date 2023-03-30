@@ -38,10 +38,10 @@
                             <el-form-item label="修改头像" v-if="!editable">
                                 <el-upload
                                     class="avatar-uploader"
-                                    action="http://localhost:8080/uploadUserProfile" 
+                                    action="http://localhost:8080/uploadUserProfile"
                                     list-type="picture-card"
                                     :show-file-list="true"
-                                    :on-preview="handlePictureCardPreview" 
+                                    :on-preview="handlePictureCardPreview"
                                     :on-remove="handleRemove"
                                     :auto-upload="false"
                                     ref="upload"

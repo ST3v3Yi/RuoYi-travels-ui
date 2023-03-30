@@ -1,12 +1,12 @@
 <template>
-  <header class="navbar">
+<!--  <header class="navbar">
     <el-row type="flex" justify="space-between" class="main">
-      <!-- logo -->
+      &lt;!&ndash; logo &ndash;&gt;
       <div class="logo">
         <img src="../../assets/logo/logo.png" class="header-logo">
       </div>
 
-      <!-- 菜单栏 -->
+      &lt;!&ndash; 菜单栏 &ndash;&gt;
       <el-row type="flex" class="nav">
         <router-link to="/">主页</router-link>
         <router-link to="/site">景点信息</router-link>
@@ -17,7 +17,7 @@
         <router-link to="/test">测试页面</router-link>
       </el-row>
 
-      <!-- 用户登录信息 -->
+      &lt;!&ndash; 用户登录信息 &ndash;&gt;
       <div class="right-menu">
         <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
           <div class="avatar-wrapper">
@@ -41,157 +41,69 @@
         </el-dropdown>
       </div>
     </el-row>
-  </header>
+  </header>-->
+  <div class="menuContainer">
+    <el-menu :router="true" :default-active="activeIndex" mode="horizontal">
+      <el-menu-item index="/" @click="onClick('/')" :class="{ active: activeIndex === '/' }">首页</el-menu-item>
+      <el-menu-item index="/site" @click="onClick('/site')" :class="{ active: activeIndex === '/site' }">景点</el-menu-item>
+      <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
+      <el-menu-item index="/hotel" @click="onClick('/hotel')" :class="{ active: activeIndex === '/hotel' }">订酒店</el-menu-item>
+      <el-menu-item index="/announcement" @click="onClick('/announcement')" :class="{ active: activeIndex === '/announcement' }">通知公告</el-menu-item>
+      <NavbarAvatar class="navbarAvatar" />
+    </el-menu>
+  </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import NavbarAvatar from "@/layout/components/Navbar-avatar.vue";
 export default {
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar',
-      'device'
-    ]),
-    /*setting: {
-      get() {
-        return this.$store.state.settings.showSettings
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'showSettings',
-          value: val
-        })
-      }
-    },*/
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav
-      }
+  data() {
+    return {
+      activeIndex: '/',
     }
   },
+  components: {
+    NavbarAvatar,
+  },
   methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
+    onClick(index) {
+      this.activeIndex = index;
     },
-    async logout() {
-      this.$confirm('确定注销账号并退出吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('LogOut').then(() => {
-          location.href = '/home';
-        })
-      }).catch(() => {});
-    }
-  }
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-.navbar {
+.menuContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  z-index: 999;
+}
+.el-menu {
   height: 60px;
-  line-height:60px;
-  background:#fff;
-  border-bottom: 1px #ddd solid;
-  box-shadow:0 3px 0 #f5f5f5;
-  box-sizing: border-box;
-
-  .main {
-    width:1000px;
-    margin:0 auto;
-  }
-
-  .logo{
-    width: 50px;
-    padding-top: 5px;
-    img{
-      display: block;
-      width:100%;
-    }
-  }
-
-  .nav{
-    margin: 0px 40px;
-    flex:1;
-    a{
-      display: block;
-      padding: 0 20px;
-      height: 60px;
-      box-sizing: border-box;
-      &:hover,&:focus, &:active {
-        border-bottom: 5px #409eff solid;
-        color:#409eff;
-      }
-    }
-    .route-link-exact-active{
-      background:#409eff;
-      color:#fff!important;
-    }
-  }
-
-  .message{
-    height: 36px;
-    line-height:1;
-    cursor:pointer;
-    .el-icon-bell{
-      margin-right:2px;
-      font-size:18px;
-    }
-  }
-
-  .right-menu {
-    float: right;
-    height: 100%;
-    line-height: 50px;
-    padding-top: 5px;
-
-    &:focus {
-      outline: none;
-    }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
-    }
-
-    .avatar-container {
-      margin-right: 30px;
-
-      .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-      }
-    }
-  }
+  border-bottom: 0;
+}
+.el-menu-item {
+  height: 60px;
+  font-size: 16px;
+  display: inline-block;
+}
+.active {
+  height: 60px;
+  font-size: 18px;
+  display: inline-block;
+}
+.animated.bounce {
+  animation-duration: 1s;
+  animation-delay: 0s;
+  animation-fill-mode: both;
+}
+.navbarAvatar {
+  margin-top: 5px;
+  min-width: 100px;
+  display: inline-block;
 }
 </style>

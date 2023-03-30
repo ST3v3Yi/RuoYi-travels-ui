@@ -33,7 +33,7 @@ import Navbar from "@/layout/components/Navbar.vue";
 
 export default {
     name: 'vue_main',
-  components: { Navbar },
+    components: { Navbar },
     mounted() {
         this.userName = window.localStorage.getItem('userName');
         this.userType = window.localStorage.getItem('userType');

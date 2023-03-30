@@ -8,7 +8,11 @@
     <el-row type="flex" class="row-bg" justify="center">
       <el-col class="bgCol">
         <div class="coverImg-container bg-purple">
-          <image-preview :src="route.coverImg" style="width: 100%; height: 100%;" />
+          <img :src="'/dev-api' + route.coverImg" style="width: 100%; height: 100%;" />
+<!--          <el-image
+            style="width: 100%; height: 100%;"
+            :src="'/dev-api' + route.coverImg"
+            :fit="fit"></el-image>-->
         </div>
       </el-col>
     </el-row>
@@ -47,14 +51,14 @@
       <el-col style="width: 250px;" class="bg-purple">
           <div style="display: flex; align-items: center; margin-right: 20px;">
             <i :class="iconClass" @click="toggleFavorite" style="margin-right: 5px;"/>
-            <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.2);">收藏</span>
+            <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.1);">{{ isFavorite ? '已收藏' : '收藏' }}</span>
             <el-rate
               v-model="value"
               allow-half
               show-score
               text-color="#ff9900"
               :colors="colors"
-              style="margin-left: 35px;"
+              style="margin-left: 30px;"
               @change="submitRating">
             </el-rate>
           </div>
@@ -131,10 +135,11 @@ import { addRouteRating } from "@/api/routeRating/routeRating";
 import { getUserProfile } from "@/api/system/user";
 import { getUser } from "@/api/system/user";
 import { parseTime } from "../../utils/ruoyi";
-import { getRouteAVGRating } from "@/api/routeRating/routeRating";
+import { getRouteAVGRating, getRating } from "@/api/routeRating/routeRating";
 import { addRouteComments } from "@/api/routeComments/routeComments";
 import { getRouteCommentsList } from "@/api/routeComments/routeComments";
 import {addRouteReply, getReplyList} from "@/api/routeReply/routeReply";
+import { getIsFavorite, delFavorite, addRouteFavorite } from "@/api/routeFavorite/routeFavorite";
 
 export default{
   data( ){
@@ -153,6 +158,10 @@ export default{
       replyInfo: {
         id: null,
         showReplyBox: false
+      },
+      favoriteInfo: {
+        userId: '',
+        routeId: '',
       },
       colors: ['#99A9BF', '#F7BA2A', '#FF9900']
     };
@@ -201,6 +210,18 @@ export default{
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
+        return this.user.userId;
+      }).then((userId) => {
+        this.favoriteInfo = {
+          userId: userId,
+          routeId: this.$route.query.id
+        }
+        return getIsFavorite(this.favoriteInfo);
+      }).then((res) => {
+        this.isFavorite = res.data;
+        return getRating(this.favoriteInfo);
+      }).then((res) => {
+        this.value = res.data;
       })
     },
     getRouteComments() {
@@ -227,7 +248,20 @@ export default{
       this.replyContent = '';
     },
     toggleFavorite() {
-      this.isFavorite = !this.isFavorite
+      if (this.isFavorite) {
+        const data = this.favoriteInfo;
+        delFavorite(data).then((res) => {
+          if(res.code == 200) {
+            this.isFavorite = false;
+          }
+        })
+      } else {
+        addRouteFavorite(this.favoriteInfo).then((res) => {
+          if(res.code == 200) {
+            this.isFavorite = true;
+          }
+        })
+      }
     },
     submitRating() {
       const data = {

@@ -25,6 +25,15 @@ export function getRouteAVGRating(routeId) {
   })
 }
 
+// 查询当前用户对该路线的评分
+export function getRating(data) {
+  return request({
+    url: '/routeRating/routeRating/rating',
+    method: 'post',
+    data: data
+  })
+}
+
 // 新增路线评分
 export function addRouteRating(data) {
   return request({

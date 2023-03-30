@@ -9,6 +9,22 @@ export function listRoute(query) {
   })
 }
 
+export function getListByDay(data) {
+  return request({
+    url: '/route/route/listByDay',
+    method: 'post',
+    data: data
+  })
+}
+
+export function getListByPrice(data) {
+  return request({
+    url: '/route/route/listByPrice',
+    method: 'post',
+    data: data
+  })
+}
+
 // 查询路线详细
 export function getRoute(id) {
   return request({
