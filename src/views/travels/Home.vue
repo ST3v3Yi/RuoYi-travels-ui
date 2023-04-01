@@ -1,29 +1,35 @@
 <template>
   <div class="carouselContainer">
     <el-carousel height="640px" :interval="6000" arrow="hover">
-      <el-carousel-item>
-        <el-image
-          :src="require('@/assets/banner1.jpeg')" fit="scale-down">
-        </el-image>
-      </el-carousel-item>
-      <el-carousel-item>
-        <el-image
-          :src="require('@/assets/banner2.jpeg')" fit="scale-down">
-        </el-image>
-      </el-carousel-item>
-      <el-carousel-item>
-        <el-image :src="require('@/assets/banner3.jpeg')" fit="scale-down">
-        </el-image>
+      <el-carousel-item v-for="(item, index) in imgList" :key="index">
+        <img :src="item" class="carousel-img" />
       </el-carousel-item>
     </el-carousel>
   </div>
 </template>
 
+<script>
+  export default {
+    data() {
+      return {
+        imgList: [
+          require("@/assets/banner1.jpeg"),
+          require("@/assets/banner2.jpeg"),
+          require("@/assets/banner3.jpeg"),
+        ],
+      }
+    },
+    mounted() {
+    },
+    methods: {
+
+    }
+  }
+</script>
+
 <style>
 .carouselContainer {
   position: relative;
-  width: 100%;
-  height: 500px;
   z-index: 1;
 }
 .el-carousel {
@@ -31,7 +37,6 @@
   top: 2px;
   left: 0px;
   width: 100%;
-  height: 600px;
   overflow: hidden;
 }
 .el-carousel__item h3 {
