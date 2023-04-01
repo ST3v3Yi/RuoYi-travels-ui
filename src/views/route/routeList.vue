@@ -6,7 +6,9 @@
             <div style="margin-top: 10px;">
               <span style="font-size: 28px; font-weight: bold; margin-left: 20px;">路线分享</span>
               <div style="display: flex; justify-content: right; margin-top: -31px; margin-right: 20px;">
-                <el-button type="primary" icon="el-icon-edit" round>分享我的路线</el-button>
+                <el-button type="primary" icon="el-icon-edit" round>
+                  <router-link to="/writeRoute">分享我的路线</router-link>
+                </el-button>
               </div>
               <el-row style="margin-left: 20px; margin-top: 30px;">
                 <span>行程天数：</span>

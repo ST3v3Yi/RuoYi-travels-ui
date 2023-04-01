@@ -42,9 +42,8 @@
       </div>
     </el-row>
   </header>-->
-  <el-header>
-    <div class="menuContainer">
-      <el-menu :router="true" :default-active="activeIndex" mode="horizontal">
+    <div :style="menuContainer">
+      <el-menu :router="true" :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f">
         <el-menu-item index="/" @click="onClick('/')" :class="{ active: activeIndex === '/' }">首页</el-menu-item>
         <el-menu-item index="/site" @click="onClick('/site')" :class="{ active: activeIndex === '/site' }">景点</el-menu-item>
         <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
@@ -53,7 +52,6 @@
         <NavbarAvatar class="navbarAvatar" />
       </el-menu>
     </div>
-  </el-header>
 </template>
 
 <script>
@@ -62,10 +60,25 @@ export default {
   data() {
     return {
       activeIndex: '/',
+      menuContainer: {
+        width: window.innerWidth + "px",
+        position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: "999",
+      }
     }
   },
   components: {
     NavbarAvatar,
+  },
+  mounted() {
+    // 注册resize事件，当浏览器窗口大小变化时，重新设置navbar的宽度
+    window.addEventListener('resize', () => {
+      const newWidth = window.innerWidth;
+      this.menuContainer.width = `${newWidth}px`;
+    })
   },
   methods: {
     onClick(index) {
@@ -76,11 +89,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-header {
-  padding: 0 0;
-}
 .menuContainer {
-  width: 100%;
   position: relative;
   display: flex;
   justify-content: center;
@@ -90,11 +99,18 @@ export default {
 .el-menu {
   height: 60px;
   border-bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.el-menu:hover {
 }
 .el-menu-item {
   height: 60px;
   font-size: 16px;
-  color: #2ec4b6;
+  font-weight: bold;
+  color: #2a9d8f;
+  background-color: transparent;
   display: inline-block;
 }
 .active {

@@ -80,6 +80,11 @@ export const constantRoutes = [
     component: () => import('../views/route/Detail.vue')
   },
   {
+    path: '/writeRoute',
+    name: 'writeRoute',
+    component: () => import('../views/route/writeRoute.vue')
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,
