@@ -85,6 +85,11 @@ export const constantRoutes = [
     component: () => import('../views/route/writeRoute.vue')
   },
   {
+    path: '/spotList',
+    name: 'spotList',
+    component: () => import('../views/spot/spotList.vue')
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,
