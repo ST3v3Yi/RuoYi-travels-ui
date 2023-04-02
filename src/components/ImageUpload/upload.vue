@@ -179,6 +179,8 @@ export default {
         this.number = 0;
         this.$emit("input", this.listToString(this.fileList));
         this.$modal.closeLoading();
+        this.$emit('upload-success', this.fileList[0].url);
+        console.log(this.fileList[0].url);
       }
     },
     // 预览

@@ -2,7 +2,7 @@
   <div>
     <div class="coverImg">
       <div class="uploadContainer">
-        <imageUpload class="uploadCoverImg" v-model="uploadImg" />
+        <imageUpload class="uploadCoverImg" v-model="uploadImg" @upload-success="handleUploadSuccess" v-show="showUpload" />
       </div>
       <el-image
         class="backgroundImg"
@@ -13,6 +13,7 @@
     <div class="titleContainer">
       <el-input class="titleInput" v-model="title" placeholder="请输入游记名称"></el-input>
     </div>
+    <img :src="coverUrl" />
   </div>
 </template>
 
@@ -25,7 +26,9 @@ export default {
     return {
       imageUrl: require('@/assets/images/coverImg-background.jpg'),
       title: '',
-      uploadImg: ''
+      uploadImg: '',
+      coverUrl: '',
+      showUpload: true,
     }
   },
   components: {
@@ -35,8 +38,10 @@ export default {
 
   },
   methods: {
-    handleUploadSuccess() {
-
+    handleUploadSuccess(url) {
+      this.imageUrl = '/dev-api' + url;
+      this.showUpload = false;
+      console.log(this.imageUrl);
     }
   }
 }
