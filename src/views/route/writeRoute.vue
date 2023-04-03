@@ -21,8 +21,21 @@
         >
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-          <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过5MB</div>
+          <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过15MB</div>
         </el-upload>
+        <el-dialog
+          id="imgCrop"
+          title="图片裁剪"
+          :visible.sync="dialogVisible"
+          :show-close="false"
+          :close-on-click-modal="false"
+          :before-close="beforeClose">
+          <canvas ref="canvas"></canvas>
+          <div slot="footer">
+            <el-button @click="closeDialog">取消</el-button>
+            <el-button type="primary" @click="confirmUpload">确定</el-button>
+          </div>
+        </el-dialog>
       </div>
       <el-image
         class="backgroundImg"
@@ -56,7 +69,7 @@ export default {
     // 大小限制(MB)
     fileSize: {
       type: Number,
-      default: 5,
+      default: 15,
     },
     // 文件类型, 例如['png', 'jpg', 'jpeg']
     fileType: {
@@ -87,6 +100,8 @@ export default {
       uploadImg: '',
       showUpload: true,
       showDelButton: false,
+      image: null,
+      cropper: null,
     };
   },
   watch: {
@@ -146,10 +161,59 @@ export default {
       if (this.fileSize) {
         const isLt = file.size / 1024 / 1024 < this.fileSize;
         if (!isLt) {
-          this.$modal.msgError(`上传头像图片大小不能超过 ${this.fileSize} MB!`);
+          this.$modal.msgError(`上传图片大小不能超过 ${this.fileSize} MB!`);
           return false;
         }
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => {
+            this.image = new Image()
+            this.image.src = reader.result.toString()
+            // 未装载到DOM中的原因是应当弹出一个el-dialog来装载相应的图片，进而进行裁剪【4月3日解决】
+            // 目前的想法是在img.onload前将其装在到一个el-dialog中，让我们尝试看看
+            console.log('Before creating Cropper object, img is in the DOM:', document.body.contains(this.image))
+            console.log(this.image.src)
+            this.image.onload = () => {
+              // 显示裁剪窗口
+              this.dialogVisible = true;
+            }
+          }
+        })
       }
+      return false;
+    },
+    // 销毁Cropper对象
+    beforeClose(done) {
+      this.cropper.destroy()
+      this.cropper = null
+      done()
+    },
+    // 关闭dialog
+    closeDialog() {
+      this.dialogVisible = false;
+    },
+    // 获取裁剪后的图片数据
+    confirmUpload() {
+      // 创建 Cropper 对象
+      this.cropper = new Cropper(this.image, {
+        aspectRatio: 3,
+        viewMode: 1,
+        crop: () => {
+          // 裁剪完的回调函数
+          const canvas = this.cropper.getCroppedCanvas({
+            width: 1920,  // 裁剪后图片的宽度
+            height: 640   // 裁剪后图片的高度
+          })
+          canvas.toBlob(blob => {
+            // 将裁剪后的图片传递给后台进行上传操作
+            const formData = new FormData()
+            formData.append('file', blob)
+            // TODO: 调用上传接口上传formData
+            this.dialogVisible = false
+          }, 'image/jpeg')
+        }
+      })
       this.$modal.loading("正在上传图片，请稍候...");
       this.number++;
     },
@@ -194,7 +258,6 @@ export default {
         this.imageUrl = '/dev-api' + this.fileList[0].url;
         this.showUpload = false;
         this.showDelButton = true;
-        console.log(this.fileList[0].url);
       }
     },
     /*// 预览
