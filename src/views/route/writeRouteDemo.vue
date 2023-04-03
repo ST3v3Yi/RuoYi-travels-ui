@@ -1,6 +1,6 @@
 <template>
   <div class="coverImgContainer">
-    <div class="uploadButton" @click="editCropper()">
+    <div class="uploadButton" v-show="uploadShow" @click="editCropper()">
       <p style="font-size: 20px; display: flex; align-items: center;"><i class="uploadIcon el-icon-upload"/>点击上传封面图</p>
     </div>
     <el-dialog title="背景图" :visible.sync="openDialog" width="1280px" append-to-body @opened="modalOpened"  @close="closeDialog">
@@ -46,7 +46,7 @@
         </el-col>
       </el-row>
     </el-dialog>
-    <img v-bind:src="options.img" title="点击上传头像" class="coverImg" />
+    <img :src="image" class="coverImg" />
   </div>
 </template>
 
@@ -54,7 +54,9 @@
 import store from "@/store";
 import { VueCropper } from "vue-cropper";
 import {debounce} from "@/utils";
-import { uploadCoverImg } from "@/api/route/route"
+import { uploadCoverImg } from "@/api/route/route";
+import { getToken } from "@/utils/auth";
+import request from "@/utils/request";
 export default {
   components: {
     VueCropper
@@ -65,18 +67,26 @@ export default {
       openDialog: false,
       // 是否显示Cropper
       visible: false,
+      // 是否显示upload组件
+      uploadShow: true,
       options: {
-        img: require('@/assets/images/coverImg-background.jpg'), // 裁剪图片的地址
+        // img: require('@/assets/images/coverImg-background.jpg'), // 裁剪图片的地址
+        img: '',
         autoCrop: true, // 是否默认生成截图框
-        autoCropWidth: 600, // 默认生成截图框宽度
-        autoCropHeight: 200, // 默认生成截图框高度
+        autoCropWidth: 1920, // 默认生成截图框宽度
+        autoCropHeight: 640, // 默认生成截图框高度
         fixedBox: false, // 固定截图框大小 不允许改变
         outputType:"png" // 默认生成截图为PNG格式
       },
       previews: {},
+      image: require('@/assets/images/coverImg-background.jpg'),
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
     }
   },
   methods: {
+    request,
     // 编辑封面图
     editCropper() {
       this.openDialog = true;
@@ -123,9 +133,10 @@ export default {
         uploadCoverImg(formData).then(response => {
           this.open = false;
           this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl;
-          // store.commit('SET_AVATAR', this.options.img);
-          this.$modal.msgSuccess("修改成功");
+          this.image = this.options.img
           this.visible = false;
+          this.openDialog = false;
+          this.uploadShow = false;
         });
       });
     },
@@ -161,7 +172,10 @@ export default {
     margin-right: 10px;
     color: #666666;
   }
-  .uploadIcon:hover {
+}
+.uploadButton:hover{
+  font-weight: bold;
+  .uploadIcon {
     color: #000000;
   }
 }
