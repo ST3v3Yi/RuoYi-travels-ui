@@ -24,12 +24,13 @@
           <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过15MB</div>
         </el-upload>
         <el-dialog
-          id="imgCrop"
+          class="imgCropDialog"
           title="图片裁剪"
           :visible.sync="dialogVisible"
           :show-close="false"
           :close-on-click-modal="false"
           :before-close="beforeClose">
+          <img :src="dialogImageUrl">
           <canvas ref="canvas"></canvas>
           <div slot="footer">
             <el-button @click="closeDialog">取消</el-button>
@@ -170,6 +171,7 @@ export default {
           reader.onload = () => {
             this.image = new Image()
             this.image.src = reader.result.toString()
+            this.dialogImageUrl = this.image.src
             // 未装载到DOM中的原因是应当弹出一个el-dialog来装载相应的图片，进而进行裁剪【4月3日解决】
             // 目前的想法是在img.onload前将其装在到一个el-dialog中，让我们尝试看看
             console.log('Before creating Cropper object, img is in the DOM:', document.body.contains(this.image))
@@ -260,11 +262,6 @@ export default {
         this.showDelButton = true;
       }
     },
-    /*// 预览
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-    },*/
     // 对象转成指定字符串分隔
     listToString(list, separator) {
       let strs = "";
@@ -286,7 +283,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .coverImg {
   position: relative;
   width: 100%;
@@ -314,9 +311,19 @@ export default {
   height: 100%;
   z-index: 0;
 }
+.imgCropDialog {
+  width: 1280px;
+  height: 800px;
+  overflow: auto;
+  .img {
+    display: block;
+    max-width: 1280px;
+    max-height: 720px;
+  }
+}
 .inputContainer {
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
   align-items: center;
   position: relative;
 }

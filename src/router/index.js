@@ -85,6 +85,11 @@ export const constantRoutes = [
     component: () => import('../views/route/writeRoute.vue')
   },
   {
+    path: '/writeRouteDemo',
+    name: 'writeRouteDemo',
+    component: () => import('../views/route/writeRouteDemo.vue')
+  },
+  {
     path: '/spotList',
     name: 'spotList',
     component: () => import('../views/spot/spotList.vue')

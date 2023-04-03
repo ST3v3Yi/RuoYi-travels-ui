@@ -1,5 +1,15 @@
 import request from '@/utils/request'
 
+// 上传路线封面图
+export function uploadCoverImg(data) {
+  return request({
+    url: '/route/route/coverImg',
+    method: "post",
+    data: data
+  })
+}
+
+
 // 查询路线列表
 export function listRoute(query) {
   return request({
@@ -58,3 +68,4 @@ export function delRoute(id) {
     method: 'delete'
   })
 }
+
