@@ -2,10 +2,10 @@
 
 ```bash
 # 克隆项目
-git clone https://gitee.com/y_project/RuoYi-Vue
+git clone https://github.com/ST3v3Yi/RuoYi-travels-ui
 
 # 进入项目目录
-cd ruoyi-ui
+cd RuoYi-travels-ui
 
 # 安装依赖
 npm install
@@ -17,7 +17,7 @@ npm install --registry=https://registry.npmmirror.com
 npm run dev
 ```
 
-浏览器访问 http://localhost:80
+浏览器访问 http://localhost:8088
 
 ## 发布
 
