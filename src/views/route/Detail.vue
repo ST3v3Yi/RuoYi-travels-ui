@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <el-breadcrumb separator-class="el-icon-arrow-right" style="font-size: 16px; margin-left: 430px; margin-top: 20px">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/routeList' }">路线推荐</el-breadcrumb-item>
@@ -64,7 +64,6 @@
           </div>
         <el-divider style="height: 2px;"></el-divider>
       </el-col>
-
     </el-row>
     <el-row>
       <div style="margin: 10px auto; width: 1050px;">
@@ -140,8 +139,12 @@ import { addRouteComments } from "@/api/routeComments/routeComments";
 import { getRouteCommentsList } from "@/api/routeComments/routeComments";
 import {addRouteReply, getReplyList} from "@/api/routeReply/routeReply";
 import { getIsFavorite, delFavorite, addRouteFavorite } from "@/api/routeFavorite/routeFavorite";
+import GoTopAndBottom from "@/components/GoTopAndBottom/index.vue";
 
 export default{
+  components: {
+    GoTopAndBottom
+  },
   data( ){
     return{
       route: {},
@@ -342,6 +345,9 @@ export default{
 </script>
 
 <style lang="scss" scoped>
+.container {
+  height: 100%;
+}
 .el-row {
   margin-bottom: 20px;
   &:last-child {

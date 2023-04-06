@@ -1,5 +1,5 @@
 <template>
-<div class="routelist-main">
+  <div class="routelist-main">
     <el-container>
       <template>
         <el-row class="bgHead">
@@ -119,7 +119,7 @@
       <el-footer>到底了</el-footer>
       <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
     </el-container>
-</div>
+  </div>
 </template>
 
 <script>

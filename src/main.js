@@ -39,6 +39,7 @@ import VueMeta from 'vue-meta'
 import DictData from '@/components/DictData'
 // Animate.css
 import 'animate.css'
+import GoTopAndBottom from "@/components/GoTopAndBottom/index.vue";
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -59,6 +60,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+Vue.component('GoTopAndBottom', GoTopAndBottom)
 
 Vue.use(directive)
 Vue.use(plugins)

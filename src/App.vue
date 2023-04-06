@@ -1,11 +1,19 @@
 <template>
-<div id="app">
+  <div id="app" class="app">
+    <GoTopAndBottom target=".app" />
     <navbar/>
     <router-view style="padding-top: 0px" />
-</div>
+  </div>
 </template>
 
 <style lang="scss">
+html, body, #app {
+  overflow: auto;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden;
+}
 #nav {
   border-bottom: solid 0.5px #42b983;
   background-color: white;
@@ -30,10 +38,14 @@
 
 <script>
 import Navbar from "@/layout/components/Navbar.vue";
+import GoTopAndBottom from "@/components/GoTopAndBottom/index.vue";
 
 export default {
     name: 'vue_main',
-    components: { Navbar },
+    components: {
+      Navbar,
+      GoTopAndBottom
+    },
     mounted() {
         this.userName = window.localStorage.getItem('userName');
         this.userType = window.localStorage.getItem('userType');
