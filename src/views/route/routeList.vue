@@ -117,7 +117,6 @@
         </el-row>
       </template>
       <el-footer>到底了</el-footer>
-      <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
     </el-container>
   </div>
 </template>
@@ -126,7 +125,7 @@
 const axios = require('axios')
 const qs = require('qs')
 const ele = require('element-ui')
-import { listRoute, getListByDay, getListByPrice } from "@/api/route/route";
+import {getListByDay, getListByPrice, getRouteList} from "@/api/route/route";
 import { getRouteAVGRating } from "@/api/routeRating/routeRating"
 
 export default {
@@ -153,7 +152,7 @@ export default {
     methods: {
       getList() {
         this.loading = true;
-        listRoute(this.queryParams).then(response => {
+        getRouteList().then(response => {
           this.routeList = response.rows;
           this.total = response.total;
           this.loading = false;

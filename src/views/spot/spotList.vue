@@ -33,7 +33,6 @@ export default {
         this.spotList = response.rows;
         this.total = response.total;
         this.loading = false;
-        console.log(this.spotList);
       });
     },
   }

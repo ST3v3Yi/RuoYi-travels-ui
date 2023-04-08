@@ -44,7 +44,7 @@ export default {
     name: 'vue_main',
     components: {
       Navbar,
-      GoTopAndBottom
+      GoTopAndBottom,
     },
     mounted() {
         this.userName = window.localStorage.getItem('userName');

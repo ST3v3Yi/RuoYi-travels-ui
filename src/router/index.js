@@ -37,7 +37,7 @@ export const constantRoutes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/travels/Home.vue')
+    component: () => import('../views/travels/Home.vue'),
   },
   {
     path: '/about',
@@ -82,17 +82,17 @@ export const constantRoutes = [
   {
     path: '/writeRoute',
     name: 'writeRoute',
-    component: () => import('../views/route/writeRoute.vue')
-  },
-  {
-    path: '/writeRouteDemo',
-    name: 'writeRouteDemo',
-    component: () => import('../views/route/writeRouteDemo.vue')
+    component: () => import('../views/route/writeRoute.vue'),
   },
   {
     path: '/spotList',
     name: 'spotList',
     component: () => import('../views/spot/spotList.vue')
+  },
+  {
+    path: '/spotDetail',
+    name: 'spotDetail',
+    component: () => import('../views/spot/spotDetail.vue')
   },
   {
     path: '/redirect',

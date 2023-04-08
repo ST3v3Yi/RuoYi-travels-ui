@@ -18,6 +18,14 @@ export function listRoute(query) {
   })
 }
 
+// 查询发布路线列表
+export function getRouteList() {
+  return request({
+    url: '/route/route/routeList',
+    method: 'get'
+  })
+}
+
 export function getListByDay(data) {
   return request({
     url: '/route/route/listByDay',

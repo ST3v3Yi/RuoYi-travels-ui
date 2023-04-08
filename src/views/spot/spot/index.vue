@@ -74,6 +74,15 @@
     <el-table v-loading="loading" :data="spotList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="景区名字" align="center" prop="spotName" />
+      <el-table-column label="景区封面图" align="center" prop="coverImg" width="100">
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.coverImg" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="联系电话" align="center" prop="telephone" />
+      <el-table-column label="交通方式" align="center" prop="traffic" />
+      <el-table-column label="门票情况" align="center" prop="tickets" />
+      <el-table-column label="开放时间" align="center" prop="openingHours" />
       <el-table-column label="是否发布" align="center" prop="isDeleted">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_is_released" :value="scope.row.isDeleted"/>
@@ -113,8 +122,11 @@
         <el-form-item label="景区名字" prop="spotName">
           <el-input v-model="form.spotName" placeholder="请输入景区名字" />
         </el-form-item>
+        <el-form-item label="景区封面图" prop="coverImg">
+          <image-upload v-model="form.coverImg"/>
+        </el-form-item>
         <el-form-item label="景区简介" prop="introduction">
-          <el-input v-model="form.introduction" type="textarea" placeholder="请输入景区简介" />
+          <el-input v-model="form.introduction" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="联系电话" prop="telephone">
           <el-input v-model="form.telephone" placeholder="请输入联系电话" />
@@ -133,6 +145,19 @@
         </el-form-item>
         <el-form-item label="景区位置" prop="location">
           <el-input v-model="form.location" placeholder="请输入景区位置" />
+        </el-form-item>
+        <el-form-item label="景区图片" prop="spotImg">
+          <image-upload v-model="form.spotImg"/>
+        </el-form-item>
+        <el-form-item label="是否发布" prop="isDeleted">
+          <el-select v-model="form.isDeleted" placeholder="请选择是否发布">
+            <el-option
+              v-for="dict in dict.type.sys_is_released"
+              :key="dict.value"
+              :label="dict.label"
+              :value="parseInt(dict.value)"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -206,6 +231,7 @@ export default {
       this.form = {
         id: null,
         spotName: null,
+        coverImg: null,
         introduction: null,
         telephone: null,
         playtime: null,
@@ -213,6 +239,7 @@ export default {
         tickets: null,
         openingHours: null,
         location: null,
+        spotImg: null,
         createTime: null,
         isDeleted: null
       };

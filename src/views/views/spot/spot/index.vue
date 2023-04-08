@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="图片编号" prop="imgId">
+      <el-form-item label="景区名字" prop="spotName">
         <el-input
-          v-model="queryParams.imgId"
-          placeholder="请输入图片编号"
+          v-model="queryParams.spotName"
+          placeholder="请输入景区名字"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="景区id" prop="spotId">
+      <el-form-item label="是否发布" prop="isDeleted">
         <el-input
-          v-model="queryParams.spotId"
-          placeholder="请输入景区id"
+          v-model="queryParams.isDeleted"
+          placeholder="请输入是否发布"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -31,7 +31,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['spotImg:spotImg:add']"
+          v-hasPermi="['spot:spot:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -42,7 +42,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['spotImg:spotImg:edit']"
+          v-hasPermi="['spot:spot:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,7 +53,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['spotImg:spotImg:remove']"
+          v-hasPermi="['spot:spot:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,19 +63,28 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['spotImg:spotImg:export']"
+          v-hasPermi="['spot:spot:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="spotImgList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="spotList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="图片编号" align="center" prop="imgId" />
-      <el-table-column label="景区id" align="center" prop="spotId" />
-      <el-table-column label="图片路径" align="center" prop="img" width="100">
+      <el-table-column label="主键" align="center" prop="id" />
+      <el-table-column label="景区名字" align="center" prop="spotName" />
+      <el-table-column label="景区封面图" align="center" prop="coverImg" width="100">
         <template slot-scope="scope">
-          <image-preview :src="scope.row.img" :width="50" :height="50"/>
+          <image-preview :src="scope.row.coverImg" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="联系电话" align="center" prop="telephone" />
+      <el-table-column label="交通方式" align="center" prop="traffic" />
+      <el-table-column label="门票情况" align="center" prop="tickets" />
+      <el-table-column label="开放时间" align="center" prop="openingHours" />
+      <el-table-column label="是否发布" align="center" prop="isDeleted">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.sys_is_released" :value="scope.row.isDeleted"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -85,19 +94,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['spotImg:spotImg:edit']"
+            v-hasPermi="['spot:spot:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['spotImg:spotImg:remove']"
+            v-hasPermi="['spot:spot:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -106,17 +115,41 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改景区图片对话框 -->
+    <!-- 添加或修改景区对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="图片编号" prop="imgId">
-          <el-input v-model="form.imgId" placeholder="请输入图片编号" />
+        <el-form-item label="景区名字" prop="spotName">
+          <el-input v-model="form.spotName" placeholder="请输入景区名字" />
         </el-form-item>
-        <el-form-item label="景区id" prop="spotId">
-          <el-input v-model="form.spotId" placeholder="请输入景区id" />
+        <el-form-item label="景区封面图" prop="coverImg">
+          <image-upload v-model="form.coverImg"/>
         </el-form-item>
-        <el-form-item label="图片路径" prop="img">
-          <image-upload v-model="form.img"/>
+        <el-form-item label="景区简介" prop="introduction">
+          <el-input v-model="form.introduction" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="联系电话" prop="telephone">
+          <el-input v-model="form.telephone" placeholder="请输入联系电话" />
+        </el-form-item>
+        <el-form-item label="用时参考 " prop="playtime">
+          <el-input v-model="form.playtime" placeholder="请输入用时参考 " />
+        </el-form-item>
+        <el-form-item label="交通方式" prop="traffic">
+          <el-input v-model="form.traffic" placeholder="请输入交通方式" />
+        </el-form-item>
+        <el-form-item label="门票情况" prop="tickets">
+          <el-input v-model="form.tickets" placeholder="请输入门票情况" />
+        </el-form-item>
+        <el-form-item label="开放时间" prop="openingHours">
+          <el-input v-model="form.openingHours" placeholder="请输入开放时间" />
+        </el-form-item>
+        <el-form-item label="景区位置" prop="location">
+          <el-input v-model="form.location" placeholder="请输入景区位置" />
+        </el-form-item>
+        <el-form-item label="景区图片" prop="spotImg">
+          <image-upload v-model="form.spotImg"/>
+        </el-form-item>
+        <el-form-item label="是否发布" prop="isDeleted">
+          <el-input v-model="form.isDeleted" placeholder="请输入是否发布" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -128,10 +161,10 @@
 </template>
 
 <script>
-import { listSpotImg, getSpotImg, delSpotImg, addSpotImg, updateSpotImg } from "@/api/spotImg/spotImg";
+import { listSpot, getSpot, delSpot, addSpot, updateSpot } from "@/api/spot/spot";
 
 export default {
-  name: "SpotImg",
+  name: "Spot",
   data() {
     return {
       // 遮罩层
@@ -146,8 +179,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 景区图片表格数据
-      spotImgList: [],
+      // 景区表格数据
+      spotList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -156,8 +189,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        imgId: null,
-        spotId: null,
+        spotName: null,
+        isDeleted: null
       },
       // 表单参数
       form: {},
@@ -170,11 +203,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询景区图片列表 */
+    /** 查询景区列表 */
     getList() {
       this.loading = true;
-      listSpotImg(this.queryParams).then(response => {
-        this.spotImgList = response.rows;
+      listSpot(this.queryParams).then(response => {
+        this.spotList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -188,9 +221,18 @@ export default {
     reset() {
       this.form = {
         id: null,
-        imgId: null,
-        spotId: null,
-        img: null
+        spotName: null,
+        coverImg: null,
+        introduction: null,
+        telephone: null,
+        playtime: null,
+        traffic: null,
+        tickets: null,
+        openingHours: null,
+        location: null,
+        spotImg: null,
+        createTime: null,
+        isDeleted: null
       };
       this.resetForm("form");
     },
@@ -214,16 +256,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加景区图片";
+      this.title = "添加景区";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getSpotImg(id).then(response => {
+      getSpot(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改景区图片";
+        this.title = "修改景区";
       });
     },
     /** 提交按钮 */
@@ -231,13 +273,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateSpotImg(this.form).then(response => {
+            updateSpot(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addSpotImg(this.form).then(response => {
+            addSpot(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -249,8 +291,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除景区图片编号为"' + ids + '"的数据项？').then(function() {
-        return delSpotImg(ids);
+      this.$modal.confirm('是否确认删除景区编号为"' + ids + '"的数据项？').then(function() {
+        return delSpot(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -258,9 +300,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('spotImg/spotImg/export', {
+      this.download('spot/spot/export', {
         ...this.queryParams
-      }, `spotImg_${new Date().getTime()}.xlsx`)
+      }, `spot_${new Date().getTime()}.xlsx`)
     }
   }
 };

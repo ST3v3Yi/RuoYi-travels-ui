@@ -40,6 +40,13 @@ import DictData from '@/components/DictData'
 // Animate.css
 import 'animate.css'
 import GoTopAndBottom from "@/components/GoTopAndBottom/index.vue";
+// Quill
+import VueQuillEditor from 'vue-quill-editor'
+import Quill from 'quill';
+import imageResize from 'quill-image-resize-module' // 图片缩放组件引用
+import { ImageDrop } from 'quill-image-drop-module'; // 图片拖动组件引用
+Quill.register('modules/imageDrop', ImageDrop); // 注册
+Quill.register('modules/imageResize', imageResize ) // 注册
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -65,6 +72,7 @@ Vue.component('GoTopAndBottom', GoTopAndBottom)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+Vue.use(VueQuillEditor);
 DictData.install()
 
 /**
