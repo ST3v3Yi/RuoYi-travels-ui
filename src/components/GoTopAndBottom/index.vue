@@ -59,6 +59,10 @@ export default {
     bottom: {
       type: Number,
       default: 40
+    },
+    offsetTop: {
+      type: Number,
+      required: true
     }
   },
 
@@ -68,6 +72,7 @@ export default {
       container: null,
       toTopVisible: false,
       toBottomVisible:true,
+      topDistance: null,
     };
   },
 
@@ -85,9 +90,15 @@ export default {
 
   mounted() {
     this.init();
-    this.throttledScrollHandler = throttle(300, this.onScroll);
+    this.throttledScrollHandler = throttle(100, this.onScroll);
     this.container.addEventListener('scroll', this.throttledScrollHandler);
     this.onScroll();
+  },
+
+  watch: {
+    offsetTop(newVal) {
+      this.scrollToHeight(newVal - 50);
+    }
   },
 
   methods: {
@@ -103,8 +114,9 @@ export default {
       }
     },
     onScroll() {
-
       const scrollTop = this.el.scrollTop;
+      this.topDistance = scrollTop;
+      this.$emit('topDistanceChange', this.topDistance);
       this.toTopVisible = scrollTop >= this.goTopVisibilityHeight;
       this.toBottomVisible = (scrollTop + document.documentElement.clientHeight) <= (this.el.scrollHeight-this.tobotVisibilityHeight);
     },
@@ -141,7 +153,6 @@ export default {
       const rAF = window.requestAnimationFrame || (func => setTimeout(func, 16));
       const frameFunc = () => {
         const progress = (Date.now() - beginTime) / 500;
-
         if (progress < 1) {
           el.scrollTop = (endScrollTop-beginValue) * easeInOutCubic(progress) + beginValue;
           rAF(frameFunc);
@@ -150,7 +161,28 @@ export default {
         }
       };
       rAF(frameFunc);
+    },
+    scrollToHeight(height) {
+      const el = this.el;
+      const beginTime = Date.now();
+      const scrollTop = this.el.scrollTop;
+      this.topDistance = scrollTop;
+      this.$emit('topDistanceChange', this.topDistance);
+      const beginValue = el.scrollTop;
+      const endValue = height;
+      const rAF = window.requestAnimationFrame || (func => setTimeout(func, 16));
+      const frameFunc = () => {
+        const progress = (Date.now() - beginTime) / 500;
+        if (progress < 1) {
+          el.scrollTop = (endValue - beginValue) * easeInOutCubic(progress) + beginValue;
+          rAF(frameFunc);
+        } else {
+          el.scrollTop = endValue;
+        }
+      };
+      rAF(frameFunc);
     }
+
   },
 
   beforeDestroy() {

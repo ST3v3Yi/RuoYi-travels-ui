@@ -9,8 +9,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="是否发布" prop="isDeleted">
-        <el-select v-model="queryParams.isDeleted" placeholder="请选择是否发布" clearable>
+      <el-form-item label="是否删除" prop="isDeleted">
+        <el-select v-model="queryParams.isDeleted" placeholder="请选择是否删除" clearable>
           <el-option
             v-for="dict in dict.type.sys_is_released"
             :key="dict.value"
@@ -80,10 +80,8 @@
         </template>
       </el-table-column>
       <el-table-column label="联系电话" align="center" prop="telephone" />
-      <el-table-column label="交通方式" align="center" prop="traffic" />
-      <el-table-column label="门票情况" align="center" prop="tickets" />
-      <el-table-column label="开放时间" align="center" prop="openingHours" />
-      <el-table-column label="是否发布" align="center" prop="isDeleted">
+      <el-table-column label="景区位置" align="center" prop="location" />
+      <el-table-column label="是否删除" align="center" prop="isDeleted">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_is_released" :value="scope.row.isDeleted"/>
         </template>
@@ -138,10 +136,10 @@
           <el-input v-model="form.traffic" placeholder="请输入交通方式" />
         </el-form-item>
         <el-form-item label="门票情况" prop="tickets">
-          <el-input v-model="form.tickets" placeholder="请输入门票情况" />
+          <el-input v-model="form.tickets" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="开放时间" prop="openingHours">
-          <el-input v-model="form.openingHours" placeholder="请输入开放时间" />
+          <el-input v-model="form.openingHours" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="景区位置" prop="location">
           <el-input v-model="form.location" placeholder="请输入景区位置" />
@@ -149,8 +147,14 @@
         <el-form-item label="景区图片" prop="spotImg">
           <image-upload v-model="form.spotImg"/>
         </el-form-item>
-        <el-form-item label="是否发布" prop="isDeleted">
-          <el-select v-model="form.isDeleted" placeholder="请选择是否发布">
+        <el-form-item label="经度" prop="lng">
+          <el-input v-model="form.lng" placeholder="请输入经度" />
+        </el-form-item>
+        <el-form-item label="纬度" prop="lat">
+          <el-input v-model="form.lat" placeholder="请输入纬度" />
+        </el-form-item>
+        <el-form-item label="是否删除" prop="isDeleted">
+          <el-select v-model="form.isDeleted" placeholder="请选择是否删除">
             <el-option
               v-for="dict in dict.type.sys_is_released"
               :key="dict.value"
@@ -205,6 +209,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        spotName: [
+          { required: true, message: "景区名字不能为空", trigger: "blur" }
+        ],
       }
     };
   },
@@ -240,7 +247,10 @@ export default {
         openingHours: null,
         location: null,
         spotImg: null,
+        lng: null,
+        lat: null,
         createTime: null,
+        updateTime: null,
         isDeleted: null
       };
       this.resetForm("form");

@@ -1,8 +1,8 @@
 <template>
   <div id="app" class="app">
-    <GoTopAndBottom target=".app" />
+    <GoTopAndBottom target=".app" @topDistanceChange="handleScroll" :offsetTop="offsetTop"/>
     <navbar/>
-    <router-view style="padding-top: 0px" />
+    <router-view style="padding-top: 0px" :topDistance="updatedTopDistance" @scrollTo="handleScrollTo"/>
   </div>
 </template>
 
@@ -55,8 +55,15 @@ export default {
         return {
             userName: '',
             userType: '',
-            userProfile: ''
+            userProfile: '',
+            topDistance: 0,
+            offsetTop: 0
         }
+    },
+    computed: {
+      updatedTopDistance: function() {
+        return this.topDistance; // 传递从GoTopAndBottom组件中接收到的topDistance值
+      }
     },
     methods: {
         login() {
@@ -75,6 +82,15 @@ export default {
             window.localStorage.setItem('userProfile', '')
             this.$router.push('/login')
             ele.Message.success("退出当前账号")
+        },
+        handleScroll(topDistance) {
+          if (typeof topDistance === 'number') {
+            this.topDistance = topDistance;
+            // console.log(this.topDistance);
+          }
+        },
+        handleScrollTo(offsetTop) {
+          this.offsetTop = offsetTop;
         }
     }
 };

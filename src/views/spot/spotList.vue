@@ -5,7 +5,9 @@
         <el-card v-for="(item, index) in spotList" :key="index" style="margin: 20px auto; width: 1050px;">
           <div>
             <h1>{{ item.id }}</h1>
-            <h2>{{ item.spotName }}</h2>
+            <router-link :to="{ path: '/spotDetail/:id', query: { id: item.id } }">
+              <h2>{{ item.spotName }}</h2>
+            </router-link>
             <p>{{ item.location }}</p>
           </div>
         </el-card>

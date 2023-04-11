@@ -1,4 +1,5 @@
 <template>
+  <div>
   <footer class="footer">
     <el-row type="flex" justify="center">
       <el-col :span="4" class="col1">
@@ -76,6 +77,7 @@
       </div>
     </el-row>
   </footer>
+  </div>
 </template>
 
 <script>

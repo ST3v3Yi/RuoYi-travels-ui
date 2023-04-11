@@ -6,6 +6,7 @@
       <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
       <el-menu-item index="/hotel" @click="onClick('/hotel')" :class="{ active: activeIndex === '/hotel' }">订酒店</el-menu-item>
       <el-menu-item index="/spotDetail" @click="onClick('/announcement')" :class="{ active: activeIndex === '/announcement' }">通知公告</el-menu-item>
+      <el-menu-item index="/test" @click="onClick('/test')" :class="{ active: activeIndex === '/test' }">测试页面</el-menu-item>
       <NavbarAvatar class="navbarAvatar" />
     </el-menu>
   </div>
@@ -24,6 +25,8 @@ export default {
         justifyContent: "center",
         alignItems: "center",
         zIndex: "999",
+        border: "1px solid #eee",
+        marginBottom: "2px"
       }
     }
   },

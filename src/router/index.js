@@ -90,7 +90,7 @@ export const constantRoutes = [
     component: () => import('../views/spot/spotList.vue')
   },
   {
-    path: '/spotDetail',
+    path: '/spotDetail/:id',
     name: 'spotDetail',
     component: () => import('../views/spot/spotDetail.vue')
   },

@@ -17,22 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="评分" prop="rating">
-        <el-input
-          v-model="queryParams.rating"
-          placeholder="请输入评分"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="发布时间" prop="createTime">
-        <el-date-picker clearable
-          v-model="queryParams.createTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择发布时间">
-        </el-date-picker>
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -87,11 +71,15 @@
 
     <el-table v-loading="loading" :data="spotCommentsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="用户id" align="center" prop="userId" />
       <el-table-column label="景区id" align="center" prop="spotId" />
       <el-table-column label="评论内容" align="center" prop="content" />
       <el-table-column label="评分" align="center" prop="rating" />
+      <el-table-column label="评论图片" align="center" prop="img" width="100">
+        <template slot-scope="scope">
+          <image-preview :src="scope.row.img" :width="50" :height="50"/>
+        </template>
+      </el-table-column>
       <el-table-column label="发布时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -116,7 +104,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -128,6 +116,21 @@
     <!-- 添加或修改景区评分评论对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="用户id" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入用户id" />
+        </el-form-item>
+        <el-form-item label="景区id" prop="spotId">
+          <el-input v-model="form.spotId" placeholder="请输入景区id" />
+        </el-form-item>
+        <el-form-item label="评论内容">
+          <editor v-model="form.content" :min-height="192"/>
+        </el-form-item>
+        <el-form-item label="评分" prop="rating">
+          <el-input v-model="form.rating" placeholder="请输入评分" />
+        </el-form-item>
+        <el-form-item label="评论图片" prop="img">
+          <image-upload v-model="form.img"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -168,8 +171,6 @@ export default {
         pageSize: 10,
         userId: null,
         spotId: null,
-        rating: null,
-        createTime: null
       },
       // 表单参数
       form: {},
@@ -204,6 +205,7 @@ export default {
         spotId: null,
         content: null,
         rating: null,
+        img: null,
         createTime: null
       };
       this.resetForm("form");

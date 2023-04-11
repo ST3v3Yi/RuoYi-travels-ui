@@ -67,7 +67,6 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
-Vue.component('GoTopAndBottom', GoTopAndBottom)
 
 Vue.use(directive)
 Vue.use(plugins)

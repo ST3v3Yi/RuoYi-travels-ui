@@ -315,7 +315,7 @@ export default {
         type: 'warning'
       }).then(() => {
         //点击确认
-        this.$router.push('/Home')
+        this.$router.push('/routeList')
       }).catch(() => {
         this.$message({
           type: 'info',
