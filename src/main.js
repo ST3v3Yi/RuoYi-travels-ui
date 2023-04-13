@@ -47,6 +47,8 @@ import imageResize from 'quill-image-resize-module' // 图片缩放组件引用
 import { ImageDrop } from 'quill-image-drop-module'; // 图片拖动组件引用
 Quill.register('modules/imageDrop', ImageDrop); // 注册
 Quill.register('modules/imageResize', imageResize ) // 注册
+// BaiduMap
+import BaiduMap from 'vue-baidu-map'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -72,6 +74,9 @@ Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 Vue.use(VueQuillEditor);
+Vue.use(BaiduMap, {
+  ak: 'ug72GyyXove7zmvoWllvcKGewfbz0Rpa'
+})
 DictData.install()
 
 /**

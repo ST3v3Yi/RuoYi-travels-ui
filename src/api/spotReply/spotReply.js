@@ -17,6 +17,13 @@ export function getSpotReply(id) {
   })
 }
 
+export function getReplyList(commentId) {
+  return request({
+    url: '/spotReply/spotReply/list/' + commentId,
+    method: 'get'
+  })
+}
+
 // 新增景区回复表
 export function addSpotReply(data) {
   return request({

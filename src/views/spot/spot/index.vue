@@ -9,8 +9,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="是否删除" prop="isDeleted">
-        <el-select v-model="queryParams.isDeleted" placeholder="请选择是否删除" clearable>
+      <el-form-item label="是否发布" prop="isDeleted">
+        <el-select v-model="queryParams.isDeleted" placeholder="请选择是否发布" clearable>
           <el-option
             v-for="dict in dict.type.sys_is_released"
             :key="dict.value"
@@ -81,7 +81,7 @@
       </el-table-column>
       <el-table-column label="联系电话" align="center" prop="telephone" />
       <el-table-column label="景区位置" align="center" prop="location" />
-      <el-table-column label="是否删除" align="center" prop="isDeleted">
+      <el-table-column label="是否发布" align="center" prop="isDeleted">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_is_released" :value="scope.row.isDeleted"/>
         </template>
@@ -153,8 +153,8 @@
         <el-form-item label="纬度" prop="lat">
           <el-input v-model="form.lat" placeholder="请输入纬度" />
         </el-form-item>
-        <el-form-item label="是否删除" prop="isDeleted">
-          <el-select v-model="form.isDeleted" placeholder="请选择是否删除">
+        <el-form-item label="是否发布" prop="isDeleted">
+          <el-select v-model="form.isDeleted" placeholder="请选择是否发布">
             <el-option
               v-for="dict in dict.type.sys_is_released"
               :key="dict.value"

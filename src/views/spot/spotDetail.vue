@@ -86,17 +86,32 @@
       <el-divider></el-divider>
       <div class="mapWrapper">
         <div class="mapContainer">
-          <h1>地图组件位置</h1>
+          <baidu-map
+            class="map"
+            :center="center"
+            :zoom="16"
+            :scroll-wheel-zoom="false">
+            <bm-traffic></bm-traffic>
+<!--            <bm-marker :position="center" animation="BMAP_ANIMATION_BOUNCE"></bm-marker>-->
+            <bm-local-search
+              :keyword="'景区'"
+              :auto-viewport="true"
+              @searchcomplete="handleSearchResult"
+              :panel="false"
+              :autoViewport="false"/>
+          </baidu-map>
         </div>
         <div class="aroundSpot">
           <div class="poiTitle">周边景区</div>
-          <ul style="height: 328px; overflow-y: auto; margin: 0; padding: 0; background-color: #1ab394">
-            <li style="list-style:none; background-color: #fafafa; display: flex; align-items: center; position:relative;">
-              <img style="width: 80px; height: 80px;" :src="require('@/assets/weatherIcons/100.png')">
-              <span style="color: #333">周边景区名字</span>
-              <el-button type="text" style="position: absolute; top: 55px; right: 25px;" @click="">路线规划</el-button>
-              <el-divider style="position: absolute; margin: 5px 0; top: 80px;"></el-divider>
-            </li>
+          <ul style="height: 328px; overflow-y: auto; margin: 0; padding: 0; border: 1px solid #eee">
+            <template v-for="(item, index) in spotList">
+              <li v-if="index !== 0" :key="index" style="list-style:none; background-color: #fafafa; display: flex; align-items: center; position:relative;">
+                <img style="width: 80px; height: 80px;" :src="require('@/assets/weatherIcons/100.png')">
+                <span @click="changeCenter(item.point.lng, item.point.lat)" class="spotTitle">{{ item.title }}</span>
+                <el-button type="text" style="position: absolute; top: 55px; right: 25px;" @click="">路线规划</el-button>
+                <el-divider style="position: absolute; margin: 5px 0; top: 80px;"></el-divider>
+              </li>
+            </template>
           </ul>
         </div>
       </div>
@@ -108,34 +123,93 @@
         <el-divider></el-divider>
         <div style="display: flex; justify-content: center;">
           <div class="commentContainer">
-            <el-row>
-              <el-col :span="2">
-                <el-avatar :size="50" :src="'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'"></el-avatar>
-              </el-col>
-              <el-col :span="20">
-                <div style="margin-top: 10px; font-size: 14px; display: flex; color: #333">
-                  <span>点评人</span>
-                  <el-rate
-                    v-model="value"
-                    disabled
-                    text-color="#ff9900"
-                    :colors="colors"
-                    style="margin-left: 10px;"></el-rate>
-                </div>
-                <div>
-                  <span style="display: block; font-size: 14px; color: #666666; white-space: pre-wrap; margin-bottom: 10px;">{{ this.commentContent }}</span>
-                  <div style="display: flex;">
-                    <div v-if="imgList.length" v-for="item in imgList" :key="item.id">
-                      <image-preview style="width: 200px; height: 120px; margin: 0 10px 10px 0;" :src="item.url" />
+            <div v-if="commentsList.length == 0" style="text-align: left; font-size: 16px; font-weight: bold; margin-left: 20px; margin-top: 20px;">暂无点评，期待您的评论~</div>
+            <div v-else v-for="item in commentsList" :key="item.id" class="fullComment">
+              <el-row style="border-bottom: 1px solid #ccc;">
+                <el-col :span="2">
+                  <el-avatar :size="50" :src="'/dev-api' + item.avatar"></el-avatar>
+                </el-col>
+                <el-col :span="20">
+                  <div style="margin-top: 10px; font-size: 14px; display: flex; color: #333">
+                    <span>{{ item.nickName }}</span>
+                    <el-rate
+                      v-model="item.rating"
+                      disabled
+                      text-color="#ff9900"
+                      :colors="colors"
+                      style="margin-left: 10px;" />
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 14px; color: #666666; white-space: pre-wrap; margin-bottom: 10px;">{{ item.content }}</span>
+                    <div style="display: flex; margin-bottom: 10px;">
+                      <div v-if="item.img" v-for="(image, index) in (item.img ? item.img.split(',') : [])" :key="index">
+                        <el-image
+                          style="width: 200px; height: 120px; margin-right: 10px; border-radius: 5px;"
+                          :src="'/dev-api' + image"
+                          :preview-src-list="['/dev-api' + image]"
+                          preview
+                        />
+                      </div>
+                    </div>
+                    <div class="commentTime">
+                      <span>{{ item.createTime }}</span>
+                      <el-button type="text" style="margin-left: 690px" @click="showReplyBox(item.id, item.nickName)">评论</el-button>
                     </div>
                   </div>
+                </el-col>
+              </el-row>
+              <div class="replyContainer" v-for="reply in item.replyList" :key="reply.id">
+                <div class="reply">
+                  <el-avatar :size="30" :src="'/dev-api' + reply.avatar" />
+                  <span style="color: #1ab394">{{ reply.userName }}</span>
+                  <span>：{{ reply.content }}</span>
                 </div>
-              </el-col>
-            </el-row>
+                <div style="font-size: 12px; color: #999999; margin-left: 10px; margin-bottom: 5px;">
+                  <span>{{ reply.createTime }}</span>
+                </div>
+              </div>
+              <!-- 评论 -->
+              <div style="width: 834px; margin-left: 83px" v-if="replyInfo.showReplyBox && replyInfo.id === item.id">
+                <el-input type="textarea" :placeholder="'评论@' + replyInfo.name" v-model.lazy="replyContent"></el-input>
+                <div style="text-align: right; margin: 5px 0;">
+                  <el-button @click="shutReplyBox">取消</el-button>
+                  <el-button type="primary" @click="submitReply(item.id, item.userId)">提交</el-button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- 点评对话框 -->
+    <el-dialog
+      :title="spot.spotName"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+      class="commentDialog">
+      <el-form :form="commentForm" label-width="75px">
+        <el-form-item label="评分">
+          <el-rate
+            v-model="commentForm.rating"
+            :colors="colors"
+            :texts="texts"
+            show-text>
+          </el-rate>
+        </el-form-item>
+        <el-form-item label="评论内容">
+          <el-input type="textarea" placeholder="请留下您的点评~" v-model="commentForm.content"></el-input>
+        </el-form-item>
+        <el-form-item label="图片上传">
+          <uploadImg v-model="commentForm.img" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="confirmComment">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 页脚 -->
     <Footer style="margin-top: 30px;"/>
   </div>
 </template>
@@ -145,9 +219,15 @@ import axios from "axios";
 import 'qweather-icons/font/qweather-icons.css'
 import Footer from "@/layout/components/Footer.vue";
 import {getSpot} from "@/api/spot/spot";
+import {addSpotComments, getSpotCommentsList} from "@/api/spotComments/spotComments";
+import uploadImg from "@/components/ImageUpload/spotImgUpload.vue"
+import {getUserProfile} from "@/api/system/user";
+import {addSpotReply, getReplyList} from "@/api/spotReply/spotReply";
+
 export default {
   components: {
     Footer,
+    uploadImg
   },
   data() {
     return {
@@ -156,22 +236,38 @@ export default {
       isFavorite: false,
       activeIndex: '1',
       weather: {},
-      spotImg: [],
       spot: {},
-      center: [114.341599, 34.80764],
+      spotImg: [],
+      commentsList: [],
       value: 5,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
-      commentContent: " 清明上河园，是中国河南省开封市著名的历史文化景区，也是中国十大历史文化名园之一。这座园林座落于漫长而曲折的清明上河图的河畔，是一座以宋代北方城市风貌为特色的园林景区。在这里，游客可以欣赏到古老的城市文化，领略到传统的建筑风格和园林艺术。\n" +
-        "清明上河园的布局和建筑设计非常巧妙，巧妙地将北方的城市文化和园林艺术结合起来。园内的建筑、古迹和景观构成了一幅具有浓郁历史气息的图画，使游客仿佛穿越时空，回到了宋代的开封城。\n" +
-        "园内最著名的景点是仿宋建筑的北风梗、南风梗、文庙、水陆庵等，以及建于北宋的升仙亭、钓鱼台、歌台等。这些古迹和建筑给游客留下了深刻的印象，并且使他们更好地了解了中国的历史和文化。\n" +
-        "此外，园内的园林景观也非常美丽。游客可以欣赏到美丽的湖泊、水榭、廊桥和花园，同时还可以在这里散步、欣赏、拍照或者乘船游览，感受这座古老城市的魅力。\n" +
-        "总之，清明上河园是一座富有历史、文化和园林艺术价值的景区。游客在这里不仅可以了解到中国的传统文化和历史，还可以享受美丽的园林景观，感受到中国古老城市的气息。无论是文化爱好者，还是旅游者，都不容错过这个迷人的地方。",
       imgList: [
         { id:1, url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg' },
         { id:2, url: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg' },
         { id:3, url: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg' },
       ],
       isTopMenuFixed: false,
+      texts: ['不值门票', '略有不足', '还可以', '值得一看', '强烈推荐'],
+      dialogVisible: false,
+      commentForm: {
+        userId: null,
+        spotId: null,
+        content: null,
+        rating: null,
+        img: null
+      },
+      user: {},
+      center: {
+        lng: null,
+        lat: null
+      },
+      spotList: [],
+      replyInfo: {
+        id: null,
+        name: null,
+        showReplyBox: false
+      },
+      replyContent: '',
     }
   },
   props: {
@@ -179,6 +275,10 @@ export default {
       type: Number,
       required: true,
       default: 0
+    },
+    limit: {
+      type: Number,
+      default: 3,
     },
   },
   computed: {
@@ -201,19 +301,32 @@ export default {
     };
     this.getWeather();
     this.getSpotDetail();
+    this.getSpotComments();
+    this.getUserInfo();
   },
   methods: {
+    // 获取当前景点信息
     getSpotDetail() {
       const id = this.$route.query.id;
       // GET景区信息
       getSpot(id).then((res) => {
         this.spot = res.data;
+        const lng = this.spot.lng;
+        const lat = this.spot.lat;
+        this.center = { lng, lat }
         const imgArray = this.spot.spotImg.split(",");
         for (let i = 0; i < imgArray.length; i++) {
           this.spotImg.push('/dev-api' + imgArray[i]);
         }
       });
     },
+    // 获取当前用户信息
+    getUserInfo() {
+      getUserProfile().then((res) => {
+        this.user = res.data;
+      })
+    },
+    // 获取当地天气信息
     getWeather() {
       let data = this;
       axios.get('https://devapi.qweather.com/v7/weather/now', {
@@ -227,6 +340,7 @@ export default {
         console.log(err);
       })
     },
+    // 实现收藏图标变换
     toggleFavorite() {
       if (!this.isFavorite) {
         this.isFavorite = true;
@@ -234,14 +348,117 @@ export default {
         this.isFavorite = false;
       }
     },
-    comment() {
-      this.scrollToSection('#spotComments');
+    // 获取周边景点信息
+    handleSearchResult(result) {
+      this.spotList = result.Yr;
     },
+    // 改变地图中心点
+    changeCenter(lng, lat) {
+      this.center = { lng, lat };
+    },
+    // GET景点评论信息
+    getSpotComments() {
+      const spotId = this.$route.query.id;
+      this.loading = true;
+      getSpotCommentsList(spotId).then((res) => {
+        this.commentsList = res.data;
+        this.total = res.data.length;
+        this.loading = false;
+        this.commentsList.forEach(comment => {
+          getReplyList(comment.id).then(response => {
+            comment.replyList = response.data;
+            // console.log(response.data);
+          })
+        })
+      })
+    },
+    // 控制点评窗口开关
+    comment() {
+      this.dialogVisible = true;
+    },
+    // 实现窗口滚动到指定位置
     scrollToSection(selector) {
       const targetElement = document.querySelector(selector)
       const offsetTop = targetElement.offsetTop
       this.$nextTick(() => {
         this.$emit('scrollTo', offsetTop);
+      })
+    },
+    // 点评窗口右上角关闭事件
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
+    // 重置form表单
+    resetForm() {
+      this.commentForm = {
+        userId: null,
+        spotId: null,
+        content: null,
+        rating: null,
+        img: null
+      };
+    },
+    // 提交点评
+    confirmComment() {
+      this.commentForm.userId = this.user.userId;
+      this.commentForm.spotId = this.$route.query.id;
+      addSpotComments(this.commentForm).then((res) => {
+        this.$notify({
+          title: '成功',
+          message: '点评提交成功~',
+          type: "success",
+          duration: 3000
+        });
+        this.dialogVisible = false;
+        this.resetForm();
+        this.getSpotComments();
+      }).catch(err => {
+        this.$notify.error({
+          title: '错误',
+          message: '点评提交失败~',
+          duration: 3000
+        });
+        console.log(err);
+      })
+    },
+    showReplyBox(id, name, isReply) {
+      this.replyInfo.id = id;
+      this.replyInfo.name = name;
+      this.replyInfo.showReplyBox = true;
+      console.log(this.replyInfo);
+    },
+    shutReplyBox() {
+      this.replyInfo.showReplyBox = false;
+      this.replyContent = '';
+    },
+    submitReply(id, toUserId) {
+      const data = {
+        userId: this.user.userId,
+        spotId: this.spot.id,
+        commentId: id,
+        toUserId: toUserId,
+        content: this.replyContent
+      }
+      addSpotReply(data).then((res) => {
+        this.$notify({
+          title: '成功',
+          message: '回复提交成功~',
+          type: "success",
+          duration: 3000
+        });
+        this.replyContent = '';
+        this.getSpotComments();
+      }).catch(error => {
+        this.$notify.error({
+          title: '错误',
+          message: '回复失败~',
+          duration: 3000
+        });
+        console.log(error);
       })
     }
   },
@@ -426,20 +643,21 @@ export default {
   width: 1050px;
   height: 400px;
   margin-left: 435px;
-  background-color: #666;
   .mapContainer {
     width: 500px;
     height: 360px;
     margin-left: 20px;
     margin-top: 20px;
-    background-color: #ff9900;
+    .map {
+      width: 100%;
+      height: 100%;
+    }
   }
   .aroundSpot {
     width: 300px;
     height: 360px;
     margin-left: 100px;
     margin-top: 20px;
-    background-color: #ff9900;
     .poiTitle {
       display: flex;
       justify-content: center;
@@ -460,17 +678,17 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: #666;
   .commentsWrapper {
     width: 1050px;
-    background-color: #d4d4d4;
     .el-divider--horizontal {
       margin: 5px 0;
       background-color: #DCDFE6;
     }
     .commentContainer {
       width: 1000px;
-      background-color: #30B08F;
+      .fullComment {
+        border-bottom: 1px dashed #ccc;
+      }
       .el-avatar {
         margin: 15px;
       }
@@ -478,10 +696,62 @@ export default {
         width: 200px;
         height: 120px;
       }
+      .commentTime {
+        width: 834px;
+        font-size: 12px;
+        color: #999999;
+      }
+      .replyContainer {
+        width: 834px;
+        margin-top: 5px;
+        margin-left: 83px;
+        margin-bottom: 10px;
+        border-bottom: 1px dotted #ccc;
+        .reply {
+          display: flex;
+          align-items: center;
+          position: relative;
+          height: 40px;
+          margin-top: 5px;
+          font-size: 12px;
+          color: #666666;
+          .el-avatar {
+            margin: 0 5px;
+          }
+          .el-button {
+            position: absolute;
+            font-size: 12px;
+            color: #1ab394;;
+            right: 5px;
+          }
+        }
+      }
     }
   }
 }
+.commentDialog {
+  ::v-deep .el-dialog__body {
+    padding: 0px 0px;
+  }
+  .el-rate {
+    margin-top: 8px;
+  }
+  ::v-deep .el-textarea__inner {
+    padding: 5px 5px;
+    width: 95%;
+  }
+}
+.spotTitle {
+  cursor: pointer;
+  color: #333333;
+}
+.spotTitle:hover {
+  color: #1ab394;
+}
 ::v-deep .el-rate__icon{
   margin-right: 0;
+}
+::v-deep .anchorBL {
+  display: none !important;
 }
 </style>

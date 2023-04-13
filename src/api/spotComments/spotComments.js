@@ -9,6 +9,14 @@ export function listSpotComments(query) {
   })
 }
 
+// 查询指定景区的评论列表
+export function getSpotCommentsList(spotId) {
+  return request({
+    url: '/spotComments/spotComments/list/' + spotId,
+    method: 'get'
+  })
+}
+
 // 查询景区评分评论详细
 export function getSpotComments(id) {
   return request({
