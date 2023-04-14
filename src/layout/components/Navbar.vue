@@ -62,8 +62,10 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
+  background-color: transparent;
 }
 .el-menu:hover {
+  background-color: #FFFFFF;
 }
 .el-menu-item {
   height: 60px;

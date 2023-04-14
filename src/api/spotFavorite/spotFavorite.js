@@ -17,6 +17,15 @@ export function getSpotFavorite(userId) {
   })
 }
 
+// 查询用户是否收藏景点
+export function getIsFavorite(data) {
+  return request({
+    url: '/spotFavorite/spotFavorite/isFavorite',
+    method: 'post',
+    data: data
+  })
+}
+
 // 新增景区收藏
 export function addSpotFavorite(data) {
   return request({
@@ -40,5 +49,14 @@ export function delSpotFavorite(userId) {
   return request({
     url: '/spotFavorite/spotFavorite/' + userId,
     method: 'delete'
+  })
+}
+
+// 删除景点收藏
+export function delFavorite(data) {
+  return request({
+    url: '/spotFavorite/spotFavorite/delFavorite',
+    method: 'post',
+    data: data
   })
 }

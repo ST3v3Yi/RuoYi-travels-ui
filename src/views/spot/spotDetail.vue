@@ -33,7 +33,17 @@
       <div style="display: flex; justify-content: center;">
         <div class="imgShow">
           <div class="mainImg">
-            <el-image :src="spotImg[0]" style="object-fit: cover; width: 100%; height: 100%;" :preview-src-list="spotImg"/>
+            <el-image
+              :key="`${spotImg[0]}-${Date.now()}`"
+              :src="spotImg[0]"
+              style="object-fit: cover; width: 100%; height: 100%;"
+              :preview-src-list="spotImg"
+              ref="spotImg"
+              @error="handleImageError">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
           </div>
           <div class="rightImg">
             <div class="img01">
@@ -89,7 +99,7 @@
           <baidu-map
             class="map"
             :center="center"
-            :zoom="16"
+            :zoom="17"
             :scroll-wheel-zoom="false">
             <bm-traffic></bm-traffic>
 <!--            <bm-marker :position="center" animation="BMAP_ANIMATION_BOUNCE"></bm-marker>-->
@@ -223,6 +233,7 @@ import {addSpotComments, getSpotCommentsList} from "@/api/spotComments/spotComme
 import uploadImg from "@/components/ImageUpload/spotImgUpload.vue"
 import {getUserProfile} from "@/api/system/user";
 import {addSpotReply, getReplyList} from "@/api/spotReply/spotReply";
+import {getIsFavorite, addSpotFavorite, delFavorite} from "@/api/spotFavorite/spotFavorite";
 
 export default {
   components: {
@@ -268,6 +279,10 @@ export default {
         showReplyBox: false
       },
       replyContent: '',
+      favoriteInfo: {
+        userId: '',
+        spotId: ''
+      }
     }
   },
   props: {
@@ -324,6 +339,15 @@ export default {
     getUserInfo() {
       getUserProfile().then((res) => {
         this.user = res.data;
+        return this.user.userId;
+      }).then((userId) => {
+        this.favoriteInfo = {
+          userId: userId,
+          spotId: this.$route.query.id
+        };
+        getIsFavorite(this.favoriteInfo).then((res) => {
+          this.isFavorite = res.data;
+        })
       })
     },
     // 获取当地天气信息
@@ -340,12 +364,25 @@ export default {
         console.log(err);
       })
     },
+    handleImageError() {
+      this.$refs.spotImg.currentSrc = '';
+      this.$forceUpdate();
+    },
     // 实现收藏图标变换
     toggleFavorite() {
-      if (!this.isFavorite) {
-        this.isFavorite = true;
+      if (this.isFavorite) {
+        const data = this.favoriteInfo;
+        delFavorite(data).then((res) => {
+          if(res.code == 200) {
+            this.isFavorite = false;
+          }
+        })
       } else {
-        this.isFavorite = false;
+        addSpotFavorite(this.favoriteInfo).then((res) => {
+          if(res.code == 200) {
+            this.isFavorite = true;
+          }
+        })
       }
     },
     // 获取周边景点信息
@@ -502,7 +539,7 @@ export default {
   align-items: center;
 }
 .spotFavorite {
-  margin-left: 800px;
+  margin-right: auto;
   .el-icon-star-off {
     font-size: 30px;
   }
@@ -587,7 +624,6 @@ export default {
   height: 1200px;
   .spotIntroduction {
     width: 1050px;
-    height: 680px;
     margin-top: 35px;
     background-color: #ffffff;
     .introduction {
@@ -656,7 +692,7 @@ export default {
   .aroundSpot {
     width: 300px;
     height: 360px;
-    margin-left: 100px;
+    margin-left: 50px;
     margin-top: 20px;
     .poiTitle {
       display: flex;
@@ -753,5 +789,14 @@ export default {
 }
 ::v-deep .anchorBL {
   display: none !important;
+}
+::v-deep .image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: #909399;
+  font-size: 30px;
 }
 </style>

@@ -120,6 +120,9 @@
         <el-form-item label="景区名字" prop="spotName">
           <el-input v-model="form.spotName" placeholder="请输入景区名字" />
         </el-form-item>
+        <el-form-item label="景区外文名" prop="spotForeignName">
+          <el-input v-model="form.spotForeignName" placeholder="请输入景区外文名" />
+        </el-form-item>
         <el-form-item label="景区封面图" prop="coverImg">
           <image-upload v-model="form.coverImg"/>
         </el-form-item>
@@ -238,6 +241,7 @@ export default {
       this.form = {
         id: null,
         spotName: null,
+        spotForeignName: null,
         coverImg: null,
         introduction: null,
         telephone: null,

@@ -1,6 +1,6 @@
 <template>
   <div class="carouselContainer">
-    <el-carousel height="640px" :interval="6000" arrow="hover">
+    <el-carousel :height="bannerHeight + 'px'" :interval="6000" arrow="hover">
       <el-carousel-item v-for="(item, index) in imgList" :key="index">
         <img :src="item" class="carousel-img" />
       </el-carousel-item>
@@ -17,9 +17,19 @@
           require("@/assets/banner2.jpeg"),
           require("@/assets/banner3.jpeg"),
         ],
+        screenWidth: 0,
+        bannerHeight: 0,
       }
     },
     mounted() {
+      // 首次加载时,初始化高度
+      this.screenWidth = window.innerWidth
+      this.bannerHeight = 640 / 1920 * this.screenWidth
+      // 窗口大小发生改变
+      window.onresize = () => {
+        this.screenWidth = window.innerWidth
+        this.bannerHeight = 640 / 1920 * this.screenWidth
+      }
     },
     methods: {
 
