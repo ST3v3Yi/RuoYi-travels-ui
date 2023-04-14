@@ -12,11 +12,18 @@
         <span style="margin-left: 15px; font-size: 14px;">{{weather.temp}}℃</span>
       </div>
       <div class="spotName">
-        <h1>{{ spot.spotName }}</h1>
-        <div class="spotFavorite">
-          <i :class="iconClass" @click="toggleFavorite" style="margin-right: 5px;"/>
-          <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.1);">{{ isFavorite ? '已收藏' : '收藏' }}</span>
-        </div>
+        <el-row style="width: 1050px;">
+          <el-col :span="12">
+            <h1 style="line-height: 0.5;">{{ spot.spotName }}</h1>
+            <h3 style="display: block; color: #666666">{{ spot.spotForeignName }}</h3>
+          </el-col>
+          <el-col :span="12">
+            <div class="spotFavorite">
+              <i :class="iconClass" @click="toggleFavorite" style="margin-right: 5px;"/>
+              <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.1);">{{ isFavorite ? '已收藏' : '收藏' }}</span>
+            </div>
+          </el-col>
+        </el-row>
       </div>
       <div style="display: flex; justify-content: center">
         <el-divider class="topDivider"></el-divider>
@@ -510,7 +517,6 @@ export default {
   position: relative;
   align-items: center;
   width: 1920px;
-  height: 190px;
   background-color: #ffffff;
 }
 .CrumbContainer {
@@ -539,7 +545,8 @@ export default {
   align-items: center;
 }
 .spotFavorite {
-  margin-right: auto;
+  margin-top: 50px;
+  margin-left: 440px;
   .el-icon-star-off {
     font-size: 30px;
   }
@@ -555,7 +562,7 @@ export default {
 }
 .topDivider {
   width: 1050px;
-  margin: 120px 0 5px 0;
+  margin: 140px 0 5px 0;
 }
 .topMenu {
   display: flex;
