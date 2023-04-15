@@ -125,6 +125,8 @@
         </div>
       </div>
     </el-row>
+    <!-- 页脚 -->
+    <Footer style="margin-top: 30px;"/>
   </div>
 </template>
 
@@ -139,11 +141,11 @@ import { addRouteComments } from "@/api/routeComments/routeComments";
 import { getRouteCommentsList } from "@/api/routeComments/routeComments";
 import {addRouteReply, getReplyList} from "@/api/routeReply/routeReply";
 import { getIsFavorite, delFavorite, addRouteFavorite } from "@/api/routeFavorite/routeFavorite";
-import GoTopAndBottom from "@/components/GoTopAndBottom/index.vue";
+import Footer from "@/layout/components/Footer.vue";
 
 export default{
   components: {
-    GoTopAndBottom
+    Footer,
   },
   data( ){
     return{

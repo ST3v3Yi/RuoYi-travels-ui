@@ -43,7 +43,7 @@
             <el-image
               :key="`${spotImg[0]}-${Date.now()}`"
               :src="spotImg[0]"
-              style="object-fit: cover; width: 100%; height: 100%;"
+              style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;"
               :preview-src-list="spotImg"
               ref="spotImg"
               @error="handleImageError">
@@ -54,10 +54,10 @@
           </div>
           <div class="rightImg">
             <div class="img01">
-              <img :src="spotImg[1]" style="object-fit: cover; width: 100%; height: 100%;"/>
+              <img :src="spotImg[1]" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;"/>
             </div>
             <div class="img02">
-              <img :src="spotImg[2]" style="object-fit: cover; width: 100%; height: 100%;"/>
+              <img :src="spotImg[2]" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;"/>
             </div>
           </div>
         </div>
