@@ -82,11 +82,21 @@
               <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
                 <image-preview :src="item.coverImg" :width="240" :height="180" style="margin-right: 10px;" />
               </router-link>
-              <div style="flex: 1; height: 180px; overflow: hidden; text-overflow: ellipsis; padding: 10px 20px;" align="left">
+              <div class="routeInfo" align="left">
                 <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
                   <h2 style="margin-top: -5px;">{{ item.title }}</h2>
                 </router-link>
-                <p style="margin-left: 10px;">{{ item.introduction }}</p>
+                <el-rate
+                  v-if="item.avgRating !== 0"
+                  v-model=item.avgRating
+                  allow-half
+                  disabled
+                  show-score
+                  text-color="#ff9900"
+                  :colors="colors"
+                  style="">
+                </el-rate>
+                <p style="margin-left: 5px;">{{ item.introduction }}</p>
               </div>
             </div>
             <div class="bottom clearfix" align="left">
@@ -97,16 +107,6 @@
                 <i class="el-icon-money" />
                 {{item.cost}}
               </el-tag>
-              <!--                <el-rate
-                                v-model="ratingValue"
-                                allow-half
-                                disabled
-                                show-score
-                                text-color="#ff9900"
-                                :colors="colors"
-                                style="margin-left: 30px;"
-                                @change="getRouteRating(item.id)">
-                              </el-rate>-->
               <el-button type="text" class="button">
                 <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">查看详情</router-link>
               </el-button>
@@ -144,28 +144,33 @@ export default {
           minPrice: '',
           maxPrice: ''
         },
-        ratingValue: 0,
-        colors: ['#99A9BF', '#F7BA2A', '#FF9900']
+        ratingValue: null,
+        colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+        rating: null,
       }
     },
     mounted() {
       this.getList();
-      // this.getRouteRating();
     },
     methods: {
       getList() {
         this.loading = true;
         getRouteList().then(response => {
-          this.routeList = response.rows;
-          this.total = response.total;
-          this.loading = false;
+          const promises = response.rows.map(route => {
+            const id = route.id;
+            return getRouteAVGRating(id).then((res) => {
+              const avgRating = res.data;
+              return {
+                ...route,
+                avgRating
+              };
+            });
+          });
+          Promise.all(promises).then(results => {
+            this.routeList = results;
+          });
         });
       },
-      // getRouteRating(id) {
-      //   getRouteAVGRating(id).then((res) => {
-      //     this.avgRating = res.data;
-      //   })
-      // },
       changeSelected(lower, upper) {
         this.isSelected.lower = lower;
         this.isSelected.upper = upper;
@@ -204,7 +209,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .site-card th {
     border: none;
 }
@@ -213,43 +218,43 @@ export default {
   color: #999;
   margin-left: 10px;
 }
-
 .tag {
   font-size: 13px;
   margin-left: 10px;
 }
-
 .bottom {
   margin-top: 13px;
   line-height: 12px;
 }
-
 .button {
   padding: 0;
   float: right;
   margin-right: 10px;
   margin-bottom: 10px;
 }
-
-.el-card__body :scope {
+.el-card__body {
   padding-right: 20px;
   height: 220px;
   margin-bottom: 20px;
 }
-
+.routeInfo {
+  flex: 1;
+  height: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 10px 20px;
+  h2 {
+    color: #333333;
+    margin-bottom: 0px;
+  }
+  p {
+    color: #666666;
+    margin: 5px 0;
+  }
+}
 .grid-cont-right h2 {
     color: #42b983;
 }
-
-.el-footer {
-  border: none;
-  padding: 0;
-  background-color: #e8e8e8;
-  color: #666666;
-  text-align: center;
-  line-height: 60px;
-}
-
 .bgHead {
   width: 1050px;
   border-radius: 4px;
@@ -257,17 +262,21 @@ export default {
   margin: 10px auto;
   height: 200px;
 }
-
 .buttonClass {
   padding: 5px 10px;
   font-size: 14px;
   border-radius: 4px;
 }
-
 .bgButton {
   border-radius: 5px;
   background-color: #f5f5f5;
   position: absolute;
 
+}
+::v-deep .el-rate__icon{
+  margin-right: 0;
+}
+::v-deep .el-rate__text {
+  margin-left: 5px;
 }
 </style>
