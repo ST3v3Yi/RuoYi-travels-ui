@@ -1,10 +1,21 @@
 <template>
-  <div class="routelist-main">
-    <template>
-      <el-row class="bgHead">
+  <div>
+    <!-- 头图走马灯 -->
+    <div style="display: flex; justify-content: center;">
+      <div class="carousel">
+        <el-carousel height="350px" direction="vertical" :autoplay="false" style="width: 1050px;">
+          <el-carousel-item v-for="(item, index) in routeList" :key="index">
+            <img :src="'dev-api' + item.coverImg" style="width: 100%; height: 100%"/>
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+    </div>
+    <!-- 路线筛选器 -->
+    <div style="display: flex; justify-content: center;">
+      <div class="filter">
         <div style="margin-top: 10px;">
           <span style="font-size: 28px; font-weight: bold; margin-left: 20px;">路线分享</span>
-          <div style="display: flex; justify-content: right; margin-top: -31px; margin-right: 20px;">
+          <div style="display: flex; justify-content: right; margin-top: -35px; margin-right: 20px;">
             <el-button type="primary" icon="el-icon-edit" round>
               <router-link to="/writeRoute">分享我的路线</router-link>
             </el-button>
@@ -74,18 +85,21 @@
             </div>
           </el-row>
         </div>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-card v-for="(item, index) in routeList" :key="index" style="margin: 20px auto; width: 1050px;">
-            <div style="display: flex;">
-              <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
-                <image-preview :src="item.coverImg" :width="240" :height="180" style="margin-right: 10px;" />
-              </router-link>
-              <div class="routeInfo" align="left">
+      </div>
+    </div>
+    <!-- 路线展示列表和右侧边栏 -->
+    <div class="listShow">
+      <div class="routeList">
+        <el-row>
+          <el-col :span="24">
+            <el-card v-for="(item, index) in routeList" :key="index">
+              <!-- 路线标题和评分显示 -->
+              <div class="title">
+                <!-- 标题【附带跳转和hover】 -->
                 <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
-                  <h2 style="margin-top: -5px;">{{ item.title }}</h2>
+                  <h1>{{ item.title }}</h1>
                 </router-link>
+                <!-- 评分显示 absolute布局 -->
                 <el-rate
                   v-if="item.avgRating !== 0"
                   v-model=item.avgRating
@@ -93,30 +107,40 @@
                   disabled
                   show-score
                   text-color="#ff9900"
-                  :colors="colors"
-                  style="">
+                  :colors="colors">
                 </el-rate>
-                <p style="margin-left: 5px;">{{ item.introduction }}</p>
               </div>
-            </div>
-            <div class="bottom clearfix" align="left">
-              <time class="time">{{ item.updateTime }}</time>
-              <el-tag class="tag">
-                <i class="el-icon-date" />
-                {{item.day}}
-                <i class="el-icon-money" />
-                {{item.cost}}
-              </el-tag>
-              <el-button type="text" class="button">
-                <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">查看详情</router-link>
-              </el-button>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </template>
-    <!-- 页脚 -->
-    <Footer style="margin-top: 30px;"/>
+              <!-- 图片和路线简介 -->
+              <div style="display: flex; margin-bottom: 10px;">
+                <!-- 图片 采用预览模式 el-image扩展组件 -->
+                <image-preview :src="item.coverImg" :width="220" :height="150" style="margin-right: 10px;" />
+                <!-- 路线信息 路线简介 -->
+                <div class="routeInfo">
+                  <p>{{ item.introduction }}</p>
+                </div>
+              </div>
+              <!-- 底部信息 -->
+              <div class="bottomInfo clearfix">
+                <div style="display: flex; align-items: center; height: 28px;">
+                  <time class="time">{{ item.updateTime }}</time>
+                </div>
+                <el-tag class="tag" v-if="item.day !== null && item.cost !== null">
+                  <i class="el-icon-date" />{{item.day}}天
+                  <i class="el-icon-money" />{{item.cost}}￥
+                </el-tag>
+                <div class="userInfo">
+                  <el-avatar size="small" :src="'/dev-api' + item.avatar"></el-avatar>
+                  <span style="margin-left: 5px; font-size: 14px; color: #666666;">{{ item.userName }}</span>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="RecSpot">
+
+      </div>
+    </div>
   </div>
 </template>
 
@@ -132,146 +156,177 @@ export default {
   components: {
     Footer,
   },
-    data() {
-      return {
-        routeList: [],
-        isSelected: {
-          lower: '',
-          upper: ''
-        },
-        showButtons: false,
-        price: {
-          minPrice: '',
-          maxPrice: ''
-        },
-        ratingValue: null,
-        colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
-        rating: null,
-      }
-    },
-    mounted() {
-      this.getList();
-    },
-    methods: {
-      getList() {
-        this.loading = true;
-        getRouteList().then(response => {
-          const promises = response.rows.map(route => {
-            const id = route.id;
-            return getRouteAVGRating(id).then((res) => {
-              const avgRating = res.data;
-              return {
-                ...route,
-                avgRating
-              };
-            });
-          });
-          Promise.all(promises).then(results => {
-            this.routeList = results;
+  data() {
+    return {
+      routeList: [],
+      isSelected: {
+        lower: '',
+        upper: ''
+      },
+      showButtons: false,
+      price: {
+        minPrice: '',
+        maxPrice: ''
+      },
+      ratingValue: null,
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+      rating: null,
+    }
+  },
+  mounted() {
+    this.getList();
+  },
+  methods: {
+    getList() {
+      this.loading = true;
+      getRouteList().then(response => {
+        const promises = response.rows.map(route => {
+          const id = route.id;
+          return getRouteAVGRating(id).then((res) => {
+            const avgRating = res.data;
+            return {
+              ...route,
+              avgRating
+            };
           });
         });
-      },
-      changeSelected(lower, upper) {
-        this.isSelected.lower = lower;
-        this.isSelected.upper = upper;
+        Promise.all(promises).then(results => {
+          this.routeList = results;
+          console.log(this.routeList);
+        });
+      });
+    },
+    changeSelected(lower, upper) {
+      this.isSelected.lower = lower;
+      this.isSelected.upper = upper;
+      this.loading = true;
+      const data = this.isSelected;
+      if (lower == '' && upper == '') {
+        this.getList();
+      } else {
+        getListByDay(data).then((res) =>{
+          this.routeList = res.data;
+          this.loading = false;
+        })
+      }
+    },
+    clearInput() {
+      this.price.minPrice = '';
+      this.price.maxPrice = '';
+      this.selectByPrice();
+    },
+    selectByPrice() {
+      if (this.minPrice > this.maxPrice) {
+        this.$notify.error({
+          title: '错误',
+          message: '最低值不得高于最高值！'
+        })
+      } else {
         this.loading = true;
-        const data = this.isSelected;
-        if (lower == '' && upper == '') {
-          this.getList();
-        } else {
-          getListByDay(data).then((res) =>{
-            this.routeList = res.data;
-            this.loading = false;
-          })
-        }
-      },
-      clearInput() {
-        this.price.minPrice = '';
-        this.price.maxPrice = '';
-        this.selectByPrice();
-      },
-      selectByPrice() {
-        if (this.minPrice > this.maxPrice) {
-          this.$notify.error({
-            title: '错误',
-            message: '最低值不得高于最高值！'
-          })
-        } else {
-          this.loading = true;
-          const data = this.price;
-          getListByPrice(data).then((res) => {
-            this.routeList = res.data;
-            this.loading = false;
-          })
-        }
+        const data = this.price;
+        getListByPrice(data).then((res) => {
+          this.routeList = res.data;
+          this.loading = false;
+        })
       }
     }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.site-card th {
-    border: none;
-}
-.time {
-  font-size: 13px;
-  color: #999;
-  margin-left: 10px;
-}
-.tag {
-  font-size: 13px;
-  margin-left: 10px;
-}
-.bottom {
-  margin-top: 13px;
-  line-height: 12px;
-}
-.button {
-  padding: 0;
-  float: right;
-  margin-right: 10px;
-  margin-bottom: 10px;
-}
-.el-card__body {
-  padding-right: 20px;
-  height: 220px;
-  margin-bottom: 20px;
-}
-.routeInfo {
-  flex: 1;
-  height: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 10px 20px;
-  h2 {
-    color: #333333;
-    margin-bottom: 0px;
-  }
-  p {
-    color: #666666;
-    margin: 5px 0;
-  }
-}
-.grid-cont-right h2 {
-    color: #42b983;
-}
-.bgHead {
+.carousel {
   width: 1050px;
-  border-radius: 4px;
-  background-color: #f9fafc;
-  margin: 10px auto;
-  height: 200px;
-}
-.buttonClass {
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-}
-.bgButton {
+  height: 350px;
   border-radius: 5px;
-  background-color: #f5f5f5;
-  position: absolute;
-
+  margin-top: 5px;
+  background-color: #999999;
+  box-shadow: 0 0 2px 0 #999999;
+}
+.filter {
+  width: 1050px;
+  height: 200px;
+  border-radius: 5px;
+  margin: 10px 0;
+  background-color: #f9fafc;
+  box-shadow: 0 0 2px 0 #999999;
+  .buttonClass {
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+  }
+}
+.listShow {
+  display: flex;
+  justify-content: center;
+  margin-top: -5px;
+  .routeList {
+    width: 670px;
+    height: 200px;
+    .el-card {
+      margin: 10px auto;
+      width: 670px;
+    }
+    ::v-deep .el-card__body {
+      padding: 5px 10px 5px 15px;
+    }
+    .title {
+      position: relative;
+      h1 {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 15px 0 15px 5px;
+        cursor: pointer;
+      }
+      h1:hover {
+        color: #1ab394;
+      }
+      .el-rate {
+        position: absolute;
+        top: -15px;
+        left: 520px;
+      }
+    }
+    .routeInfo {
+      flex: 1;
+      height: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0px 5px;
+      margin-top: 5px;
+      p {
+        color: #666666;
+        margin: 5px 0;
+      }
+    }
+    .bottomInfo {
+      display: flex;
+      position: relative;
+      .time {
+        font-size: 12px;
+        color: #999;
+        margin-left: 5px;
+      }
+      .tag {
+        margin-left: 20px;
+      }
+      .userInfo {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        left: 550px;
+      }
+    }
+  }
+  .RecSpot {
+    width: 330px;
+    margin-left: 50px;
+    margin-top: 10px;
+    height: 200px;
+    border-radius: 5px;
+    background-color: #1ab394;
+  }
 }
 ::v-deep .el-rate__icon{
   margin-right: 0;

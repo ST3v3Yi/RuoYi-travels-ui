@@ -341,10 +341,10 @@ export default {
       this.route.cost = this.infoForm.cost;
       // 获取当前用户信息
       // 【在editCropper()中实现】
-      // 获取简介 —— 内容的前200个字符，多余的使用“...”替代
+      // 获取简介 —— 内容的前75个字符，多余的使用“...”替代
       const plainText = this.quill.getText();
       const limitedText = plainText.replace(/\n/g, ' ');
-      this.route.introduction = limitedText.slice(0, 200) + (limitedText.length > 200 ? '...' : '');
+      this.route.introduction = limitedText.slice(0, 75) + (limitedText.length > 75 ? '...' : '');
       // 获取内容的HTML格式
       this.route.content = this.quill.root.innerHTML;
       // 发布状态，将is_deleted设置为 0

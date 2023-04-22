@@ -270,7 +270,7 @@ export default {
   height: 175px;
   border-radius: 5px;
   background-color: #fffefd;
-  box-shadow: 0 2px 6px 0 #666666;
+  box-shadow: 0 0 2px 0 #999999;
   .spotRec {
     width: 100%;
     height: 160px;
@@ -318,7 +318,7 @@ export default {
   width: 330px;
   border-radius: 5px;
   background-color: #fffefd;
-  box-shadow: 0 2px 6px 0 #666666;
+  box-shadow: 0 0 2px 0 #999999;
   .routeRec {
     width: 100%;
     .routeRecTitle {
