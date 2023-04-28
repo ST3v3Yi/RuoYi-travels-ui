@@ -3,9 +3,17 @@
     <!-- 头图走马灯 -->
     <div style="display: flex; justify-content: center;">
       <div class="carousel">
-        <el-carousel height="350px" direction="vertical" :autoplay="false" style="width: 1050px;">
+        <el-carousel height="350px" direction="vertical" :autoplay="true" style="width: 1050px;">
           <el-carousel-item v-for="(item, index) in routeList" :key="index">
             <img :src="'dev-api' + item.coverImg" style="width: 100%; height: 100%"/>
+            <!-- 图片下信息 -->
+            <div class="imgInfo">
+              <div class="date">
+                <span class="day">{{ item.day }}</span>
+                {{ item.date }}
+              </div>
+              <h1>{{ item.title }}</h1>
+            </div>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -141,6 +149,8 @@
 
       </div>
     </div>
+    <!-- 页脚 -->
+    <Footer style="margin-top: 30px;"/>
   </div>
 </template>
 
@@ -184,15 +194,19 @@ export default {
           const id = route.id;
           return getRouteAVGRating(id).then((res) => {
             const avgRating = res.data;
+            const newDate = new Date(route.updateTime);
+            const day = `${newDate.getDate()}`;
+            const date = `/${newDate.toLocaleString('en-US', { month: 'short' })}. ${newDate.getFullYear()}`;
             return {
               ...route,
-              avgRating
+              avgRating,
+              day,
+              date
             };
           });
         });
         Promise.all(promises).then(results => {
           this.routeList = results;
-          console.log(this.routeList);
         });
       });
     },
@@ -236,12 +250,37 @@ export default {
 
 <style lang="scss" scoped>
 .carousel {
+  position: relative;
   width: 1050px;
   height: 350px;
   border-radius: 5px;
   margin-top: 5px;
   background-color: #999999;
   box-shadow: 0 0 2px 0 #999999;
+  .imgInfo {
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 5px;
+    .date {
+      font-size: 20px;
+      font-family: "Microsoft Yahei";
+      line-height: 1.2;
+      color: #FFFFFF;
+      text-shadow: 1px 1px 1px #000000;
+      .day {
+        font-size: 30px;
+      }
+    }
+    h1 {
+      margin: 5px 0 0 10px;
+      font-size: 28px;
+      font-family: "Microsoft Yahei";
+      line-height: 1.2;
+      color: #FFFFFF;
+      text-shadow: 1px 1px 1px #000000;
+    }
+  }
 }
 .filter {
   width: 1050px;
@@ -262,7 +301,6 @@ export default {
   margin-top: -5px;
   .routeList {
     width: 670px;
-    height: 200px;
     .el-card {
       margin: 10px auto;
       width: 670px;

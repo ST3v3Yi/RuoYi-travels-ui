@@ -535,7 +535,7 @@ export default {
 .weatherIcon {
   width: 35px;
   height: 35px;
-  margin-left: 750px;
+  margin-left: 700px;
 }
 .spotName {
   position: absolute;
