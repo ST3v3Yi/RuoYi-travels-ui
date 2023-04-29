@@ -77,11 +77,34 @@
           type="daterange"
           range-separator="至"
           start-placeholder="入住日期"
-          end-placeholder="离店日期">
+          end-placeholder="离店日期"
+          style="margin: 5px 0 0 5px;">
         </el-date-picker>
-        <el-select v-model="selectValue" @click="clickSelect" />
+        <el-button plain @click="clickSelect">
+          <span>{{ buttonValue }}</span>
+          <i :class="isShowWin ? 'el-icon-arrow-up' : 'el-icon-arrow-down'" style="margin-left: 150px;"/>
+        </el-button>
+        <!-- 价格 -->
+        <div class="priceSlider">
+          <span>价格范围：</span>
+          <el-slider
+            v-model="priceRange"
+            range
+            :step="100"
+            :max="2000"
+            style="width: 800px; margin-left: 20px;">
+          </el-slider>
+        </div>
         <div class="chooseWindow" v-show="isShowWin">
-
+          <div style="height: 40px">
+            <span>房间</span>
+            <el-input-number v-model="roomNum" :min="1" style="margin-left: 90px"></el-input-number>
+          </div>
+          <div style="margin-top: 2px;">
+            <span>人数</span>
+            <el-input-number v-model="peopleNum" :min="1" style="margin-left: 90px"></el-input-number>
+          </div>
+          <el-button type="text" style="position: absolute; bottom: 5px; right: -80px;" @click="confirmRoom">确定</el-button>
         </div>
       </div>
       <el-card :class="isShowAll ? 'autoCard' : 'lockCard'">
@@ -154,7 +177,9 @@ export default {
       isShowWin: false,
       roomNum: 1,
       peopleNum: 1,
-      selectValue: null,
+      buttonValue: '1间，1位',
+      /* priceRange是一个数组，[0]是最小值，[1]是最大值 */
+      priceRange: null,
 
     }
   },
@@ -182,9 +207,14 @@ export default {
     showAll() {
       this.isShowAll = true;
     },
+    // 显示房间、人数选择窗口
     clickSelect() {
       this.isShowWin = !this.isShowWin;
-      console.log(this.isShowWin);
+    },
+    // 房间、人数确认按钮
+    confirmRoom() {
+      this.buttonValue = this.roomNum + "间，" + this.peopleNum + "位";
+      this.isShowWin = false;
     }
   },
   filters: {
@@ -321,26 +351,59 @@ export default {
   display: flex;
   justify-content: center;
   width: 100%;
-  background-color: #999999;
   flex-wrap: wrap;
   .roomFilter {
+    position: relative;
     width: 1050px;
     height: 200px;
     margin-top: 5px;
-    background-color: #666666;
-    .el-dropdown {
-      border-radius: 5px;
-      background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    .el-button {
+      width: 250px;
+      height: 36px;
+      margin-left: 10px;
+      padding: 5px 10px 5px 10px;
+      span {
+        font-size: 14px;
+        color: #333333;
+      }
     }
-    .el-dropdown-link {
-      color: #1ab394;
+    .priceSlider {
+      margin: 5px 0 0 5px;
     }
   }
   .chooseWindow {
-    width: 217px;
+    position: absolute;
+    width: 250px;
     height: 150px;
+    border-radius: 3px;
     border-top: 2px solid #1ab394;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    left: 365px;
+    top: 40px;
+    padding: 10px;
     background-color: #FFFFFF;
+    ::v-deep .el-input-number--medium {
+      width: 100px;
+      height: 20px;
+    }
+    ::v-deep .el-input-number--medium .el-input-number__increase {
+      border: 0;
+      color: #333333;
+      background-color: #eee;
+    }
+    ::v-deep .el-input-number--medium .el-input-number__decrease {
+      border: 0;
+      color: #333333;
+      background-color: #eee;
+    }
+    ::v-deep .el-input--medium .el-input__inner {
+      padding: 0;
+      border: 0px;
+    }
   }
   .autoCard {
     position: relative;
