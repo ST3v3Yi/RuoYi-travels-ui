@@ -9,13 +9,23 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="房间类型" prop="roomType">
+      <el-form-item label="房间名称" prop="roomName">
         <el-input
-          v-model="queryParams.roomType"
-          placeholder="请输入房间类型"
+          v-model="queryParams.roomName"
+          placeholder="请输入房间名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="房间类型" prop="type">
+        <el-select v-model="queryParams.type" placeholder="请选择房间类型" clearable>
+          <el-option
+            v-for="dict in dict.type.room_type"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="房间人数" prop="number">
         <el-input
@@ -89,10 +99,14 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="酒店id" align="center" prop="hotelId" />
-      <el-table-column label="房间类型" align="center" prop="roomType" />
+      <el-table-column label="房间名称" align="center" prop="roomName" />
+      <el-table-column label="房间类型" align="center" prop="type">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.room_type" :value="scope.row.type"/>
+        </template>
+      </el-table-column>
       <el-table-column label="房间大小" align="center" prop="size" />
       <el-table-column label="房间人数" align="center" prop="number" />
-      <el-table-column label="床铺情况" align="center" prop="bed" />
       <el-table-column label="房间价格" align="center" prop="price" />
       <el-table-column label="房间数" align="center" prop="counts" />
       <el-table-column label="房间图片" align="center" prop="img" width="100">
@@ -119,7 +133,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -134,8 +148,18 @@
         <el-form-item label="酒店id" prop="hotelId">
           <el-input v-model="form.hotelId" placeholder="请输入酒店id" />
         </el-form-item>
-        <el-form-item label="房间类型" prop="roomType">
-          <el-input v-model="form.roomType" placeholder="请输入房间类型" />
+        <el-form-item label="房间名称" prop="roomName">
+          <el-input v-model="form.roomName" placeholder="请输入房间名称" />
+        </el-form-item>
+        <el-form-item label="房间类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择房间类型">
+            <el-option
+              v-for="dict in dict.type.room_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="parseInt(dict.value)"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="房间大小" prop="size">
           <el-input v-model="form.size" placeholder="请输入房间大小" />
@@ -169,6 +193,7 @@ import { listRooms, getRooms, delRooms, addRooms, updateRooms } from "@/api/trav
 
 export default {
   name: "Rooms",
+  dicts: ['room_type'],
   data() {
     return {
       // 遮罩层
@@ -194,7 +219,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         hotelId: null,
-        roomType: null,
+        roomName: null,
+        type: null,
         number: null,
         price: null,
       },
@@ -228,7 +254,8 @@ export default {
       this.form = {
         id: null,
         hotelId: null,
-        roomType: null,
+        roomName: null,
+        type: null,
         size: null,
         number: null,
         bed: null,

@@ -84,9 +84,12 @@
           <span>{{ buttonValue }}</span>
           <i :class="isShowWin ? 'el-icon-arrow-up' : 'el-icon-arrow-down'" style="margin-left: 150px;"/>
         </el-button>
+        <el-button icon="el-icon-search" circle style="width: 36px" type="primary"></el-button>
         <!-- 价格 -->
         <div class="priceSlider">
-          <span>价格范围：</span>
+          <span style="font-size: 17px;">价格范围：</span>
+          <span>￥{{priceRange[0]}} - </span>
+          <span v-if="priceRange[1] !== 2000">￥{{priceRange[1]}}</span>
           <el-slider
             v-model="priceRange"
             range
@@ -94,6 +97,14 @@
             :max="2000"
             style="width: 800px; margin-left: 20px;">
           </el-slider>
+        </div>
+        <!-- 房型 -->
+        <div class="roomLayout">
+          <span style="margin-left: 5px; font-size: 17px;">房型：</span>
+          <el-button :type="roomLayout===3 ? 'primary' : 'text'" @click="selectLayout(3)">全部</el-button>
+          <el-button :type="roomLayout===0 ? 'primary' : 'text'" @click="selectLayout(0)">双床房</el-button>
+          <el-button :type="roomLayout===1 ? 'primary' : 'text'" @click="selectLayout(1)">大床房</el-button>
+          <el-button :type="roomLayout===2 ? 'primary' : 'text'" @click="selectLayout(2)">多床房</el-button>
         </div>
         <div class="chooseWindow" v-show="isShowWin">
           <div style="height: 40px">
@@ -152,6 +163,39 @@
         </div>
       </el-card>
     </div>
+    <!-- 酒店点评容器 -->
+    <div class="hotelReviewContainer">
+      <!-- 酒店点评 -->
+      <div class="hotelReview">
+        <!-- 酒店评分 -->
+        <div class="hotelRating">
+          <!-- 点评标题 -->
+          <h1>点评</h1>
+          <!-- 总评分 -->
+          <div class="mainRating">
+            <div style="display: flex; justify-content: center;">
+              <span style="font-size: 24px; color: #1ab394; font-weight: bold;">棒</span>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: flex-end; margin-top: 15px;">
+              <span style="font-size: 48px; color: #1ab394; font-weight: bold;">4.8</span>
+              <span style="font-size: 32px; color: #999999; font-weight: bold;">/5.0</span>
+            </div>
+          </div>
+          <!-- 各项评分 -->
+          <div class="otherRating">
+            <!-- 环境评分 -->
+            <div>
+              <span>环境</span>
+              <v-chart
+                ref="environment"
+                :option="environment"
+                style="width: 120px; height: 120px;">
+              </v-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- 页脚 -->
     <Footer style="margin-top: 30px;"/>
   </div>
@@ -173,13 +217,58 @@ export default {
       hotelRating: 5.0,
       activeIndex: '1',
       isShowAll: false,
-      dateRange: '',
+      dateRange: [],
       isShowWin: false,
       roomNum: 1,
       peopleNum: 1,
       buttonValue: '1间，1位',
       /* priceRange是一个数组，[0]是最小值，[1]是最大值 */
-      priceRange: null,
+      priceRange: [0,2000],
+      roomLayout: 3,
+      environment: {
+        series: [
+          {
+            name: 'Environment Rating',
+            type: 'pie',
+            radius: ['60%', '90%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 1,
+              borderColor: '#eee',
+              borderWidth: 1
+            },
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: 40,
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              {
+                value: 4.8,
+                itemStyle: {
+                  color: '#1ab394',
+                },
+              },
+              {
+                value: 0.2,
+                itemStyle: {
+                  color: '#f3f3f3',
+                },
+              },
+            ]
+          }
+
+        ]
+      },
 
     }
   },
@@ -215,6 +304,10 @@ export default {
     confirmRoom() {
       this.buttonValue = this.roomNum + "间，" + this.peopleNum + "位";
       this.isShowWin = false;
+    },
+    // 选择房型
+    selectLayout(id) {
+      this.roomLayout = id;
     }
   },
   filters: {
@@ -373,6 +466,15 @@ export default {
       margin: 5px 0 0 5px;
     }
   }
+  .roomLayout {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    .el-button {
+      width: 80px;
+      font-size: 16px;
+    }
+  }
   .chooseWindow {
     position: absolute;
     width: 250px;
@@ -499,6 +601,49 @@ export default {
       }
       .bookingButton:hover {
         background-color: #ff8a00;
+      }
+    }
+  }
+}
+.hotelReviewContainer {
+  display: flex;
+  justify-content: center;
+  height: 500px;
+  margin-top: 10px;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+  background-color: #f5f7fa;
+  .hotelReview {
+    width: 1050px;
+    height: 300px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+    background-color: #FFFFFF;
+    .hotelRating {
+      position: relative;
+      height: 200px;
+      border-radius: 5px;
+      h1 {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+        padding: 10px;
+      }
+      .mainRating {
+        position: absolute;
+        width: 400px;
+        height: 120px;
+        top: 60px;
+        left: 20px;
+      }
+      .otherRating {
+        position: absolute;
+        width: 580px;
+        height: 160px;
+        top: 40px;
+        left: 400px;
+        background-color: #999999;
       }
     }
   }
