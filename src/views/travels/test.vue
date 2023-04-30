@@ -118,10 +118,10 @@
           <el-button type="text" style="position: absolute; bottom: 5px; right: -80px;" @click="confirmRoom">确定</el-button>
         </div>
       </div>
-      <el-card :class="isShowAll ? 'autoCard' : 'lockCard'">
+      <el-card>
         <div class="roomContainer">
           <div class="roomImg">
-            <img :src="require('@/assets/banner1.jpeg')" style="width: 100%; height: 175px; border-radius: 5px;" />
+            <room-preview :src="require('@/assets/banner1.jpeg')" style="width: 100%; height: 175px; border-radius: 5px;" />
             <p>豪华大床房[roomType]</p>
             <span style="display: block; font-size: 14px; color: #999999; margin-top: 2px">
               1张2米特大床[bed]
@@ -135,7 +135,7 @@
               <i class="el-icon-user-solid" />
             </div>
             <div class="facilitiesContainer">
-              <div class="facilities">
+<!--              <div class="facilities">
                 <h1>全部设施</h1>
                 <h2>洗浴用品</h2>
                 <span style="margin-left: 5px; font-size: 14px; color: #666666" v-for="n in 3">
@@ -151,12 +151,15 @@
               </div>
               <div class="showAllButton" v-show="!isShowAll">
                 <el-button type="text" @click="showAll">>>展开全部<<</el-button>
-              </div>
+              </div>-->
             </div>
             <div>
               <div class="roomPrice">
                 <h3>￥1307</h3>
                 <el-button class="bookingButton">预订</el-button>
+              </div>
+              <div class="remainRoom">
+                <span style="color: #999999; font-size: 14px;">剩余5间</span>
               </div>
             </div>
           </div>
@@ -184,13 +187,14 @@
           <!-- 各项评分 -->
           <div class="otherRating">
             <!-- 环境评分 -->
-            <div>
+            <div style="position: relative;">
               <span>环境</span>
               <v-chart
                 ref="environment"
                 :option="environment"
                 style="width: 120px; height: 120px;">
               </v-chart>
+              <span style="position: absolute; top: 70px; left: 48px; font-size: 18px; font-weight: bold">4.8</span>
             </div>
           </div>
         </div>
@@ -204,10 +208,12 @@
 <script>
 import axios from "axios";
 import Footer from "@/layout/components/Footer.vue";
+import RoomImagePreview from "@/components/RoomImagePreview/index.vue";
 
 export default {
   components: {
     Footer,
+    'room-preview': RoomImagePreview,
   },
   data() {
     return {
@@ -230,7 +236,7 @@ export default {
           {
             name: 'Environment Rating',
             type: 'pie',
-            radius: ['60%', '90%'],
+            radius: ['55%', '90%'],
             avoidLabelOverlap: false,
             itemStyle: {
               borderRadius: 1,
@@ -241,40 +247,34 @@ export default {
               show: false,
               position: 'center'
             },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: 40,
-                fontWeight: 'bold'
-              }
-            },
             labelLine: {
               show: false
             },
             data: [
               {
-                value: 4.8,
+                value: 0,
                 itemStyle: {
                   color: '#1ab394',
                 },
               },
               {
-                value: 0.2,
+                value: 0,
                 itemStyle: {
                   color: '#f3f3f3',
                 },
               },
             ]
           }
-
         ]
       },
-
     }
   },
   computed: {
   },
   mounted() {
+    // 在获取到后端数据后更新value的值
+    this.environment.series[0].data[0].value = 4.8;
+    this.environment.series[0].data[1].value = 0.2;
     // 获取天气信息
     this.getWeather();
   },
@@ -507,6 +507,12 @@ export default {
       border: 0px;
     }
   }
+  .el-card {
+    position: relative;
+    width: 1050px;
+    height: 240px;
+    margin-top: 10px;
+  }
   .autoCard {
     position: relative;
     width: 1050px;
@@ -544,7 +550,8 @@ export default {
       .number {
         width: 80%;
         height: 25px;
-        margin-left: 10px;
+        margin-top: 30px;
+        margin-left: 20px;
         ::v-deep .el-icon-user-solid::before {
           font-size: 22px;
           margin-right: 5px;
@@ -587,7 +594,7 @@ export default {
       right: 0;
       bottom: 45%;
       h3 {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: bold;
         color: #1ab394;
         margin: 0;
@@ -602,6 +609,13 @@ export default {
       .bookingButton:hover {
         background-color: #ff8a00;
       }
+    }
+    .remainRoom {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      right: 12px;
+      bottom: 36%;
     }
   }
 }
