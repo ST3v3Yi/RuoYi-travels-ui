@@ -1,0 +1,123 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4045800 */
+  src: url('iconfont.woff2?t=1682870139603') format('woff2'),
+       url('iconfont.woff?t=1682870139603') format('woff'),
+       url('iconfont.ttf?t=1682870139603') format('truetype');
+}
+
+.iconfont,[class^="hotel"],[class*=" hotel"]  {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hotel-ditu_diqiu_o:before {
+  content: "\ebbb";
+}
+
+.hotel-kuaidi:before {
+  content: "\e696";
+}
+
+.hotel-17:before {
+  content: "\e616";
+}
+
+.hotel-zhuanzhihangliyuan:before {
+  content: "\e61c";
+}
+
+.hotel-anmo:before {
+  content: "\e63b";
+}
+
+.hotel-songcan:before {
+  content: "\e63e";
+}
+
+.hotel-jiaochefuwu:before {
+  content: "\e610";
+}
+
+.hotel-jiesongzhanfuwu:before {
+  content: "\e60c";
+}
+
+.hotel-spa:before {
+  content: "\eaa7";
+}
+
+.hotel-qiantai:before {
+  content: "\e625";
+}
+
+.hotel-jianshenfang:before {
+  content: "\e626";
+}
+
+.hotel-a-24Hanbao:before {
+  content: "\e627";
+}
+
+.hotel-wifi:before {
+  content: "\e783";
+}
+
+.hotel-canting:before {
+  content: "\e64f";
+}
+
+.hotel-tingchechang:before {
+  content: "\e66b";
+}
+
+.hotel-youyongchi:before {
+  content: "\e6ac";
+}
+
+.hotel-naozhong:before {
+  content: "\e890";
+}
+
+.hotel-fangzi:before {
+  content: "\e8ff";
+}
+
+.hotel-mn_jiejifuwu:before {
+  content: "\e600";
+}
+
+.hotel-kafei:before {
+  content: "\e60a";
+}
+
+.hotel-hanglijicun:before {
+  content: "\e615";
+}
+
+.hotel-iconyihuifu-:before {
+  content: "\e61b";
+}
+
+.hotel-jiankong_o:before {
+  content: "\ebc1";
+}
+
+.hotel-people:before {
+  content: "\e613";
+}
+
+.hotel-Bed:before {
+  content: "\e617";
+}
+
+.hotel-dianti:before {
+  content: "\e631";
+}
+
+.hotel-wuzhangai:before {
+  content: "\e638";
+}
+

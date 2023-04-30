@@ -52,6 +52,8 @@ import BaiduMap from 'vue-baidu-map'
 // Echarts
 import 'echarts'
 import ECharts from 'vue-echarts'
+// iconfont
+import './assets/icon/iconfont.css'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts

@@ -64,9 +64,9 @@
     <div class="topMenu">
       <el-menu :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f" class="hotelMenu">
         <el-menu-item index="1">预订</el-menu-item>
-        <el-menu-item index="2">位置</el-menu-item>
-        <el-menu-item index="3">信息</el-menu-item>
-        <el-menu-item index="4">点评</el-menu-item>
+        <el-menu-item index="2">点评</el-menu-item>
+        <el-menu-item index="3">位置</el-menu-item>
+        <el-menu-item index="4">信息</el-menu-item>
       </el-menu>
     </div>
     <!-- 酒店房间预订 -->
@@ -121,37 +121,68 @@
       <el-card>
         <div class="roomContainer">
           <div class="roomImg">
-            <room-preview :src="require('@/assets/banner1.jpeg')" style="width: 100%; height: 175px; border-radius: 5px;" />
-            <p>豪华大床房[roomType]</p>
-            <span style="display: block; font-size: 14px; color: #999999; margin-top: 2px">
+            <room-preview :src="'/profile/upload/2023/04/28/2_20230428212601A001.jpg'" style="width: 80%; height: 150px; border-radius: 5px; margin-left: 25px;" />
+            <p style="margin-left: 5px;">豪华大床房[roomType]</p>
+            <span style="display: block; font-size: 14px; color: #999999; margin-top: 2px; margin-left: 5px">
               1张2米特大床[bed]
               <el-divider direction="vertical"></el-divider>
               46[size]m²
             </span>
+            <el-button @click="showRoomInfo" type="text" style="margin-left: 5px;">查看客房信息</el-button>
           </div>
+          <el-drawer
+            :visible.sync="drawer"
+            direction="rtl"
+            :with-header="false">
+            <div class="generalInfo">
+              <h1>基本信息</h1>
+              <p><i class="hotel-fangzi" />46平方米</p>
+              <p><i class="hotel-Bed" />1张2米特大床</p>
+            </div>
+            <div class="facilities">
+              <h1>全部设施</h1>
+              <div class="infoDOM">
+                <h2>洗浴用品</h2>
+                <div class="showInfo">
+                  <span style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px" v-for="n in 5">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>牙刷
+                  </span>
+                </div>
+              </div>
+              <div class="infoDOM">
+                <h2>客房布局和家具</h2>
+                <div class="showInfo"></div>
+              </div>
+              <div class="infoDOM">
+                <h2>网络与通讯</h2>
+                <div class="showInfo"></div>
+              </div>
+              <div class="infoDOM">
+                <h2>卫浴设施</h2>
+                <div class="showInfo"></div>
+              </div>
+              <div class="infoDOM">
+                <h2>客房设施</h2>
+                <div class="showInfo"></div>
+              </div>
+              <div class="infoDOM">
+                <h2>媒体科技</h2>
+                <div class="showInfo"></div>
+              </div>
+              <div class="infoDOM">
+                <h2>便利设施</h2>
+                <div class="showInfo"></div>
+              </div>
+              <div class="infoDOM">
+                <h2>食品饮品</h2>
+                <div class="showInfo"></div>
+              </div>
+            </div>
+          </el-drawer>
           <div class="roomInfo">
             <div class="number">
               <i class="el-icon-user-solid" />
               <i class="el-icon-user-solid" />
-            </div>
-            <div class="facilitiesContainer">
-<!--              <div class="facilities">
-                <h1>全部设施</h1>
-                <h2>洗浴用品</h2>
-                <span style="margin-left: 5px; font-size: 14px; color: #666666" v-for="n in 3">
-                  <i class="el-icon-circle-check" />牙刷
-                </span>
-                <h2>客房布局和家具</h2>
-                <h2>网络与通讯</h2>
-                <h2>卫浴设施</h2>
-                <h2>客房设施</h2>
-                <h2>媒体科技</h2>
-                <h2>便利设施</h2>
-                <h2>食品饮品</h2>
-              </div>
-              <div class="showAllButton" v-show="!isShowAll">
-                <el-button type="text" @click="showAll">>>展开全部<<</el-button>
-              </div>-->
             </div>
             <div>
               <div class="roomPrice">
@@ -187,15 +218,196 @@
           <!-- 各项评分 -->
           <div class="otherRating">
             <!-- 环境评分 -->
-            <div style="position: relative;">
-              <span>环境</span>
-              <v-chart
-                ref="environment"
-                :option="environment"
-                style="width: 120px; height: 120px;">
-              </v-chart>
-              <span style="position: absolute; top: 70px; left: 48px; font-size: 18px; font-weight: bold">4.8</span>
+            <div style="position: relative; flex-basis: 50%;">
+              <span style="position: absolute; bottom: 0; left: 35px; font-size: 16px; color: #666666">环境</span>
+              <el-progress
+                type="dashboard"
+                :percentage="90"
+                :color="colors"
+                :show-text="true"
+                :width="100"
+                :stroke-width="10"
+                :format="showEnvironment">
+              </el-progress>
             </div>
+            <!-- 卫生评分 -->
+            <div style="position: relative; flex-basis: 50%;">
+              <span style="position: absolute; bottom: 0; left: 35px; font-size: 16px; color: #666666">卫生</span>
+              <el-progress
+                type="dashboard"
+                :percentage="90"
+                :color="colors"
+                :show-text="true"
+                :width="100"
+                :stroke-width="10"
+                :format="showEnvironment">
+              </el-progress>
+            </div>
+            <!-- 服务评分 -->
+            <div style="position: relative; flex-basis: 50%; margin-top: 20px;">
+              <span style="position: absolute; bottom: 0; left: 35px; font-size: 16px; color: #666666">服务</span>
+              <el-progress
+                type="dashboard"
+                :percentage="90"
+                :color="colors"
+                :show-text="true"
+                :width="100"
+                :stroke-width="10"
+                :format="showEnvironment">
+              </el-progress>
+            </div>
+            <!-- 设施评分 -->
+            <div style="position: relative; flex-basis: 50%; margin-top: 20px;">
+              <span style="position: absolute; bottom: 0; left: 35px; font-size: 16px; color: #666666">设施</span>
+              <el-progress
+                type="dashboard"
+                :percentage="90"
+                :color="colors"
+                :show-text="true"
+                :width="100"
+                :stroke-width="10"
+                :format="showEnvironment">
+              </el-progress>
+            </div>
+          </div>
+        </div>
+        <el-divider></el-divider>
+        <!-- 评分 -->
+        <div class="commentContainer">
+          <div class="hotelComment">
+            <!-- 左边部分【头像、昵称、入住房间名称、入住时间】 -->
+            <div class="leftPart">
+              <el-avatar shape="square" :src="require('@/assets/user.png')"></el-avatar>
+              <span class="username">【用户昵称】</span>
+              <span style="display: block; margin-left: 10px; font-size: 14px; margin-top: 5px; color: #999999;"><i class="hotel-Bed" style="margin-right: 5px;"/>豪华大床房</span>
+              <span style="margin-left: 11px; margin-top: 5px; font-size: 14px; color: #999999;"><i class="el-icon-date" style="margin-right: 5px;" />2023年4月入住</span>
+            </div>
+            <div class="rightPart">
+              <!-- 用户评分 -->
+              <div class="hotelRating">
+                <span style="font-size: 16px; color: #999999;">
+                  <strong style="font-size: 28px; color: #1ab394; font-weight: bold;">5</strong>
+                  /5
+                </span>
+                <!-- 根据用户评分设置一个text数组存储对应表达 -->
+                <span style="font-size: 24px; color: #1ab394; font-weight: bold; margin-left: 15px;">超棒</span>
+              </div>
+              <!-- 用户评论内容 -->
+              <div class="commentContent">
+                <p class="content">应该是开封最好的酒店，服务确实非常好，前台小哥哥跟客房阿姨都特别有礼貌，酒店私密性也很好，园区很大，特别安静。出进会有酒店摆渡车免费接送到大门口，离清明上河园也近，就在对面，不过需要走几百米才能到景区大门口。续住还送了果盘，多送了矿泉水，有点小感动！</p>
+                <p class="commentDate">2023年4月23日</p>
+                <!-- 评论图片【循环显示】 -->
+                <div>
+                  <img :src="require('@/assets/banner1.jpeg')" style="width: 120px; height: 120px; margin-right: 10px; border-radius: 5px;"/>
+                  <img :src="require('@/assets/banner2.jpeg')" style="width: 120px; height: 120px; margin-right: 10px; border-radius: 5px;"/>
+                  <img :src="require('@/assets/banner3.jpeg')" style="width: 120px; height: 120px; margin-right: 10px; border-radius: 5px;"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 酒店位置 -->
+    <div class="hotelLocation">
+      <div class="mapContainer">
+        <h1>位置</h1>
+        <baidu-map
+          class="map"
+          :center="center"
+          :zoom="20"
+          :scroll-wheel-zoom="false">
+          <bm-traffic></bm-traffic>
+          <!--            <bm-marker :position="center" animation="BMAP_ANIMATION_BOUNCE"></bm-marker>-->
+        </baidu-map>
+      </div>
+    </div>
+    <!-- 酒店信息 -->
+    <div class="hotelInfo">
+      <div class="infoContainer">
+        <!-- 基本信息 -->
+        <div style="display: flex; border-bottom: 1px solid #ddd; padding: 20px;">
+          <div class="asideInfo">
+            <span style="font-size: 16px; color: #666666;">基本信息</span>
+          </div>
+          <div style="margin-left: 0;">
+            <span style="margin: 0; font-size: 14px; color: #333333">入住时间: <strong style="font-size: 18px; font-weight: bold;">14:00 - 00:00</strong></span>
+            <span style="margin: 0 0 0 30px; font-size: 14px; color: #333333;">离店时间: <strong style="font-size: 18px; font-weight: bold;">12:00之前</strong></span>
+          </div>
+        </div>
+        <!-- 主要设施 -->
+        <div style="display: flex; border-bottom: 1px solid #ddd; padding: 20px;">
+          <div class="asideInfo">
+            <span style="font-size: 16px; color: #666666;">主要设施</span>
+          </div>
+          <div v-show="!isShowAll" style="position: relative;">
+            <ul class="facilitiesList">
+              <li><i class="hotel-wifi" /><span>免费WiFi</span></li>
+              <li><i class="hotel-tingchechang" /><span>停车场</span></li>
+              <li><i class="hotel-dianti" /><span>电梯</span></li>
+              <li><i class="hotel-canting" /><span>餐厅</span></li>
+              <li><i class="hotel-hanglijicun" /><span>行李寄存</span></li>
+              <li><i class="hotel-qiantai" /><span>前台服务</span></li>
+              <li><i class="hotel-a-24Hanbao" /><span>24H安保</span></li>
+              <li><i class="hotel-jiankong_o" /><span>监控</span></li>
+            </ul>
+            <el-button type="text" style="position: absolute; bottom: -10px;" @click="showAll"><i class="el-icon-arrow-down" />显示全部</el-button>
+          </div>
+          <div v-show="isShowAll" style="position: relative;">
+            <ul class="allFacilities">
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333;">交通服务</li>
+              <li style="width: 33%;"><i class="hotel-mn_jiejifuwu"/><span>接机服务</span></li>
+              <li style="width: 33%;"><i class="hotel-jiaochefuwu"/><span>叫车服务</span></li>
+              <li style="width: 33%;"><i class="hotel-jiesongzhanfuwu"/><span>接送站服务</span></li>
+              <li style="width: 33%;"><i class="hotel-tingchechang"/><span>停车场</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">餐饮服务</li>
+              <li style="width: 33%;"><i class="hotel-kafei"/><span>咖啡厅</span></li>
+              <li style="width: 33%;"><i class="hotel-canting"/><span>餐厅</span></li>
+              <li style="width: 33%;"><i class="hotel-songcan"/><span>送餐服务</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">康体设施</li>
+              <li style="width: 33%;"><i class="hotel-spa"/><span>SPA</span></li>
+              <li style="width: 33%;"><i class="hotel-anmo"/><span>按摩室</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">前台服务</li>
+              <li style="width: 33%;"><i class="hotel-iconyihuifu-"/><span>储物柜</span></li>
+              <li style="width: 33%;"><i class="hotel-kuaidi"/><span>快递服务</span></li>
+              <li style="width: 33%;"><i class="hotel-ditu_diqiu_o"/><span>多语种服务</span></li>
+              <li style="width: 33%;"><i class="hotel-17"/><span>快速入住退房</span></li>
+              <li style="width: 33%;"><i class="hotel-zhuanzhihangliyuan"/><span>专职行李员</span></li>
+              <li style="width: 33%;"><i class="hotel-naozhong"/><span>叫醒服务</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">公共区</li>
+              <li style="width: 33%;"><i class="hotel-wifi"/><span>公共WiFi</span></li>
+              <li style="width: 33%;"><i class="hotel-dianti"/><span>电梯</span></li>
+              <li style="width: 33%;"><i class="el-icon-no-smoking"/><span>公共区域禁烟</span></li>
+              <li style="width: 33%;"><i class="el-icon-smoking"/><span>吸烟区</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">无障碍设施服务</li>
+              <li style="width: 33%;"><i class="hotel-wuzhangai"/><span>无障碍服务</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">安全与安保</li>
+              <li style="width: 33%;"><i class="hotel-a-24Hanbao"/><span>24H安保</span></li>
+              <li style="width: 33%;"><i class="hotel-jiankong_o"/><span>公共区域监控</span></li>
+              <li style="width: 33%;"><i class="el-icon-bell"/><span>安全报警器</span></li>
+              <li style="width: 100%; font-size: 14px; font-weight: bold; color: #333333; margin-top: 10px;">运动</li>
+              <li style="width: 33%;"><i class="hotel-jianshenfang"/><span>健身房</span></li>
+              <li style="width: 33%;"><i class="hotel-youyongchi"/><span>泳池</span></li>
+            </ul>
+            <el-button type="text" style="position: absolute; bottom: -10px;" @click="showAll"><i class="el-icon-arrow-up" />收起</el-button>
+          </div>
+        </div>
+        <!-- 酒店攻略 -->
+        <div style="display: flex; border-bottom: 1px solid #ddd; padding: 20px;">
+          <div class="asideInfo">
+            <span style="font-size: 16px; color: #666666; white-space: nowrap;">酒店攻略</span>
+          </div>
+          <div style="margin-left: 100px;">
+            <span style="font-size: 14px; color: #666666; ">{{content}}</span>
+          </div>
+        </div>
+        <!-- 品牌信息 -->
+        <div style="display: flex; border-bottom: 1px solid #ddd; padding: 20px;">
+          <div class="asideInfo">
+            <span style="font-size: 16px; color: #666666; white-space: nowrap;">品牌信息</span>
+          </div>
+          <div style="">
+            <span style="font-size: 16px; color: #666666; ">铂尔曼</span>
           </div>
         </div>
       </div>
@@ -231,50 +443,24 @@ export default {
       /* priceRange是一个数组，[0]是最小值，[1]是最大值 */
       priceRange: [0,2000],
       roomLayout: 3,
-      environment: {
-        series: [
-          {
-            name: 'Environment Rating',
-            type: 'pie',
-            radius: ['55%', '90%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 1,
-              borderColor: '#eee',
-              borderWidth: 1
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            labelLine: {
-              show: false
-            },
-            data: [
-              {
-                value: 0,
-                itemStyle: {
-                  color: '#1ab394',
-                },
-              },
-              {
-                value: 0,
-                itemStyle: {
-                  color: '#f3f3f3',
-                },
-              },
-            ]
-          }
-        ]
+      drawer: false,
+      colors: [
+        {color: '#f56c6c', percentage: 20},
+        {color: '#e6a23c', percentage: 40},
+        {color: '#5cb87a', percentage: 60},
+        {color: '#1989fa', percentage: 80},
+        {color: '#1ab394', percentage: 100}
+      ],
+      center: {
+        lng: 114.348626,
+        lat: 34.821644
       },
+      content: "开封建业铂尔曼酒店位于北宋古都开封古城中心，毗邻宋都皇城龙亭公园、清明上河园、万岁山武侠城等诸多景点。占地近400亩，酒店拥有186间40-400平方米不等的客房和套房，四面湖水环绕，是融合古今文化的高奢适度低密度园林酒店。酒店处处展现北宋元素、开封市花菊花主题，贝母扣龙亭大殿艺术墙、天青色瓷器接待台构成一幅“形入紫闼，而意在青云”的画卷，不仅成为网红打卡圣地，更是开启了“繁华之上，梦回东京”的探索之旅。在露华轩中餐厅可享用开封名吃、招牌豫菜、精致粤菜，或者前往铂尔曼咖啡厅享用全球美食，休闲之余亦可选择在宋徽宗瘦金体书法背景墙旁小憩、在25米长的泳池畅游、前往花满地水疗重塑活力、或在户外湖区拥抱自然。",
     }
   },
   computed: {
   },
   mounted() {
-    // 在获取到后端数据后更新value的值
-    this.environment.series[0].data[0].value = 4.8;
-    this.environment.series[0].data[1].value = 0.2;
     // 获取天气信息
     this.getWeather();
   },
@@ -294,7 +480,7 @@ export default {
       })
     },
     showAll() {
-      this.isShowAll = true;
+      this.isShowAll = !this.isShowAll;
     },
     // 显示房间、人数选择窗口
     clickSelect() {
@@ -308,6 +494,13 @@ export default {
     // 选择房型
     selectLayout(id) {
       this.roomLayout = id;
+    },
+    // 展示房间信息
+    showRoomInfo() {
+      this.drawer = true;
+    },
+    showEnvironment() {
+      return '4.8';
     }
   },
   filters: {
@@ -542,6 +735,40 @@ export default {
         margin: 0;
       }
     }
+    .el-drawer {
+      .generalInfo {
+        h1 {
+          font-size: 28px;
+          font-weight: bold;
+          padding: 10px;
+          margin: 0;
+        }
+        p {
+          font-size: 18px;
+          padding: 5px 0 5px 10px;
+          margin: 0;
+        }
+      }
+      .facilities {
+        h1 {
+          font-size: 28px;
+          font-weight: bold;
+          padding: 10px;
+          margin: 0;
+        }
+        .infoDOM {
+          h2 {
+            font-size: 20px;
+            padding: 5px 0 5px 20px;
+            margin: 0;
+          }
+          .showInfo {
+            display: flex;
+            flex-wrap: wrap;
+          }
+        }
+      }
+    }
     .roomInfo {
       position: relative;
       width: 780px;
@@ -556,35 +783,6 @@ export default {
           font-size: 22px;
           margin-right: 5px;
         }
-      }
-    }
-    .facilitiesContainer {
-      overflow: hidden;
-      width: 600px;
-      margin: 10px;
-      .facilities {
-        overflow: hidden;
-        h1 {
-          font-size: 24px;
-          margin: 0;
-        }
-        h2 {
-          font-size: 16px;
-          margin: 5px 0 0 5px;
-        }
-        ::v-deep .el-icon-circle-check {
-          margin-left: 3px;
-        }
-      }
-      .showAllButton {
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        height: 30px;
-        background-color: #FFFFFF;
-        opacity: 90%;
-        top: 195px;
       }
     }
     .roomPrice {
@@ -622,15 +820,14 @@ export default {
 .hotelReviewContainer {
   display: flex;
   justify-content: center;
-  height: 500px;
   margin-top: 10px;
   border-top: 1px solid #eeeeee;
   border-bottom: 1px solid #eeeeee;
   background-color: #f5f7fa;
   .hotelReview {
     width: 1050px;
-    height: 300px;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     border-radius: 5px;
     border: 1px solid #eee;
     background-color: #FFFFFF;
@@ -653,13 +850,156 @@ export default {
       }
       .otherRating {
         position: absolute;
+        display: flex;
+        flex-wrap: wrap;
         width: 580px;
         height: 160px;
-        top: 40px;
-        left: 400px;
-        background-color: #999999;
+        top: 20px;
+        left: 550px;
+      }
+    }
+    ::v-deep .el-divider--horizontal {
+      width: 98%;
+      margin-top: 60px;
+      margin-left: 1%;
+    }
+    .commentContainer {
+      .hotelComment {
+        display: flex;
+        width: 1030px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding: 10px;
+        border-radius: 5px;
+        .leftPart {
+          position: relative;
+          width: 250px;
+          height: auto;
+          border-right: 1px solid #eee;
+          /* 头像 */
+          .el-avatar {
+            width: 50px;
+            height: 50px;
+            margin: 10px 0 0 10px;
+          }
+          .username {
+            position: absolute;
+            top: 10px;
+            font-size: 16px;
+            color: #333333;
+          }
+        }
+        .rightPart {
+          position: relative;
+          width: 780px;
+          margin-left: 10px;
+          .hotelRating {
+            height: 40px;
+          }
+          .commentContent {
+            .content {
+              font-size: 16px;
+              color: #455873;
+              letter-spacing: 0;
+              line-height: 24px;
+              word-break: break-word;
+              margin: 10px 0 10px 0;
+            }
+            .commentDate {
+              font-size: 14px;
+              color: #999999;
+              margin: 0 0 10px 650px;
+            }
+          }
+        }
       }
     }
   }
+}
+.hotelLocation {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: #f5f7fa;
+  .mapContainer {
+    width: 1050px;
+    padding: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0 0 15px 0;
+    }
+    .map {
+      width: 1000px;
+      height: 352px;
+      border-radius: 5px;
+    }
+  }
+}
+.hotelInfo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: #f5f7fa;
+  .infoContainer {
+    width: 1050px;
+    padding: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    .asideInfo {
+      width: 162px;
+    }
+    .facilitiesList {
+      display: flex;
+      flex-wrap: wrap;
+      width: 800px;
+      margin-top: 0;
+      list-style: none;
+      padding: 0;
+      span {
+        font-size: 14px;
+        color: #333333;
+      }
+      i {
+        margin-right: 5px;
+      }
+      li {
+        width: 20%;
+        text-align: left;
+        margin-bottom: 10px;
+      }
+    }
+    .allFacilities {
+      display: flex;
+      flex-wrap: wrap;
+      width: 800px;
+      list-style: none;
+      margin-top: 0;
+      padding: 0;
+      li {
+        text-align: left;
+        margin-bottom: 10px;
+      }
+      span {
+        font-size: 14px;
+        color: #333333;
+      }
+      i {
+        margin-right: 5px;
+      }
+    }
+  }
+}
+::v-deep .el-progress__text {
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: #333333 !important;
 }
 </style>
