@@ -9,6 +9,22 @@ export function listRooms(query) {
   })
 }
 
+// 查询相应酒店的房间信息
+export function getHotelRooms(hotelId) {
+  return request({
+    url: '/travels/rooms/hotel/' + hotelId,
+    method: 'get'
+  })
+}
+
+// 查询酒店最低价格
+export function getMinPrice(hotelId) {
+  return request({
+    url: '/travels/rooms/price/' + hotelId,
+    method: 'get'
+  })
+}
+
 // 查询酒店房间详细
 export function getRooms(id) {
   return request({

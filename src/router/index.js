@@ -99,11 +99,11 @@ export const constantRoutes = [
     name: 'hotelList',
     component: () => import('../views/hotel/hotelList.vue')
   },
-  // {
-  //   path: '/hotelDetail/:id',
-  //   name: 'hotelDetail',
-  //   component: () => import('../views/hotel/hotelDetail.vue')
-  // },
+  {
+    path: '/hotelDetail/:id',
+    name: 'hotelDetail',
+    component: () => import('../views/hotel/hotelDetail.vue')
+  },
   {
     path: '/redirect',
     component: Layout,

@@ -2,9 +2,11 @@
   <el-row>
     <el-col :span="24">
       <el-card v-for="(item, index) in hotelList" :key="index" style="margin: 25px;">
-        <div>
-          <h1>{{item.hotelName}}</h1>
-        </div>
+        <router-link :to="{ path: '/hotelDetail/:id', query: { id: item.id } }">
+          <div>
+            <h1>{{item.hotelName}}</h1>
+          </div>
+        </router-link>
       </el-card>
     </el-col>
   </el-row>

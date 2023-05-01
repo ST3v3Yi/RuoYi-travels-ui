@@ -309,7 +309,7 @@ export default {
     },
   },
   mounted() {
-    window.onload = () => {
+    this.$nextTick(() => {
       const topMenu = this.$refs.topMenu;
       const topDistance = topMenu.getBoundingClientRect().top;
       let _this = this;
@@ -320,7 +320,7 @@ export default {
           _this.isTopMenuFixed = true;
         }
       }, true)
-    };
+    });
     this.getWeather();
     this.getSpotDetail();
     this.getSpotComments();
