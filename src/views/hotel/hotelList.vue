@@ -199,7 +199,7 @@ export default {
     }
   },
   mounted() {
-    this.getList();
+    this.getList(null, null);
   },
   computed: {
     today() {
@@ -216,38 +216,55 @@ export default {
     },
   },
   methods: {
-    getList() {
+    getList(min, max) {
       this.loading = true;
       listHotel(this.queryParams).then(res => {
-        this.hotelList = res.rows;
+        this.hotelList = [];
         this.total = res.total;
         this.loading = false;
-        this.hotelList.forEach((hotel) => {
-          getMinPrice(hotel.id).then((res) => {
-            hotel.minPrice = res.data;
-            hotel.minPrice = new Intl.NumberFormat('zh-CN', {
-              style: 'currency',
-              currency: 'CNY',
-            }).format(hotel.minPrice).replace(/^(\D+)/, '').replace(/\.\d{2}$/, '');
+        // 搜索全部
+        if (min === null && max === null) {
+          this.hotelList = res.rows;
+        } else {
+          const list = res.rows;
+          list.forEach((hotel) => {
+            getMinPrice(hotel.id).then((res) => {
+              const minPrice = res.data;
+              if (minPrice >= min && minPrice <= max) {
+                this.hotelList.push(hotel);
+              }
+            })
           })
-          getHotelRating(hotel.id).then((res) => {
-            hotel.rating = res.data;
-          })
-          // 将经纬度作为一个对象加入markerCenter数组
-          const markerCenter = {
-            lng: hotel.lng,
-            lat: hotel.lat
-          };
-          hotel.point = markerCenter;
-          hotel.iconUrl = require('@/assets/location.png');
-          hotel.hoverIconUrl = require('@/assets/location1.png');
-          hotel.isHover = false;
-        })
-        console.log(this.hotelList)
+        }
+        this.listProcessing();
       })
       const today = this.today;
       const tomorrow = this.tomorrow;
       this.dateRange = [today, tomorrow];
+    },
+    // 列表处理
+    listProcessing(){
+      this.hotelList.forEach((hotel) => {
+        getMinPrice(hotel.id).then((res) => {
+          hotel.minPrice = res.data;
+          hotel.minPrice = new Intl.NumberFormat('zh-CN', {
+            style: 'currency',
+            currency: 'CNY',
+          }).format(hotel.minPrice).replace(/^(\D+)/, '').replace(/\.\d{2}$/, '');
+        })
+        getHotelRating(hotel.id).then((res) => {
+          hotel.rating = res.data;
+        })
+        // 将经纬度作为一个对象加入markerCenter数组
+        const markerCenter = {
+          lng: hotel.lng,
+          lat: hotel.lat
+        };
+        hotel.point = markerCenter;
+        hotel.iconUrl = require('@/assets/location.png');
+        hotel.hoverIconUrl = require('@/assets/location1.png');
+        hotel.isHover = false;
+      })
     },
     // 显示房间、人数选择窗口
     clickSelect() {
@@ -272,6 +289,7 @@ export default {
     selectPrice(min, max) {
       if (this.roomPrice !== min) {
         this.roomPrice = min;
+        this.getList(min, max);
       } else {
         this.roomPrice = null;
       }
