@@ -43,9 +43,9 @@
               <div class="priceFilter">
                 <div @mouseover="showButtons = true" @mouseleave="showButtons = false" style="margin-left: 5px; position: relative;">
                   <span>￥</span>
-                  <el-input v-model="price.minPrice" style="width: 80px;" placeholder="最低价"></el-input>
+                  <el-input v-model="minPrice" style="width: 80px;" placeholder="最低价"></el-input>
                   <span style="white-space: pre;"> -￥</span>
-                  <el-input v-model="price.maxPrice" style="width: 80px;" placeholder="最高价"></el-input>
+                  <el-input v-model="maxPrice" style="width: 80px;" placeholder="最高价"></el-input>
                   <div v-if="showButtons" class="showButton">
                     <el-button
                       type="primary"
@@ -68,7 +68,7 @@
               <span style="font-size: 16px; font-weight: bold; color: #333">酒店评分</span>
             </div>
             <div class="roomRating">
-              <el-button :type="roomRating===3 ? 'primary' : 'text'" @click="selectRating(3)" style="margin-left: 5px;">全部</el-button>
+              <el-button :type="roomRating===0 ? 'primary' : 'text'" @click="selectRating(0)" style="margin-left: 5px;">全部</el-button>
               <el-button :type="roomRating===4.5 ? 'primary' : 'text'" @click="selectRating(4.5)">4.5分以上</el-button>
               <el-button :type="roomRating===4 ? 'primary' : 'text'" @click="selectRating(4)">4分以上</el-button>
               <el-button :type="roomRating===3.5 ? 'primary' : 'text'" @click="selectRating(3.5)">3.5分以上</el-button>
@@ -140,11 +140,11 @@
             <bm-info-window :show="isInfoWindow && item.id === openWinId" @close="infoWindowClose(item.id)" @open="infoWindowOpen(item.id)">
               <div class="locationInfo">
                 <h1>{{ item.hotelName }}</h1>
-                <div style="display: flex;">
-                  <div class="rating" v-if="item.rating && item.rating.mainRating">
+                <div style="display: flex;" v-if="item.rating && item.rating.mainRating">
+                  <div class="rating">
                     <span style="font-size: 14px; font-weight: bold; color: #FFFFFF">{{ item.rating.mainRating | decimal }}</span>
                   </div>
-                  <span style="font-size: 14px; color: #1ab394; margin: 10px 0 0 5px;">超棒</span>
+                  <span style="font-size: 14px; color: #1ab394; margin: 10px 0 0 5px;">{{ ratingText(item.rating.mainRating) }}</span>
                   <span style="font-size: 12px; color: #999999; margin: 12px 0 0 5px;">5条点评</span>
                 </div>
               </div>
@@ -164,7 +164,7 @@
 
 <script>
 import { listHotel } from '@/api/hotel/hotel'
-import { getMinPrice } from "@/api/travels/rooms";
+import {getHotelId, getMinPrice} from "@/api/travels/rooms";
 import { getHotelRating } from "@/api/hotel/hotelComments";
 // 导入 Intl.NumberFormat
 import Intl from 'intl'
@@ -174,6 +174,7 @@ export default {
   data() {
     return {
       hotelList: [],
+      trueHotelList: [],
       date: new Date(),
       dateRange: [],
       markers: {},
@@ -190,16 +191,14 @@ export default {
       isInfoWindow: false,
       roomPrice: null,
       showButtons: false,
-      price: {
-        minPrice: null,
-        maxPrice: null
-      },
-      roomRating: 3,
+      minPrice: null,
+      maxPrice: null,
+      roomRating: 0,
       roomLayout: 3,
     }
   },
   mounted() {
-    this.getList(null, null);
+    this.getList();
   },
   computed: {
     today() {
@@ -216,55 +215,39 @@ export default {
     },
   },
   methods: {
-    getList(min, max) {
+    getList() {
       this.loading = true;
       listHotel(this.queryParams).then(res => {
-        this.hotelList = [];
+        this.hotelList = res.rows;
         this.total = res.total;
         this.loading = false;
-        // 搜索全部
-        if (min === null && max === null) {
-          this.hotelList = res.rows;
-        } else {
-          const list = res.rows;
-          list.forEach((hotel) => {
-            getMinPrice(hotel.id).then((res) => {
-              const minPrice = res.data;
-              if (minPrice >= min && minPrice <= max) {
-                this.hotelList.push(hotel);
-              }
-            })
+        this.hotelList.forEach((hotel) => {
+          getMinPrice(hotel.id).then((res) => {
+            hotel.price = res.data;
+            hotel.minPrice = res.data;
+            hotel.minPrice = new Intl.NumberFormat('zh-CN', {
+              style: 'currency',
+              currency: 'CNY',
+            }).format(hotel.minPrice).replace(/^(\D+)/, '').replace(/\.\d{2}$/, '');
           })
-        }
-        this.listProcessing();
+          getHotelRating(hotel.id).then((res) => {
+            hotel.rating = res.data;
+          })
+          // 将经纬度作为一个对象加入markerCenter数组
+          const markerCenter = {
+            lng: hotel.lng,
+            lat: hotel.lat
+          };
+          hotel.point = markerCenter;
+          hotel.iconUrl = require('@/assets/location.png');
+          hotel.hoverIconUrl = require('@/assets/location1.png');
+          hotel.isHover = false;
+        })
+        this.trueHotelList = this.hotelList;
       })
       const today = this.today;
       const tomorrow = this.tomorrow;
       this.dateRange = [today, tomorrow];
-    },
-    // 列表处理
-    listProcessing(){
-      this.hotelList.forEach((hotel) => {
-        getMinPrice(hotel.id).then((res) => {
-          hotel.minPrice = res.data;
-          hotel.minPrice = new Intl.NumberFormat('zh-CN', {
-            style: 'currency',
-            currency: 'CNY',
-          }).format(hotel.minPrice).replace(/^(\D+)/, '').replace(/\.\d{2}$/, '');
-        })
-        getHotelRating(hotel.id).then((res) => {
-          hotel.rating = res.data;
-        })
-        // 将经纬度作为一个对象加入markerCenter数组
-        const markerCenter = {
-          lng: hotel.lng,
-          lat: hotel.lat
-        };
-        hotel.point = markerCenter;
-        hotel.iconUrl = require('@/assets/location.png');
-        hotel.hoverIconUrl = require('@/assets/location1.png');
-        hotel.isHover = false;
-      })
     },
     // 显示房间、人数选择窗口
     clickSelect() {
@@ -287,40 +270,98 @@ export default {
     },
     // 选择酒店价格
     selectPrice(min, max) {
-      if (this.roomPrice !== min) {
+      const hotelList = this.trueHotelList;
+      const hotels = [];
+      if (this.roomPrice !== min && max !== 0) {
         this.roomPrice = min;
-        this.getList(min, max);
+        hotelList.forEach((hotel) => {
+          if (hotel.price >= min && hotel.minPrice <= max) {
+            hotels.push(hotel);
+          }
+        })
+        this.hotelList = hotels;
+      } else if (this.roomPrice !== min && max === 0) {
+        this.roomPrice = min;
+        hotelList.forEach((hotel) => {
+          if (hotel.price >= min) {
+            hotels.push(hotel);
+          }
+        })
+        this.hotelList = hotels;
       } else {
         this.roomPrice = null;
+        this.hotelList = hotelList;
       }
     },
     clearInput() {
-      this.price.minPrice = '';
-      this.price.maxPrice = '';
+      this.minPrice = '';
+      this.maxPrice = '';
+      this.hotelList = this.trueHotelList;
     },
     selectByPrice() {
-      console.log(this.minPrice, this.maxPrice)
       if (this.minPrice > this.maxPrice) {
         this.$notify.error({
           title: '错误',
           message: '最低值不得高于最高值！'
         })
       } else {
-        // this.loading = true;
-        // const data = this.price;
-        // getListByPrice(data).then((res) => {
-        //   this.routeList = res.data;
-        //   this.loading = false;
-        // })
+        const hotelList = this.trueHotelList;
+        const hotels = [];
+        if (this.minPrice === null && this.maxPrice === null) {
+          this.hotelList = hotelList;
+        } else if (this.minPrice === null && this.maxPrice !== null) {
+          hotelList.forEach((hotel) => {
+            if (hotel.minPrice <= this.maxPrice) {
+              hotels.push(hotel);
+            }
+          })
+          this.hotelList = hotels;
+        } else if (this.minPrice !== null && this.maxPrice === null) {
+          hotelList.forEach((hotel) => {
+            if (hotel.minPrice >= this.minPrice) {
+              hotels.push(hotel);
+            }
+          })
+          this.hotelList = hotels;
+        } else {
+          hotelList.forEach((hotel) => {
+            if (hotel.minPrice >= this.minPrice && hotel.minPrice <= this.maxPrice) {
+              hotels.push(hotel);
+            }
+          })
+          this.hotelList = hotels;
+        }
       }
     },
     // 选择酒店评分
-    selectRating(id) {
-      this.roomRating = id;
+    selectRating(rating) {
+      const hotelList = this.trueHotelList;
+      const hotels = [];
+      hotelList.forEach((hotel) => {
+        if (hotel.rating.mainRating >= rating) {
+          hotels.push(hotel);
+        }
+      })
+      this.hotelList = hotels;
+      this.roomRating = rating;
     },
     // 选择房型
     selectLayout(id) {
+      const hotelList = this.trueHotelList;
+      const hotels = [];
       this.roomLayout = id;
+      if (id === 3) {
+        this.hotelList = hotelList;
+      } else {
+        getHotelId(id).then((res) => {
+          hotelList.forEach((hotel) => {
+            if (res.data.includes(hotel.id)) {
+              hotels.push(hotel)
+            }
+          })
+          this.hotelList = hotels;
+        })
+      }
     },
     hoverHotelCard(item) {
       this.center = item.point;
@@ -332,6 +373,21 @@ export default {
         lat: 34.815321
       };
       this.infoWindowClose();
+    },
+    ratingText(score) {
+      if (score >= 5) {
+        return '超棒';
+      } else if (score >= 4) {
+        return '棒';
+      } else if (score >= 3.5) {
+        return '好';
+      } else if (score >= 3) {
+        return '一般';
+      } else if (score >= 2) {
+        return '较差';
+      } else {
+        return '差';
+      }
     },
   },
   filters: {

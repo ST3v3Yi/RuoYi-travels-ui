@@ -25,6 +25,23 @@ export function getMinPrice(hotelId) {
   })
 }
 
+// 查询不同房型对应的酒店ID
+export function getHotelId(type) {
+  return request({
+    url: '/travels/rooms/room/' + type,
+    method: 'get'
+  })
+}
+
+// 贪心算法求得酒店可行性
+export function getFeasibility(data) {
+  return request({
+    url: '/travels/rooms/feasibility',
+    method: 'post',
+    data: data
+  })
+}
+
 // 查询酒店房间详细
 export function getRooms(id) {
   return request({

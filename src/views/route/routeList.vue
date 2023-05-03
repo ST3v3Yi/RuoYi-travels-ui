@@ -230,7 +230,7 @@ export default {
       this.selectByPrice();
     },
     selectByPrice() {
-      if (this.minPrice > this.maxPrice) {
+      if (this.price.minPrice > this.price.maxPrice) {
         this.$notify.error({
           title: '错误',
           message: '最低值不得高于最高值！'
