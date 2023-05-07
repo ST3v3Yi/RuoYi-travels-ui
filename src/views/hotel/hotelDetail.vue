@@ -194,10 +194,12 @@
             <div>
               <div class="roomPrice">
                 <h3>￥{{ item.price }}</h3>
-                <el-button class="bookingButton">预订</el-button>
+                <router-link :to="{ path: '/order/:roomId', query: { roomId: item.id } }">
+                  <el-button class="bookingButton">预订</el-button>
+                </router-link>
               </div>
               <div class="remainRoom">
-                <span style="color: #999999; font-size: 14px;">剩余5间</span>
+                <span style="color: #999999; font-size: 14px;" v-if="item.counts <= 5">剩余{{ item.counts }}间</span>
               </div>
             </div>
           </div>

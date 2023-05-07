@@ -73,7 +73,7 @@
         <div style="display: flex; justify-content: center;">
           <el-divider style="background-color: #c2c2c2;"></el-divider>
         </div>
-        <p style="color: #c2c2c2;">© 2023 XX旅游网. All rights reserved.</p>
+        <p style="color: #c2c2c2;">© 2023 东京夢華旅游网. All rights reserved.</p>
       </div>
     </el-row>
   </footer>

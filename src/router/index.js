@@ -65,11 +65,6 @@ export const constantRoutes = [
     component: () => import('../views/travels/Announcement.vue')
   },
   {
-    path: '/test',
-    name: 'Test',
-    component: () => import('../views/travels/test.vue')
-  },
-  {
     path: '/routeList',
     name: 'routeList',
     component: () => import('../views/route/routeList.vue')
@@ -105,6 +100,15 @@ export const constantRoutes = [
     component: () => import('../views/hotel/hotelDetail.vue')
   },
   {
+    path: '/order/:roomId',
+    name: 'order',
+    hidden: true,
+    meta: {
+      hideHeader: true,
+    },
+    component: () => import('../views/hotel/order.vue')
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,
@@ -118,7 +122,10 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login'),
-    hidden: true
+    hidden: true,
+    meta: {
+      hideHeader: true,
+    }
   },
   {
     path: '/register',
@@ -161,6 +168,12 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    hidden: true,
+    component: () => import('../views/travels/test.vue')
   }
 ]
 

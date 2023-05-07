@@ -1,5 +1,11 @@
 <template>
   <div :style="menuContainer">
+    <router-link to="/home">
+      <div class="logo">
+        <img :src="require('@/assets/logo.svg')" class="logoImg" />
+        <img :src="require('@/assets/name.png')" class="nameImg" />
+      </div>
+    </router-link>
     <el-menu :router="true" :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f">
       <el-menu-item index="/" @click="onClick('/')" :class="{ active: activeIndex === '/' }">首页</el-menu-item>
       <el-menu-item index="/spotList" @click="onClick('/spotList')" :class="{ active: activeIndex === '/spotList' }">景点</el-menu-item>
@@ -55,6 +61,20 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 999;
+}
+.logo {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0;
+  left: 300px;
+  z-index: 1000;
+  .logoImg {
+    height: 60px;
+  }
+  .nameImg {
+    height: 50px;
+  }
 }
 .el-menu {
   height: 60px;

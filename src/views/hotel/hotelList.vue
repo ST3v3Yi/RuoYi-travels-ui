@@ -14,7 +14,7 @@
           <span>{{ buttonValue }}</span>
           <i :class="isShowWin ? 'el-icon-arrow-up' : 'el-icon-arrow-down'" style="margin-left: 150px;"/>
         </el-button>
-        <el-button icon="el-icon-search" circle style="width: 36px" type="primary"></el-button>
+        <el-button icon="el-icon-search" circle style="width: 36px" type="primary" @click="searchHotel"></el-button>
         <div class="chooseWindow" v-show="isShowWin">
           <div style="height: 40px">
             <span>房间</span>
@@ -164,7 +164,7 @@
 
 <script>
 import { listHotel } from '@/api/hotel/hotel'
-import {getHotelId, getMinPrice} from "@/api/travels/rooms";
+import {getFeasibility, getHotelId, getMinPrice} from "@/api/travels/rooms";
 import { getHotelRating } from "@/api/hotel/hotelComments";
 // 导入 Intl.NumberFormat
 import Intl from 'intl'
@@ -257,6 +257,25 @@ export default {
     confirmRoom() {
       this.buttonValue = this.roomNum + "间，" + this.peopleNum + "位";
       this.isShowWin = false;
+    },
+    // 寻找符合条件的酒店【贪心算法 / 只求可行性 不求最优解】
+    searchHotel() {
+      const hotelList = this.trueHotelList;
+      const hotels = [];
+      const data ={
+        roomNumber: this.roomNum,
+        peopleNumber: this.peopleNum
+      };
+      getFeasibility(data).then((res) => {
+        res.data.forEach((data) => {
+          hotelList.forEach((hotel) => {
+            if (hotel.id === data) {
+              hotels.push(hotel);
+            }
+          })
+        })
+      })
+      this.hotelList = hotels;
     },
     // 位置Marker点击事件
     infoWindowOpen(id) {

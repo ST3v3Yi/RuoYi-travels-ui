@@ -1,16 +1,20 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4045800 */
-  src: url('iconfont.woff2?t=1682870139603') format('woff2'),
-       url('iconfont.woff?t=1682870139603') format('woff'),
-       url('iconfont.ttf?t=1682870139603') format('truetype');
+  src: url('iconfont.woff2?t=1683463456519') format('woff2'),
+       url('iconfont.woff?t=1683463456519') format('woff'),
+       url('iconfont.ttf?t=1683463456519') format('truetype');
 }
 
-.iconfont,[class^="hotel"],[class*=" hotel"]  {
+.iconfont,[class^="hotel"],[class*=" hotel"]{
   font-family: "iconfont" !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.hotel-chuang:before {
+  content: "\e60d";
 }
 
 .hotel-ditu_diqiu_o:before {

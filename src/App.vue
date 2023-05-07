@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="app">
     <GoTopAndBottom target=".app" @topDistanceChange="handleScroll" :offsetTop="offsetTop"/>
-    <navbar/>
+    <navbar v-show="!$route.meta.hideHeader"/>
     <router-view style="padding-top: 0px" :topDistance="updatedTopDistance" @scrollTo="handleScrollTo"/>
   </div>
 </template>
