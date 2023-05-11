@@ -50,6 +50,14 @@ export function getRoute(id) {
   })
 }
 
+// 获取推荐路线列表
+export function getRecRoute() {
+  return request({
+    url: '/route/route/home/route',
+    method: 'get'
+  })
+}
+
 // 新增路线
 export function addRoute(data) {
   return request({

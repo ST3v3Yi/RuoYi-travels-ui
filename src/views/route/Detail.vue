@@ -9,10 +9,6 @@
       <el-col class="bgCol">
         <div class="coverImg-container bg-purple">
           <img :src="'/dev-api' + route.coverImg" style="width: 100%; height: 100%;" />
-<!--          <el-image
-            style="width: 100%; height: 100%;"
-            :src="'/dev-api' + route.coverImg"
-            :fit="fit"></el-image>-->
         </div>
       </el-col>
     </el-row>
@@ -141,6 +137,7 @@ import { addRouteComments } from "@/api/routeComments/routeComments";
 import { getRouteCommentsList } from "@/api/routeComments/routeComments";
 import {addRouteReply, getReplyList} from "@/api/routeReply/routeReply";
 import { getIsFavorite, delFavorite, addRouteFavorite } from "@/api/routeFavorite/routeFavorite";
+import { addUserRecords } from "@/api/userRecords/userRecords";
 import Footer from "@/layout/components/Footer.vue";
 
 export default{
@@ -186,6 +183,8 @@ export default{
     this.getUserInfo();
     this.getRouteRating();
     this.getRouteComments();
+    // 添加用户浏览记录
+    this.addUserRecord();
   },
   methods: {
     parseTime,
@@ -242,6 +241,16 @@ export default{
             // console.log(response.data);
           })
         })
+      })
+    },
+    addUserRecord() {
+      getUserProfile().then((res) => {
+        const data = {
+          userId: res.data.userId,
+          type: 1,
+          routeId: this.$route.query.id
+        }
+        addUserRecords(data);
       })
     },
     showReplyBox(id) {
@@ -411,10 +420,17 @@ export default{
   transform: scale(1.2);
 }
 .el-rate {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 .el-divider {
   margin: 5px 0;
   background-color: #cccccc;
+}
+::v-deep .el-rate__icon{
+  margin-right: 0;
+}
+::v-deep .el-rate__text {
+  margin-left: 5px;
+  font-size: 16px;
 }
 </style>

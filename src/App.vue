@@ -6,13 +6,14 @@
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 html, body, #app {
   overflow: auto;
   height: 100%;
   margin: 0px;
   padding: 0px;
   overflow-x: hidden;
+  scroll-snap-type: y mandatory;
 }
 #nav {
   border-bottom: solid 0.5px #42b983;
@@ -57,7 +58,8 @@ export default {
             userType: '',
             userProfile: '',
             topDistance: 0,
-            offsetTop: 0
+            offsetTop: 0,
+            hideScroll: false
         }
     },
     computed: {

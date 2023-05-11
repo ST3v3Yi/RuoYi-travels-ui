@@ -17,6 +17,14 @@ export function getSpot(id) {
   })
 }
 
+// 随机获取两个景区
+export function  getRandomSpot() {
+  return request({
+    url: '/spot/spot/randomSpot',
+    method: 'get'
+  })
+}
+
 // 新增景区
 export function addSpot(data) {
   return request({

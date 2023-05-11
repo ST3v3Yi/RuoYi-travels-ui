@@ -1,5 +1,5 @@
 <template>
-  <div style="background-color: #f5f7fa;">
+  <div>
     <!-- 填写个人信息界面Header -->
     <div class="orderHeader">
       <router-link to="/home">
@@ -18,7 +18,7 @@
     </div>
     <!-- 信息展示和个人信息填写 -->
     <div class="infoContainer">
-      <div class="infoWrapper" v-if="room && hotel">
+      <div class="infoWrapper" v-if="room && hotel && hotelRating">
         <div class="hotelAndRoomInfo">
           <div class="hotelName">
             <h1>{{ hotel.hotelName }}</h1>
@@ -105,6 +105,38 @@
           </span>
           <el-button type="primary" @click="goToPay">去支付</el-button>
         </div>
+        <el-dialog
+          class="payDialog"
+          title="支付"
+          :visible.sync="paymentInterface"
+          width="30%"
+          :before-close="handleClose">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 20px; font-weight: bold; color: #333333;">支付金额</span>
+            <span style="font-size: 24px; font-weight: bold; color: #1ab394;">￥{{ totalPrice }}</span>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="PayToHotel">支 付</el-button>
+          </span>
+        </el-dialog>
+        <el-dialog
+          class="payDialog"
+          title="支付成功"
+          :visible.sync="paySuccess"
+          width="30%">
+          <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+            <svg width="100" height="100">
+              <circle fill="none" stroke="#68E534" stroke-width="5" cx="50" cy="50" r="48" stroke-linecap="round" transform="rotate(-90 50 50)" class="circle"/>
+              <polyline fill="none" stroke="#68E534" stroke-width="5" points="22,53.5,43.25,71,76,34.5" stroke-linecap="round" stroke-linejoin="round" class="tick"/>
+            </svg>
+            <h2>支付成功</h2>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <router-link :to="{ path: '/hotelDetail/:id', query: { id: hotel.id } }">
+            <el-button type="primary" @click="PaymentSuccess">确 定</el-button>
+            </router-link>
+          </span>
+        </el-dialog>
         <router-link :to="{ path: '/hotelDetail/:id', query: { id: hotel.id } }">
         <el-button type="text" style="position: absolute; left: 0px; top: 1120px; font-size: 16px; font-weight: bold; color: #1ab394;">< 更改我的选择</el-button>
         </router-link>
@@ -120,6 +152,9 @@
 <script>
 import { getRooms } from "@/api/travels/rooms";
 import { getHotel } from "@/api/hotel/hotel";
+import {getHotelRating} from "@/api/hotel/hotelComments";
+import Stickybits from 'stickybits'
+
 export default {
   data() {
     return {
@@ -137,6 +172,8 @@ export default {
       tel: '',
       arrivalTime: '14:00',
       totalPrice: 0,
+      paymentInterface: false,
+      paySuccess: false,
 
     }
   },
@@ -147,21 +184,22 @@ export default {
       default: 0
     },
   },
-  computed: {
-
-  },
   mounted() {
     this.$nextTick(() => {
       const UShouldKnow = this.$refs.UShouldKnow;
-      this.distance = UShouldKnow.getBoundingClientRect().top;
-      let _this = this;
-      window.addEventListener('scroll', () => {
-        if(_this.topDistance < _this.distance) {
-          _this.isTopMenuFixed = false;
-        } else {
-          _this.isTopMenuFixed = true;
-        }
-      }, true)
+      if (UShouldKnow) {
+        Stickybits(UShouldKnow);
+        this.distance = 70;
+        let _this = this;
+        window.addEventListener('scroll', () => {
+          console.log(_this.topDistance);
+          if(_this.topDistance < _this.distance) {
+            _this.isTopMenuFixed = false;
+          } else {
+            _this.isTopMenuFixed = true;
+          }
+        }, true);
+      }
     });
     this.getRoomDetail();
   },
@@ -172,7 +210,10 @@ export default {
         this.totalPrice = this.room.price;
         getHotel(this.room.hotelId).then((res) =>{
           this.hotel = res.data;
-          console.log(res.data);
+        })
+        getHotelRating(this.room.hotelId).then((res) => {
+          this.hotel.rating = res.data;
+          this.hotelRating = this.hotel.rating.mainRating;
         })
       })
     },
@@ -195,6 +236,22 @@ export default {
     },
     goToPay() {
       this.activeIndex = 2;
+      this.paymentInterface = true;
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
+    PayToHotel() {
+      this.activeIndex = 3;
+      this.paymentInterface = false;
+      this.paySuccess = true;
+    },
+    PaymentSuccess() {
+      this.paySuccess = false;
     }
   }
 }
@@ -437,6 +494,69 @@ export default {
   span {
     font-size: 14px;
     color: #999999;
+  }
+}
+.payDialog {
+  .circle {
+    stroke-dasharray: 301;
+    stroke-dashoffset: 301;
+  }
+  svg .circle {
+    animation: circle 1s ease-in-out;
+    animation-fill-mode: forwards;
+  }
+  .tick {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  svg .tick {
+    animation: tick .8s ease-in-out;
+    animation-fill-mode: forwards;
+    animation-delay: .95s;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333333;
+    margin: 0;
+    padding: 5px 0;
+    opacity: 0;
+  }
+  h2 {
+    animation: .6s title ease-in-out;
+    animation-delay: 1.2s;
+    animation-fill-mode: forwards;
+  }
+  ::v-deep .el-dialog__title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  ::v-deep .el-dialog__body {
+    padding: 10px 20px;
+  }
+  @keyframes circle {
+    from {
+      stroke-dashoffset: 301;
+    }
+    to {
+      stroke-dashoffset: 602;
+    }
+  }
+  @keyframes tick {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes title {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 ::v-deep .el-rate__icon{

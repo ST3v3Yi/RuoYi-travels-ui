@@ -9,7 +9,7 @@
         <router-link to="/user/profile">
           <el-dropdown-item>个人中心</el-dropdown-item>
         </router-link>
-        <router-link to="/">
+        <router-link to="/test">
           <el-dropdown-item>我的收藏</el-dropdown-item>
         </router-link>
         <router-link to="/">

@@ -1,5 +1,5 @@
 <template>
-  <div :style="menuContainer">
+  <div :style="menuContainer" class="menuContainer">
     <router-link to="/home">
       <div class="logo">
         <img :src="require('@/assets/logo.svg')" class="logoImg" />
@@ -32,7 +32,8 @@ export default {
         alignItems: "center",
         zIndex: "999",
         border: "1px solid #eee",
-        marginBottom: "2px"
+        marginBottom: "2px",
+        // scrollSnapAlign: "start"
       }
     }
   },

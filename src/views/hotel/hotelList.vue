@@ -159,6 +159,7 @@
         </baidu-map>
       </div>
     </div>
+    <Footer style="margin-top: 30px;"/>
   </div>
 </template>
 
@@ -169,8 +170,12 @@ import { getHotelRating } from "@/api/hotel/hotelComments";
 // 导入 Intl.NumberFormat
 import Intl from 'intl'
 import 'intl/locale-data/jsonp/en.js'
-import {getListByPrice} from "@/api/route/route";
+import { getListByPrice } from "@/api/route/route";
+import Footer from "@/layout/components/Footer.vue";
 export default {
+  components: {
+    Footer,
+  },
   data() {
     return {
       hotelList: [],

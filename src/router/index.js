@@ -37,6 +37,10 @@ export const constantRoutes = [
   {
     path: '/home',
     name: 'Home',
+    hidden: true,
+    meta: {
+      hideHeader: true,
+    },
     component: () => import('../views/travels/Home.vue'),
   },
   {

@@ -439,6 +439,8 @@ import { getHotelRooms } from "@/api/travels/rooms"
 import Intl from 'intl'
 import 'intl/locale-data/jsonp/en.js'
 import { getCommentsList, getHotelRating } from "@/api/hotel/hotelComments"
+import { getUserProfile } from "@/api/system/user";
+import { addUserRecords } from "@/api/userRecords/userRecords";
 
 export default {
   components: {
@@ -525,6 +527,8 @@ export default {
     this.getWeather();
     // 获取酒店信息
     this.getHotelDetail();
+    // 添加用户浏览记录
+    this.addUserRecord();
   },
   methods: {
     // 获取当地天气信息
@@ -577,6 +581,16 @@ export default {
       })
       getHotelRating(id).then((res) => {
         this.ratingList = res.data;
+      })
+    },
+    addUserRecord() {
+      getUserProfile().then((res) => {
+        const data = {
+          userId: res.data.userId,
+          type: 2,
+          hotelId: this.$route.query.id
+        }
+        addUserRecords(data);
       })
     },
     formatDate(dateStr) {

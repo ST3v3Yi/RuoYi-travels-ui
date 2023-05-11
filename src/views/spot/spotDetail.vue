@@ -28,7 +28,8 @@
       <div style="display: flex; justify-content: center">
         <el-divider class="topDivider"></el-divider>
       </div>
-      <div class="topMenu" ref="topMenu" :class="{ fixed: isTopMenuFixed }">
+      <!-- :class="{ fixed: isTopMenuFixed }" -->
+      <div class="topMenu" ref="topMenu">
         <el-menu :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f" class="spotMenu">
           <el-menu-item index="1" @click="scrollToSection('#overview')">概况</el-menu-item>
           <el-menu-item index="2" @click="scrollToSection('#spotComments')">景区点评</el-menu-item>
@@ -241,6 +242,7 @@ import uploadImg from "@/components/ImageUpload/spotImgUpload.vue"
 import {getUserProfile} from "@/api/system/user";
 import {addSpotReply, getReplyList} from "@/api/spotReply/spotReply";
 import {getIsFavorite, addSpotFavorite, delFavorite} from "@/api/spotFavorite/spotFavorite";
+import { addUserRecords } from "@/api/userRecords/userRecords";
 
 export default {
   components: {
@@ -325,6 +327,8 @@ export default {
     this.getSpotDetail();
     this.getSpotComments();
     this.getUserInfo();
+    // 添加用户浏览记录
+    this.addUserRecord();
   },
   methods: {
     // 获取当前景点信息
@@ -369,6 +373,16 @@ export default {
         data.weather = res.data.now;
       }).catch(function (err) {
         console.log(err);
+      })
+    },
+    addUserRecord() {
+      getUserProfile().then((res) => {
+        const data = {
+          userId: res.data.userId,
+          type: 0,
+          spotId: this.$route.query.id
+        }
+        addUserRecords(data);
       })
     },
     handleImageError() {
@@ -791,9 +805,6 @@ export default {
 .spotTitle:hover {
   color: #1ab394;
 }
-::v-deep .el-rate__icon{
-  margin-right: 0;
-}
 ::v-deep .anchorBL {
   display: none !important;
 }
@@ -805,5 +816,8 @@ export default {
   height: 100%;
   color: #909399;
   font-size: 30px;
+}
+::v-deep .el-rate__icon{
+  margin-right: 0;
 }
 </style>

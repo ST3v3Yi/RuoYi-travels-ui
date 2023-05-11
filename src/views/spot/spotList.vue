@@ -29,7 +29,7 @@
       <div class="aside">
         <!-- 今日景点推荐板块 -->
         <div class="SpotRec">
-          <div class="spotRec">
+          <div class="spotRec" v-if="spotList && spotList[randomId]">
             <span class="spotRecTitle">今日景点推荐</span>
             <el-divider></el-divider>
             <router-link :to="{ path: '/spotDetail/:id', query: { id: spotList[randomId].id } }">
@@ -193,7 +193,6 @@ export default {
         this.loading = false;
         const randomIndex = Math.floor(Math.random() * this.spotList.length);
         this.randomId = randomIndex;
-        console.log(randomIndex);
       });
     },
   }

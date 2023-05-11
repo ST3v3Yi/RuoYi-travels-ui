@@ -17,6 +17,14 @@ export function getHotel(id) {
   })
 }
 
+// 随机获取一个酒店
+export function getRandomHotel() {
+  return request({
+    url: '/hotel/hotel/randomHotel',
+    method: 'get'
+  })
+}
+
 // 新增酒店管理
 export function addHotel(data) {
   return request({
