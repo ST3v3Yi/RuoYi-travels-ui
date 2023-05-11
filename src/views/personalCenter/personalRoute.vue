@@ -6,8 +6,8 @@
     <div class="topMenu">
       <el-menu :router="true" :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f">
         <el-menu-item index="/personalCenter">个人中心</el-menu-item>
-        <el-menu-item index="/">我的路线</el-menu-item>
-        <el-menu-item index="/">我的评论</el-menu-item>
+        <el-menu-item index="/personalRoute">我的路线</el-menu-item>
+        <el-menu-item index="/">我的收藏</el-menu-item>
         <el-menu-item index="/">我的订单</el-menu-item>
       </el-menu>
     </div>
@@ -22,7 +22,7 @@
           </div>
           <div class="comments">
             <p class="number">7</p>
-            <p class="intro">评论</p>
+            <p class="intro">收藏</p>
           </div>
         </div>
       </div>
@@ -82,53 +82,29 @@
           <p>看攻略</p>
         </div>
       </div>
-      <div class="basicInfo">
+      <div class="personalRoute">
         <div class="title">
-          <span>个人信息</span>
+          <span>我的路线</span>
         </div>
-        <div>
-          <div class="text-center">
-            <userAvatar :user="user" />
-          </div>
-          <ul class="list-group list-group-striped">
-            <li class="list-item">
-              <svg-icon icon-class="user" />账号
-              <div class="pull-right">{{ user.userName }}</div>
-            </li>
-            <li class="list-item">
-              <svg-icon icon-class="nickName" />用户昵称
-              <div class="pull-right">{{ user.nickName }}</div>
-            </li>
-            <li class="list-item">
-              <svg-icon icon-class="phone" />手机号码
-              <div class="pull-right">{{ user.phonenumber }}</div>
-            </li>
-            <li class="list-item">
-              <svg-icon icon-class="email" />用户邮箱
-              <div class="pull-right">{{ user.email }}</div>
-            </li>
-            <li class="list-item">
-              <svg-icon icon-class="date" />创建日期
-              <div class="pull-right">{{ user.createTime }}</div>
-            </li>
-          </ul>
+        <div class="cardContainer" v-if="routeList">
+          <el-card class="card" v-for="(item, index) in routeList" :key="index">
+            <div class="cardContent">
+              <img :src="'/dev-api' + item.coverImg" style="width: 250px; height: 130px;"/>
+              <div class="routeInfo">
+                <h1>{{ item.title }}</h1>
+              </div>
+            </div>
+          </el-card>
+          <Pagination
+            v-show="total>0"
+            :total="total"
+            :page.sync="queryParams.pageNum"
+            :limit.sync="queryParams.pageSize"
+            @pagination="getUser"
+          />
         </div>
-      </div>
-      <div class="changeInfo">
-        <div class="title">
-          <span>修改个人信息</span>
-        </div>
-        <el-tabs v-model="activeTab">
-          <el-tab-pane label="基本资料" name="userinfo">
-            <userInfo :user="user" />
-          </el-tab-pane>
-          <el-tab-pane label="修改密码" name="resetPwd">
-            <resetPwd />
-          </el-tab-pane>
-        </el-tabs>
       </div>
     </div>
-    <Footer />
   </div>
 </template>
 
@@ -137,20 +113,29 @@ import userAvatar from "@/views/system/user/profile/userAvatar.vue";
 import userInfo from "@/views/system/user/profile/userInfo.vue";
 import resetPwd from "@/views/system/user/profile/resetPwd.vue";
 import Footer from "@/layout/components/Footer.vue";
+import Pagination from "@/components/Pagination/Pagination.vue"
 import {getUserProfile} from "@/api/system/user";
+import {getUserRoute} from "@/api/route/route";
 
 export default {
   components: {
     userAvatar,
     userInfo,
     resetPwd,
+    Pagination,
     Footer
   },
   data() {
     return {
-      activeIndex: '/personalCenter',
+      activeIndex: '/personalRoute',
       user: {},
       activeTab: "userinfo",
+      routeList: null,
+      total: 0,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 5,
+      },
     }
   },
   mounted() {
@@ -160,8 +145,16 @@ export default {
     getUser() {
       getUserProfile().then(response => {
         this.user = response.data;
+        const route = {
+          userId: this.user.userId
+        }
+        getUserRoute(route).then((res) => {
+          this.routeList = res.rows;
+          this.total = res.total;
+          console.log(this.total);
+        })
       });
-    }
+    },
   }
 }
 </script>
@@ -198,9 +191,10 @@ export default {
 .InfoContainer {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   width: 1920px;
-  height: 1000px;
+  height: auto;
   background-color: #f5f7fa;
   .userInfo {
     position: relative;
@@ -314,7 +308,7 @@ export default {
       }
     }
   }
-  .basicInfo {
+  .personalRoute {
     position: absolute;
     top: 140px;
     left: 745px;
@@ -331,34 +325,43 @@ export default {
       font-weight: 700;
       color: #333333;
     }
-    .list-item {
-      border-bottom: 1px solid #eeeeee;
-      border-top: 1px solid #eeeeee;
-      margin-bottom: -1px;
-      padding: 11px 0px;
-      font-size: 16px;
-      .svg-icon {
-        margin-right: 8px;
+    .cardContainer {
+      width: 98%;
+      height: auto;
+      margin-left: 1%;
+      margin-top: 10px;
+      .card {
+        width: 100%;
+        height: 140px;
+        margin-bottom: 10px;
+        cursor: pointer;
       }
-    }
-  }
-  .changeInfo {
-    position: absolute;
-    top: 575px;
-    left: 745px;
-    width: 740px;
-    height: auto;
-    background-color: #FFFFFF;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #eeeeee;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    z-index: 2;
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #333333;
-      margin-bottom: 10px;
+      .cardContent {
+        display: flex;
+        img {
+          margin: 5px 5px;
+          border-radius: 5px;
+        }
+        .routeInfo {
+          h1 {
+            font-size: 24px;
+            color: #333333;
+            margin: 10px 5px;
+          }
+          h1:hover {
+            color: #1ab394;
+          }
+        }
+      }
+      ::v-deep .el-card.is-always-shadow {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
+      }
+      ::v-deep .el-card__body {
+        padding: 0;
+      }
+      ::v-deep .el-card:hover {
+        box-shadow: 0 2px 5px 0 #999;
+      }
     }
   }
 }

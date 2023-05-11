@@ -225,6 +225,7 @@ export default {
     /** 查询景区列表 */
     getList() {
       this.loading = true;
+      console.log(this.queryParams);
       listSpot(this.queryParams).then(response => {
         this.spotList = response.rows;
         this.total = response.total;

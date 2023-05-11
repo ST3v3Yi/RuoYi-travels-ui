@@ -6,8 +6,8 @@
     <div class="topMenu">
       <el-menu :router="true" :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f">
         <el-menu-item index="/personalCenter">个人中心</el-menu-item>
-        <el-menu-item index="/">我的路线</el-menu-item>
-        <el-menu-item index="/">我的评论</el-menu-item>
+        <el-menu-item index="/personalRoute">我的路线</el-menu-item>
+        <el-menu-item index="/">我的收藏</el-menu-item>
         <el-menu-item index="/">我的订单</el-menu-item>
       </el-menu>
     </div>

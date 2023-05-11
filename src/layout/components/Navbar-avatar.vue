@@ -6,13 +6,16 @@
         <i class="el-icon-caret-bottom" />
       </div>
       <el-dropdown-menu slot="dropdown">
-        <router-link to="/user/profile">
+        <router-link to="/personalCenter">
           <el-dropdown-item>个人中心</el-dropdown-item>
+        </router-link>
+        <router-link to="/personalRoute">
+          <el-dropdown-item>我的路线</el-dropdown-item>
         </router-link>
         <router-link to="/test">
           <el-dropdown-item>我的收藏</el-dropdown-item>
         </router-link>
-        <router-link to="/">
+        <router-link to="/user/profile">
           <el-dropdown-item>我的订单</el-dropdown-item>
         </router-link>
         <el-dropdown-item divided @click.native="logout">

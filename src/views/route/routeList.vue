@@ -287,7 +287,7 @@ export default {
   height: 200px;
   border-radius: 5px;
   margin: 10px 0;
-  background-color: #f9fafc;
+  background-color: #FFFFFF;
   box-shadow: 0 0 2px 0 #999999;
   .buttonClass {
     padding: 5px 10px;

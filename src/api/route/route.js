@@ -18,6 +18,15 @@ export function listRoute(query) {
   })
 }
 
+// 获取相应用户的路线
+export function getUserRoute(route) {
+  return request({
+    url: '/route/route/user',
+    method: 'get',
+    params: route
+  })
+}
+
 // 查询发布路线列表
 export function getRouteList() {
   return request({

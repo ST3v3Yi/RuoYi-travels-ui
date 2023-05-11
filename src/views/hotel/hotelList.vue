@@ -63,7 +63,7 @@
             </div>
           </div>
           <!-- 酒店评分 -->
-          <div style="display: flex; width: 100%; height: 50px; border-bottom: 1px solid #eee">
+          <div style="display: flex; width: 100%; height: 50px; border-bottom: 1px solid #eee;">
             <div class="aside">
               <span style="font-size: 16px; font-weight: bold; color: #333">酒店评分</span>
             </div>
@@ -471,6 +471,7 @@ export default {
     width: 100%;
     margin-top: 10px;
     border-radius: 5px;
+    background-color: #FFFFFF;
     box-shadow: 0 2px 12px 0 #eee;
     border: 1px solid #eee;
     .aside {
@@ -478,7 +479,7 @@ export default {
       justify-content: center;
       align-items: center;
       width: 150px;
-      background-color: #f5f7fa;
+      background-color: #ffffff;
     }
     .roomPrice {
       display: flex;

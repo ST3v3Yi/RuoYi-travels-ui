@@ -113,6 +113,18 @@ export const constantRoutes = [
     component: () => import('../views/hotel/order.vue')
   },
   {
+    path: '/personalCenter',
+    name: 'personalCenter',
+    hidden: true,
+    component: () => import('../views/personalCenter/personalCenter.vue')
+  },
+  {
+    path: '/personalRoute',
+    name: 'personalRoute',
+    hidden: true,
+    component: () => import('../views/personalCenter/personalRoute.vue')
+  },
+  {
     path: '/redirect',
     component: Layout,
     hidden: true,

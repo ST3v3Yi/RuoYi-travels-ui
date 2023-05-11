@@ -14,6 +14,7 @@ html, body, #app {
   padding: 0px;
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
+  background-color: #f5f7fa;
 }
 #nav {
   border-bottom: solid 0.5px #42b983;

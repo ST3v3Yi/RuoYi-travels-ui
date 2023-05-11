@@ -4,7 +4,7 @@
     <el-row type="flex" justify="center">
       <el-col :span="4" class="col1">
         <div style="margin-left: 5px; font-size: 12px; color: #c2c2c2">
-          <h3 style="font-size: 14px;">XX旅游网</h3>
+          <h3 style="font-size: 14px;">东京夢華旅游网</h3>
           <p style="line-height: 12px">这是<strong style="color: #1ab394">我们</strong>的旅游网~</p>
           <p style="line-height: 12px">这是<strong style="color: #1ab394">一座城市</strong>的旅游网~</p>
           <p style="line-height: 12px">这是<strong style="color: #1ab394">家乡</strong>的旅游网~</p>
@@ -18,7 +18,7 @@
           <div style="display: flex; flex-wrap: wrap;">
             <div style="flex: 1 0 50%;">
               <router-link to="/">
-                <span style="display: inline-block; line-height: 22px;">关于XXX</span>
+                <span style="display: inline-block; line-height: 22px;">关于东京夢華</span>
               </router-link>
             </div>
             <div style="flex: 1 0 50%;">
@@ -60,7 +60,7 @@
             </div>
             <div style="flex: 1 0 50%;">
               <router-link to="/">
-                <span style="display: inline-block; line-height: 22px;">城市视觉</span>
+                <span style="display: inline-block; line-height: 22px;">个人中心</span>
               </router-link>
             </div>
           </div>
