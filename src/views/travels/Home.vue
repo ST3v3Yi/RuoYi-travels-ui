@@ -260,6 +260,14 @@ export default {
 ::v-deep .Navbar {
   scroll-snap-align: start;
 }
+::v-deep .Navbar {
+  .el-menu {
+    background-color: transparent;
+  }
+  .el-menu:hover {
+    background-color: #FFFFFF;
+  }
+}
 ::v-deep .footer {
   margin-top: 10px;
   scroll-snap-align: start;

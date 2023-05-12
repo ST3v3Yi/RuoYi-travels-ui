@@ -154,6 +154,8 @@ import { getRooms } from "@/api/travels/rooms";
 import { getHotel } from "@/api/hotel/hotel";
 import {getHotelRating} from "@/api/hotel/hotelComments";
 import Stickybits from 'stickybits'
+import {getUserProfile} from "@/api/system/user";
+import { addOrders } from "@/api/hotel/orders";
 
 export default {
   data() {
@@ -165,6 +167,7 @@ export default {
       hotelRating: 5,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
       isUShouldKnowFixed: false,
+      date: new Date(),
       dateRange: ["2023-05-07", "2023-05-08"],
       roomNum: 1,
       name: '',
@@ -174,6 +177,23 @@ export default {
       totalPrice: 0,
       paymentInterface: false,
       paySuccess: false,
+      user: null,
+      order: {
+        userId: null,
+        userName: null,
+        email: null,
+        telephone: null,
+        hotelId: null,
+        ownerId: null,
+        roomId: null,
+        roomNumber: null,
+        fromDate: null,
+        toDate: null,
+        arrivalTime: null,
+        createTime: null,
+        status: null,
+        price: null
+      },
 
     }
   },
@@ -182,6 +202,20 @@ export default {
       type: Number,
       required: true,
       default: 0
+    },
+  },
+  computed: {
+    today() {
+      const year = this.date.getFullYear();
+      const month = this.date.getMonth() + 1;
+      const day = this.date.getDate();
+      return `${year}-${month}-${day}`;
+    },
+    tomorrow() {
+      const year = this.date.getFullYear();
+      const month = this.date.getMonth() + 1;
+      const day = this.date.getDate() + 1;
+      return `${year}-${month}-${day}`;
     },
   },
   mounted() {
@@ -202,9 +236,13 @@ export default {
       }
     });
     this.getRoomDetail();
+    this.getUser();
   },
   methods: {
     getRoomDetail() {
+      const today = this.today;
+      const tomorrow = this.tomorrow;
+      this.dateRange = [today, tomorrow];
       getRooms(this.$route.query.roomId).then((res) => {
         this.room = res.data;
         this.totalPrice = this.room.price;
@@ -215,6 +253,13 @@ export default {
           this.hotel.rating = res.data;
           this.hotelRating = this.hotel.rating.mainRating;
         })
+      })
+    },
+    getUser() {
+      getUserProfile().then(response => {
+        this.user = response.data;
+        this.email = this.user.email;
+        this.tel = this.user.phonenumber;
       })
     },
     // 计算总价格
@@ -246,6 +291,34 @@ export default {
         .catch(_ => {});
     },
     PayToHotel() {
+      // 用户ID
+      this.order.userId = this.user.userId;
+      // 用户昵称
+      this.order.userName = this.name;
+      // 用户e-mail
+      this.order.email = this.email;
+      // 用户手机号
+      this.order.telephone = this.tel;
+      // 酒店ID
+      this.order.hotelId = this.room.hotelId;
+      // 酒店方ID
+      this.order.ownerId = null;
+      // 房间ID
+      this.order.roomId = this.room.id;
+      // 房间数量
+      this.order.roomNumber = this.roomNum;
+      // 入住日期
+      this.order.fromDate = this.dateRange[0];
+      // 离店日期
+      this.order.toDate = this.dateRange[1];
+      // 到达时间
+      this.order.arrivalTime = this.arrivalTime;
+      // 订单状态
+      this.order.status = 1;
+      // 订单价格
+      this.order.price = this.totalPrice;
+      addOrders(this.order);
+      console.log(this.dateRange);
       this.activeIndex = 3;
       this.paymentInterface = false;
       this.paySuccess = true;

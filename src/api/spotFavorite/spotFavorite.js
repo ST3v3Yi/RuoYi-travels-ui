@@ -26,6 +26,14 @@ export function getIsFavorite(data) {
   })
 }
 
+// 获取用户收藏景点
+export function getUserFavoriteSpot(userId) {
+  return request({
+    url: '/spotFavorite/spotFavorite/spot/' + userId,
+    method: 'get'
+  })
+}
+
 // 新增景区收藏
 export function addSpotFavorite(data) {
   return request({

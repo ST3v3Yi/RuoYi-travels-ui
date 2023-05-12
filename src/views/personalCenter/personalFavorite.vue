@@ -21,7 +21,7 @@
             <p class="intro">路线</p>
           </div>
           <div class="comments">
-            <p class="number">{{ favoriteTotal }}</p>
+            <p class="number">{{ favoriteNum }}</p>
             <p class="intro">收藏</p>
           </div>
         </div>
@@ -92,84 +92,62 @@
       </div>
       <div class="personalRoute">
         <div class="title">
-          <span>我的路线</span>
+          <span>我的收藏</span>
         </div>
-        <div class="cardContainer" v-if="routePageList">
-          <el-card class="card" v-for="(item, index) in routePageList" :key="index">
-            <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
-            <div class="cardContent">
-              <img :src="'/dev-api' + item.coverImg" style="width: 250px; height: 130px;"/>
-              <div class="routeInfo">
-                <h1>{{ item.title }}</h1>
-              </div>
-            </div>
-            </router-link>
-            <el-tag
-              key="已保存"
-              type="warning"
-              effect="dark"
-              class="routeTag"
-              v-if="item.isDeleted === 1">
-              已保存
-            </el-tag>
-            <el-tag
-              key="已发布"
-              type="success"
-              effect="dark"
-              class="routeTag"
-              v-if="item.isDeleted === 0">
-              已发布
-            </el-tag>
-            <router-link :to="{ path: '/updateRoute/:id', query: { id: item.id } }">
-            <el-button type="text" class="updateRoute">修改路线</el-button>
-            </router-link>
-            <el-button type="text" class="deleteRoute" @click="deleteRoute(item.id, item.title)">删除路线</el-button>
-          </el-card>
-          <el-pagination
-            @current-change="handleRouteCurrentChange"
-            :current-page.sync="routePageNum"
-            :page-size="PageSize"
-            layout="total, prev, pager, next"
-            :total="routeTotal">
-          </el-pagination>
+        <div class="cardContainer" v-if="routeList">
+          <el-collapse v-model="activeNames">
+            <el-collapse-item title="收藏路线" name="1">
+              <el-card class="card" v-for="(item, index) in routeList" :key="index">
+                <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
+                  <div class="cardContent">
+                    <img :src="'/dev-api' + item.coverImg" style="width: 250px; height: 130px;"/>
+                    <div class="routeInfo">
+                      <h1>{{ item.title }}</h1>
+                    </div>
+                  </div>
+                </router-link>
+              </el-card>
+              <el-pagination
+                hide-on-single-page
+                @current-change="handleRouteCurrentChange"
+                :current-page.sync="routePageNum"
+                :page-size="3"
+                layout="total, prev, pager, next"
+                :total="routeTotal">
+              </el-pagination>
+            </el-collapse-item>
+            <el-collapse-item title="收藏景点" name="2">
+              <el-card class="card" v-for="(item, index) in spotList" :key="index">
+                <router-link :to="{ path: '/spotDetail/:id', query: { id: item.id } }">
+                  <div class="cardContent">
+                    <img :src="'/dev-api' + item.coverImg" style="width: 250px; height: 130px;"/>
+                    <div class="routeInfo">
+                      <h1>{{ item.spotName }}</h1>
+                      <h2>{{ item.spotForeignName }}</h2>
+                    </div>
+                  </div>
+                </router-link>
+              </el-card>
+              <el-pagination
+                hide-on-single-page
+                @current-change="handleSpotCurrentChange"
+                :current-page.sync="spotPageNum"
+                :page-size="2"
+                layout="total, prev, pager, next"
+                :total="spotTotal">
+              </el-pagination>
+            </el-collapse-item>
+          </el-collapse>
         </div>
-      </div>
-      <div class="personalComments">
-        <div class="title">
-          <span>我的评论</span>
-        </div>
-        <div class="userComment" v-for="(item, index) in userComments" :key="index" v-if="userComments !== null">
-          <p>{{ item.content }}</p>
-          <p class="releaseTime">
-            {{ item.createTime }}
-            <el-button type="text" style="margin-left: 130px;" @click="deleteComment(item.id)">删除</el-button>
-          </p>
-          <router-link :to="{ path: '/routeDetail/:id', query: { id: item.routeId } }">
-          <p style="color: #666666; padding: 0 0 5px 0">来自：<span class="routeTitle">{{ item.title }}</span></p>
-          </router-link>
-        </div>
-        <div class="nullUserComment" v-if="userComments === null">
-          <span>暂无评论~</span>
-        </div>
-        <el-pagination
-          @current-change="handleCommentsCurrentChange"
-          :current-page.sync="commentsPageNum"
-          :page-size="PageSize"
-          layout="total, prev, pager, next"
-          :total="commentsTotal"
-          v-if="userComments !== null">
-        </el-pagination>
       </div>
     </div>
-    <Footer style="margin-top: 830px;"/>
+    <Footer style="margin-top: 980px;"/>
   </div>
 </template>
 
 <script>
 import Footer from "@/layout/components/Footer.vue";
 import { getUserProfile } from "@/api/system/user";
-import {getUserRoute, delRoute, getUserRouteNum} from "@/api/route/route";
-import { delRouteComments, getUserComments } from "@/api/routeComments/routeComments";
 import {getUserFavoriteRoute} from "@/api/routeFavorite/routeFavorite";
 import {getUserFavoriteSpot} from "@/api/spotFavorite/spotFavorite";
 
@@ -179,17 +157,16 @@ export default {
   },
   data() {
     return {
-      activeIndex: '/personalRoute',
+      activeIndex: '/personalFavorite',
       user: {},
       routeList: null,
-      routePageList: null,
-      userComments: null,
-      favoriteTotal: 0,
+      spotList: null,
+      favoriteNum: 0,
+      activeNames: 1,
       routeTotal: 0,
       routePageNum: 1,
-      commentsTotal: 0,
-      commentsPageNum: 1,
-      PageSize: 5,
+      spotTotal: 0,
+      spotPageNum: 1,
     }
   },
   mounted() {
@@ -199,22 +176,17 @@ export default {
     getUser() {
       getUserProfile().then(response => {
         this.user = response.data;
-        getUserRoute(this.user.userId).then((res) => {
-          this.routeList = res.data;
-          this.routeTotal = res.data.length;
-          this.routePageList = res.data
-            .slice(( this.routePageNum - 1 ) * this.PageSize, this.routePageNum * this.PageSize);
-        })
-        getUserComments(this.user.userId).then((res) => {
-          this.commentsTotal = res.data.length;
-          this.userComments = res.data
-            .slice(( this.commentsPageNum - 1 ) * this.PageSize, this.commentsPageNum * this.PageSize);
-        })
         getUserFavoriteRoute(this.user.userId).then((res) => {
-          this.favoriteTotal = this.favoriteTotal + res.data.length;
+          this.routeTotal = res.data.length;
+          this.routeList = res.data
+            .slice(( this.routePageNum - 1 ) * 3, this.routePageNum * 3);
+          this.favoriteNum = this.favoriteNum + this.routeTotal;
         })
         getUserFavoriteSpot(this.user.userId).then((res) => {
-          this.favoriteTotal = this.favoriteTotal + res.data.length;
+          this.spotTotal = res.data.length;
+          this.spotList = res.data
+            .slice(( this.spotPageNum - 1 ) * 2, this.spotPageNum * 2);
+          this.favoriteNum = this.favoriteNum + this.spotTotal;
         })
       });
     },
@@ -222,38 +194,8 @@ export default {
       this.routePageNum = val;
       this.getUser();
     },
-    handleCommentsCurrentChange(val) {
-      this.commentsPageNum = val;
-      this.getUser();
-    },
-    deleteRoute(id, title) {
-      this.$confirm('此操作将永久删除路线 "' + title + '" , 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        delRoute(id);
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-        this.getUser();
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
-    },
-    deleteComment(id) {
-      delRouteComments(id).then((res) => {
-        this.$notify({
-          title: '成功',
-          message: '成功删除评论！',
-          type: 'success'
-        });
-      })
+    handleSpotCurrentChange(val) {
+      this.spotPageNum = val;
       this.getUser();
     },
   }
@@ -448,7 +390,12 @@ export default {
           h1 {
             font-size: 24px;
             color: #333333;
-            margin: 10px 5px;
+            margin: 10px 5px 0 5px;
+          }
+          h2 {
+            font-size: 14px;
+            color: #999999;
+            margin: 0 5px;
           }
           h1:hover {
             color: #1ab394;
@@ -482,56 +429,9 @@ export default {
       }
     }
   }
-  .personalComments {
-    position: absolute;
-    top: 200px;
-    left: 435px;
-    width: 300px;
-    height: auto;
-    background-color: #FFFFFF;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #eeeeee;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    z-index: 2;
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #333333;
-    }
-    .userComment {
-      width: 280px;
-      height: auto;
-      margin-top: 10px;
-      border-bottom: 1px solid #eeeeee;
-      font-size: 14px;
-      color: #666666;
-      p {
-        margin: 0;
-      }
-      .releaseTime, .routeTitle {
-        font-size: 12px;
-        color: #999999;
-      }
-      .routeTitle {
-        cursor: pointer;
-      }
-      .routeTitle:hover {
-        color: #1ab394;
-      }
-    }
-  }
-  .nullUserComment {
-    width: 280px;
-    height: auto;
-    margin-top: 10px;
-    border-bottom: 1px solid #eeeeee;
-    font-size: 14px;
-    color: #666666;
-    span {
-      font-size: 16px;
-      font-weight: bold;
-    }
-  }
+}
+::v-deep .el-collapse-item__header {
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>

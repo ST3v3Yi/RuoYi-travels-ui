@@ -83,7 +83,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: transparent;
+  background-color: #FFFFFF;
 }
 .el-menu:hover {
   background-color: #FFFFFF;

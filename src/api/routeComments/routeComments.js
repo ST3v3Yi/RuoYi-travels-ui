@@ -25,6 +25,22 @@ export function getRouteCommentsList(routeId) {
   })
 }
 
+// 查询路线评论详细
+export function getUserComments(userId) {
+  return request({
+    url: '/routeComments/routeComments/user/' + userId,
+    method: 'get'
+  })
+}
+
+// 获取用户评论数量
+export function getUserCommentsNum(userId) {
+  return request({
+    url: '/routeComments/routeComments/userComments/' + userId,
+    method: 'get'
+  })
+}
+
 // 新增路线评论
 export function addRouteComments(data) {
   return request({
@@ -46,7 +62,7 @@ export function updateRouteComments(data) {
 // 删除路线评论
 export function delRouteComments(id) {
   return request({
-    url: '/routeComments/routeComments/' + id,
+    url: '/routeComments/routeComments/del/' + id,
     method: 'delete'
   })
 }

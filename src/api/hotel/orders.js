@@ -17,6 +17,14 @@ export function getOrders(id) {
   })
 }
 
+// 获取个人订单信息
+export function getUserOrders(userId) {
+  return request({
+    url: '/hotel/orders/hotel/' + userId,
+    method: 'get'
+  })
+}
+
 // 新增酒店订单
 export function addOrders(data) {
   return request({

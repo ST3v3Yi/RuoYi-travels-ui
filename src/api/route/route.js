@@ -19,11 +19,10 @@ export function listRoute(query) {
 }
 
 // 获取相应用户的路线
-export function getUserRoute(route) {
+export function getUserRoute(userId) {
   return request({
-    url: '/route/route/user',
+    url: '/route/route/user/' + userId,
     method: 'get',
-    params: route
   })
 }
 
@@ -63,6 +62,14 @@ export function getRoute(id) {
 export function getRecRoute() {
   return request({
     url: '/route/route/home/route',
+    method: 'get'
+  })
+}
+
+// 获取用户路线数量
+export function getUserRouteNum(userId) {
+  return request({
+    url: '/route/route/userRoute/' + userId,
     method: 'get'
   })
 }

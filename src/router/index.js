@@ -84,8 +84,17 @@ export const constantRoutes = [
     component: () => import('../views/route/writeRoute.vue'),
   },
   {
+    path: '/updateRoute/:id',
+    name: 'updateRoute',
+    component: () => import('../views/route/updateRoute.vue'),
+  },
+  {
     path: '/spotList',
     name: 'spotList',
+    hidden: true,
+    meta: {
+      hideHeader: true,
+    },
     component: () => import('../views/spot/spotList.vue')
   },
   {
@@ -123,6 +132,18 @@ export const constantRoutes = [
     name: 'personalRoute',
     hidden: true,
     component: () => import('../views/personalCenter/personalRoute.vue')
+  },
+  {
+    path: '/personalFavorite',
+    name: 'personalFavorite',
+    hidden: true,
+    component: () => import('../views/personalCenter/personalFavorite.vue')
+  },
+  {
+    path: '/personalOrder',
+    name: 'personalOrder',
+    hidden: true,
+    component: () => import('../views/personalCenter/personalOrder.vue')
   },
   {
     path: '/redirect',

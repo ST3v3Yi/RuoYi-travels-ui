@@ -1,34 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户id" prop="userId">
+      <el-form-item label="住客姓名" prop="userName">
         <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="酒店id" prop="hotelId">
-        <el-input
-          v-model="queryParams.hotelId"
-          placeholder="请输入酒店id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="酒店方id" prop="ownerId">
-        <el-input
-          v-model="queryParams.ownerId"
-          placeholder="请输入酒店方id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="房间id" prop="roomId">
-        <el-input
-          v-model="queryParams.roomId"
-          placeholder="请输入房间id"
+          v-model="queryParams.userName"
+          placeholder="请输入住客姓名"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -99,15 +75,22 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="用户id" align="center" prop="userId" />
+      <el-table-column label="住客姓名" align="center" prop="userName" />
+      <el-table-column label="用户电话" align="center" prop="telephone" />
       <el-table-column label="酒店id" align="center" prop="hotelId" />
-      <el-table-column label="酒店方id" align="center" prop="ownerId" />
       <el-table-column label="房间id" align="center" prop="roomId" />
       <el-table-column label="房间数" align="center" prop="roomNumber" />
-      <el-table-column label="到店时间" align="center" prop="arrivalTime" width="180">
+      <el-table-column label="入住日期" align="center" prop="fromDate" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.arrivalTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.fromDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="离店日期" align="center" prop="toDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.toDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="到店时间" align="center" prop="arrivalTime" />
       <el-table-column label="订单状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.orders_status" :value="scope.row.status"/>
@@ -169,23 +152,33 @@
         <el-form-item label="房间数" prop="roomNumber">
           <el-input v-model="form.roomNumber" placeholder="请输入房间数" />
         </el-form-item>
-        <el-form-item label="到店时间" prop="arrivalTime">
+        <el-form-item label="入住日期" prop="fromDate">
           <el-date-picker clearable
-            v-model="form.arrivalTime"
+            v-model="form.fromDate"
             type="date"
             value-format="yyyy-MM-dd"
-            placeholder="请选择到店时间">
+            placeholder="请选择入住日期">
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="离店日期" prop="toDate">
+          <el-date-picker clearable
+            v-model="form.toDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="请选择离店日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="到店时间" prop="arrivalTime">
+          <el-input v-model="form.arrivalTime" placeholder="请输入到店时间" />
+        </el-form-item>
         <el-form-item label="订单状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择订单状态">
-            <el-option
+          <el-radio-group v-model="form.status">
+            <el-radio
               v-for="dict in dict.type.orders_status"
               :key="dict.value"
-              :label="dict.label"
-              :value="parseInt(dict.value)"
-            ></el-option>
-          </el-select>
+              :label="parseInt(dict.value)"
+            >{{dict.label}}</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="订单价格" prop="price">
           <el-input v-model="form.price" placeholder="请输入订单价格" />
@@ -229,10 +222,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userId: null,
-        hotelId: null,
-        ownerId: null,
-        roomId: null,
+        userName: null,
         status: null,
       },
       // 表单参数
@@ -272,6 +262,8 @@ export default {
         ownerId: null,
         roomId: null,
         roomNumber: null,
+        fromDate: null,
+        toDate: null,
         arrivalTime: null,
         createTime: null,
         updateTime: null,

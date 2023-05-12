@@ -64,7 +64,7 @@
       </div>
     </div>
     <!-- 顶部菜单 -->
-    <div class="topMenu" ref="topMenu" :class="{ fixed: isTopMenuFixed }">
+    <div class="topMenu" ref="topMenu">
       <el-menu :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f" class="hotelMenu">
         <el-menu-item index="1" @click="scrollToSection('#roomBooking')">预订</el-menu-item>
         <el-menu-item index="2" @click="scrollToSection('#hotelReview')">点评</el-menu-item>
@@ -670,6 +670,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 510px;
+  background-color: #FFFFFF;
   .infoContainer {
     width: 1050px;
     height: 100%;
@@ -770,6 +771,7 @@ export default {
   display: flex;
   justify-content: center;
   position: sticky;
+  background-color: #FFFFFF;
   border-bottom: 1px solid #eee;
   box-shadow: 0 1px 2px 0 #eee;
   .hotelMenu {
@@ -805,6 +807,7 @@ export default {
     height: 200px;
     margin-top: 5px;
     border-radius: 5px;
+    background-color: #FFFFFF;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     .el-button {
       width: 250px;

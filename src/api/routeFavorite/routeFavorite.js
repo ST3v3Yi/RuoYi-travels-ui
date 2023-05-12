@@ -26,6 +26,14 @@ export function getIsFavorite(data) {
   })
 }
 
+// 获取用户收藏路线
+export function getUserFavoriteRoute(userId) {
+  return request({
+    url: '/routeFavorite/routeFavorite/route/' + userId,
+    method: 'get'
+  })
+}
+
 // 新增路线收藏
 export function addRouteFavorite(data) {
   return request({

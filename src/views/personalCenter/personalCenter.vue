@@ -7,8 +7,8 @@
       <el-menu :router="true" :default-active="activeIndex" mode="horizontal" active-text-color="#2a9d8f">
         <el-menu-item index="/personalCenter">个人中心</el-menu-item>
         <el-menu-item index="/personalRoute">我的路线</el-menu-item>
-        <el-menu-item index="/">我的收藏</el-menu-item>
-        <el-menu-item index="/">我的订单</el-menu-item>
+        <el-menu-item index="/personalFavorite">我的收藏</el-menu-item>
+        <el-menu-item index="/personalOrder">我的订单</el-menu-item>
       </el-menu>
     </div>
     <div class="InfoContainer">
@@ -17,22 +17,25 @@
         <span class="userName">{{ user.nickName }}</span>
         <div class="routeAndComment">
           <div class="route">
-            <p class="number">7</p>
+            <p class="number">{{ total }}</p>
             <p class="intro">路线</p>
           </div>
           <div class="comments">
-            <p class="number">7</p>
-            <p class="intro">评论</p>
+            <p class="number">{{ favoriteTotal }}</p>
+            <p class="intro">收藏</p>
           </div>
         </div>
       </div>
       <div class="Info">
+        <router-link to="/writeRoute">
         <div class="writeRoute option">
           <svg t="1683812583696" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2847" width="60" height="60">
             <path d="M659.655431 521.588015q23.970037-6.71161 46.022472-13.423221 19.17603-5.752809 39.310861-11.505618t33.558052-10.546816l-13.423221 50.816479q-5.752809 21.093633-10.546816 31.640449-9.588015 25.88764-22.531835 47.940075t-24.449438 38.35206q-13.423221 19.17603-27.805243 35.475655l-117.932584 35.475655 96.838951 17.258427q-19.17603 16.299625-41.228464 33.558052-19.17603 14.382022-43.625468 30.202247t-51.29588 29.243446-59.925094 13.902622-62.801498-4.314607q-34.516854-4.794007-69.033708-16.299625 10.546816-16.299625 23.011236-36.434457 10.546816-17.258427 25.40824-40.749064t31.161049-52.254682q46.022472-77.662921 89.168539-152.449438t77.662921-135.191011q39.310861-69.992509 75.745318-132.314607-45.06367 51.775281-94.921348 116.014981-43.146067 54.651685-95.88015 129.917603t-107.385768 164.434457q-11.505618 18.217228-25.88764 42.187266t-30.202247 50.816479-32.599251 55.131086-33.078652 55.131086q-38.35206 62.322097-78.621723 130.397004 0.958801-20.134831 7.670412-51.775281 5.752809-26.846442 19.17603-67.116105t38.35206-94.921348q16.299625-34.516854 24.928839-53.692884t13.423221-29.722846q4.794007-11.505618 7.670412-15.340824-4.794007-5.752809-1.917603-23.011236 1.917603-15.340824 11.026217-44.58427t31.161049-81.977528q22.052434-53.692884 58.007491-115.535581t81.018727-122.726592 97.797753-117.932584 107.865169-101.153558 110.262172-72.389513 106.906367-32.11985q0.958801 33.558052-6.71161 88.689139t-19.17603 117.932584-25.88764 127.520599-27.805243 117.453184z" p-id="2848" fill="#666" id="write"></path>
           </svg>
           <p>写路线</p>
         </div>
+        </router-link>
+        <router-link to="/spotList">
         <div class="spotList option">
           <svg t="1683813572690" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4839" width="60" height="60">
             <path d="M20.298018 583.742994a491.651987 419.759008 0 1 0 983.303974 0 491.651987 419.759008 0 1 0-983.303974 0Z" fill="#FFFFFF" p-id="4840"></path>
@@ -59,12 +62,16 @@
           </svg>
           <p>观景点</p>
         </div>
+        </router-link>
+        <router-link to="/hotelList">
         <div class="hotel option">
           <svg t="1683814680386" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9253" width="60" height="60">
             <path d="M277.333333 320v-42.666667h256v42.666667H277.333333z m0 128v-42.666667h256v42.666667H277.333333z m0 128v-42.666667h256v42.666667H277.333333z m0 128v-42.666667h256v42.666667H277.333333z m618.666667 170.666667V384a21.333333 21.333333 0 0 0-21.333333-21.333333h-128a21.333333 21.333333 0 0 0-21.333334 21.333333v490.666667h-42.666666V149.397333A42.730667 42.730667 0 0 0 640.064 106.666667H170.602667A42.666667 42.666667 0 0 0 128 149.397333V874.666667H85.333333v42.666666h853.333334v-42.666666h-42.666667z" fill="#666666" p-id="9254" id="hotelTick"></path>
           </svg>
           <p>订酒店</p>
         </div>
+        </router-link>
+        <router-link to="/routeList">
         <div class="route option">
           <svg t="1683814457840" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8007" width="60" height="60">
             <path d="M0 0h1024v1024H0z" fill="#FFFFFF" p-id="8008"></path>
@@ -81,6 +88,7 @@
             <path d="M605.2 302H382.9c-11.2 0-20.2-9-20.2-20.2s9-20.2 20.2-20.2h222.3c11.2 0 20.2 9 20.2 20.2s-9 20.2-20.2 20.2zM513.6 894.6h-90.3c-33.4 0-60.6-27.2-60.6-60.6v-85.2c0-33.2 27-60.4 60.2-60.6l157.2-1.2c7.7-0.1 14.9-4.6 18.2-11.6 4.7-10.1 16.8-14.4 26.9-9.7 10.1 4.7 14.5 16.8 9.7 26.9-9.9 21-31.2 34.7-54.4 34.9l-157.2 1.2c-11.1 0.1-20.1 9.2-20.1 20.2V834c0 11.1 9.1 20.2 20.2 20.2h90.3c11.2 0 20.2 9 20.2 20.2-0.1 11.1-9.2 20.2-20.3 20.2z m103.9-250.8c-8.1 0-15.7-4.9-18.8-12.8-3.1-7.8-10.4-12.8-18.8-12.8H423.3c-33.4 0-60.6-27.2-60.6-60.6v-88.1c0-33.4 27.2-60.6 60.6-60.6H508c11.2 0 20.2 9 20.2 20.2s-9 20.2-20.2 20.2h-84.7c-11.1 0-20.2 9.1-20.2 20.2v88.1c0 11.1 9.1 20.2 20.2 20.2h156.6c25.1 0 47.3 15.1 56.5 38.5 4.1 10.4-1 22.1-11.4 26.2-2.5 0.8-5 1.3-7.5 1.3z m156.1-194.7H569.2c-11.2 0-20.2-9-20.2-20.2s9-20.2 20.2-20.2h204.4c11.1 0 20.2-9.1 20.2-20.2v-66.2c0-11.1-9.1-20.2-20.2-20.2H666.4c-11.2 0-20.2-9-20.2-20.2s9-20.2 20.2-20.2h107.2c33.4 0 60.6 27.2 60.6 60.6v66.2c0 33.4-27.1 60.6-60.6 60.6zM798 894.6H575.7c-11.2 0-20.2-9-20.2-20.2s9-20.2 20.2-20.2H798c11.2 0 20.2 9 20.2 20.2 0 11.1-9 20.2-20.2 20.2z" fill="#403F3F" p-id="8019"></path></svg>
           <p>看攻略</p>
         </div>
+        </router-link>
       </div>
       <div class="basicInfo">
         <div class="title">
@@ -138,6 +146,9 @@ import userInfo from "@/views/system/user/profile/userInfo.vue";
 import resetPwd from "@/views/system/user/profile/resetPwd.vue";
 import Footer from "@/layout/components/Footer.vue";
 import {getUserProfile} from "@/api/system/user";
+import {getUserFavoriteRoute} from "@/api/routeFavorite/routeFavorite";
+import {getUserFavoriteSpot} from "@/api/spotFavorite/spotFavorite";
+import {getUserRoute} from "@/api/route/route";
 
 export default {
   components: {
@@ -150,6 +161,8 @@ export default {
     return {
       activeIndex: '/personalCenter',
       user: {},
+      favoriteTotal: 0,
+      total: 0,
       activeTab: "userinfo",
     }
   },
@@ -160,6 +173,15 @@ export default {
     getUser() {
       getUserProfile().then(response => {
         this.user = response.data;
+        getUserRoute(this.user.userId).then((res) => {
+          this.total = res.data.length;
+        })
+        getUserFavoriteRoute(this.user.userId).then((res) => {
+          this.favoriteTotal = this.favoriteTotal + res.data.length;
+        })
+        getUserFavoriteSpot(this.user.userId).then((res) => {
+          this.favoriteTotal = this.favoriteTotal + res.data.length;
+        })
       });
     }
   }

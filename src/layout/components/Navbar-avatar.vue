@@ -12,7 +12,7 @@
         <router-link to="/personalRoute">
           <el-dropdown-item>我的路线</el-dropdown-item>
         </router-link>
-        <router-link to="/test">
+        <router-link to="/personalFavorite">
           <el-dropdown-item>我的收藏</el-dropdown-item>
         </router-link>
         <router-link to="/user/profile">

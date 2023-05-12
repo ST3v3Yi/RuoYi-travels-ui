@@ -1,5 +1,6 @@
 <template>
   <div class="Container">
+    <Navbar class="Navbar" :activeIndex="'/spotList'"/>
     <div class="headerImg">
       <el-carousel :interval="5000" :height="bannerHeight + 'px'" arrow="hover">
         <el-carousel-item v-for="(item, index) in spotList" :key="index">
@@ -155,10 +156,12 @@
 
 <script>
 import {listSpot} from "@/api/spot/spot";
+import Navbar from "@/layout/components/Navbar.vue";
 import Footer from "@/layout/components/Footer.vue";
 
 export default {
   components: {
+    Navbar,
     Footer,
   },
   data() {
@@ -200,8 +203,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.Container {
-
+::v-deep .Navbar {
+  .el-menu {
+    background-color: transparent;
+  }
+  .el-menu:hover {
+    background-color: #FFFFFF;
+  }
 }
 .headerImg {
   position: relative;

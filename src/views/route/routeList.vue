@@ -102,7 +102,7 @@
           <el-col :span="24">
             <el-card v-for="(item, index) in routeList" :key="index">
               <!-- 路线标题和评分显示 -->
-              <div class="title">
+              <div class="routeTitle">
                 <!-- 标题【附带跳转和hover】 -->
                 <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
                   <h1>{{ item.title }}</h1>
@@ -308,10 +308,10 @@ export default {
     ::v-deep .el-card__body {
       padding: 5px 10px 5px 15px;
     }
-    .title {
+    .routeTitle {
       position: relative;
       h1 {
-        font-size: 26px;
+        font-size: 20px;
         font-weight: bold;
         margin: 15px 0 15px 5px;
         cursor: pointer;
@@ -321,8 +321,8 @@ export default {
       }
       .el-rate {
         position: absolute;
-        top: -15px;
-        left: 520px;
+        top: 175px;
+        right: 5px;
       }
     }
     .routeInfo {
@@ -346,7 +346,8 @@ export default {
         margin-left: 5px;
       }
       .tag {
-        margin-left: 20px;
+        position: absolute;
+        left: 120px;
       }
       .userInfo {
         position: absolute;

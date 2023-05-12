@@ -92,73 +92,101 @@
       </div>
       <div class="personalRoute">
         <div class="title">
-          <span>我的路线</span>
+          <span>我的订单</span>
         </div>
-        <div class="cardContainer" v-if="routePageList">
-          <el-card class="card" v-for="(item, index) in routePageList" :key="index">
-            <router-link :to="{ path: '/routeDetail/:id', query: { id: item.id } }">
+        <div class="cardContainer" v-if="ordersList">
+          <el-card class="card" v-for="(item, index) in ordersList" :key="index">
             <div class="cardContent">
               <img :src="'/dev-api' + item.coverImg" style="width: 250px; height: 130px;"/>
               <div class="routeInfo">
-                <h1>{{ item.title }}</h1>
+                <h1>{{ item.hotelName }}</h1>
+                <h2>{{ item.roomName }}</h2>
               </div>
+              <span class="orderPrice">￥{{ item.price }}</span>
+              <el-button type="text" class="viewOrder" @click="showOrder = true">查看详情</el-button>
             </div>
-            </router-link>
             <el-tag
-              key="已保存"
-              type="warning"
-              effect="dark"
-              class="routeTag"
-              v-if="item.isDeleted === 1">
-              已保存
-            </el-tag>
-            <el-tag
-              key="已发布"
+              key="已支付"
               type="success"
               effect="dark"
               class="routeTag"
-              v-if="item.isDeleted === 0">
-              已发布
+              v-if="item.status === 1">
+              已支付
             </el-tag>
-            <router-link :to="{ path: '/updateRoute/:id', query: { id: item.id } }">
-            <el-button type="text" class="updateRoute">修改路线</el-button>
-            </router-link>
-            <el-button type="text" class="deleteRoute" @click="deleteRoute(item.id, item.title)">删除路线</el-button>
+            <el-tag
+              key="未支付"
+              type="warning"
+              effect="dark"
+              class="routeTag"
+              v-if="item.isDeleted === 0">
+              未支付
+            </el-tag>
+            <el-tag
+              key="已取消"
+              type="danger"
+              effect="dark"
+              class="routeTag"
+              v-if="item.isDeleted === 2">
+              已取消
+            </el-tag>
+            <el-dialog
+              title="订单信息"
+              :modal="false"
+              :visible.sync="showOrder"
+              width="30%">
+              <div class="orderInfo">
+                <h1>{{ item.hotelName }}</h1>
+                <ul>
+                  <li>
+                    <span>房间名称：</span>
+                    <span class="info">{{ item.roomName }}</span>
+                  </li>
+                  <li>
+                    <span>预订房间数：</span>
+                    <span class="info">{{ item.roomNumber }}间</span>
+                  </li>
+                  <li>
+                    <span>住店时间：</span>
+                    <span class="info">{{ item.fromDate }} 到 {{ item.toDate }}</span>
+                  </li>
+                  <li>
+                    <span>预计到店时间：</span>
+                    <span class="info">{{ item.arrivalTime }}</span>
+                  </li>
+                  <li>
+                    <span>预留姓名：</span>
+                    <span class="info">{{ item.userName }}</span>
+                  </li>
+                  <li v-if="item.email">
+                    <span>预留邮箱：</span>
+                    <span class="info">{{ item.email }}</span>
+                  </li>
+                  <li v-if="item.telephone">
+                    <span>预留手机号：</span>
+                    <span class="info" v-if="!showTel" @click="showTel = true">{{ formattedString(item.telephone) }}</span>
+                    <span class="info" v-if="showTel">{{ item.telephone }}</span>
+                  </li>
+                  <li>
+                    <span>订单价格：</span>
+                    <span style="font-size: 24px; font-weight: bold; color: #1ab394;">￥{{ item.price }}</span>
+                  </li>
+                </ul>
+              </div>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="showOrder = false; showTel = false">取 消</el-button>
+                <el-button type="primary" @click="showOrder = false; showTel = false">确 定</el-button>
+              </span>
+            </el-dialog>
           </el-card>
           <el-pagination
-            @current-change="handleRouteCurrentChange"
-            :current-page.sync="routePageNum"
-            :page-size="PageSize"
+            @current-change="handleCurrentChange"
+            hide-on-single-page
+            :current-page.sync="ordersPageNum"
+            :page-size="5"
             layout="total, prev, pager, next"
-            :total="routeTotal">
+            :total="ordersTotal">
           </el-pagination>
         </div>
-      </div>
-      <div class="personalComments">
-        <div class="title">
-          <span>我的评论</span>
-        </div>
-        <div class="userComment" v-for="(item, index) in userComments" :key="index" v-if="userComments !== null">
-          <p>{{ item.content }}</p>
-          <p class="releaseTime">
-            {{ item.createTime }}
-            <el-button type="text" style="margin-left: 130px;" @click="deleteComment(item.id)">删除</el-button>
-          </p>
-          <router-link :to="{ path: '/routeDetail/:id', query: { id: item.routeId } }">
-          <p style="color: #666666; padding: 0 0 5px 0">来自：<span class="routeTitle">{{ item.title }}</span></p>
-          </router-link>
-        </div>
-        <div class="nullUserComment" v-if="userComments === null">
-          <span>暂无评论~</span>
-        </div>
-        <el-pagination
-          @current-change="handleCommentsCurrentChange"
-          :current-page.sync="commentsPageNum"
-          :page-size="PageSize"
-          layout="total, prev, pager, next"
-          :total="commentsTotal"
-          v-if="userComments !== null">
-        </el-pagination>
       </div>
     </div>
     <Footer style="margin-top: 830px;"/>
@@ -168,10 +196,10 @@
 <script>
 import Footer from "@/layout/components/Footer.vue";
 import { getUserProfile } from "@/api/system/user";
-import {getUserRoute, delRoute, getUserRouteNum} from "@/api/route/route";
-import { delRouteComments, getUserComments } from "@/api/routeComments/routeComments";
+import { getUserRoute } from "@/api/route/route";
 import {getUserFavoriteRoute} from "@/api/routeFavorite/routeFavorite";
 import {getUserFavoriteSpot} from "@/api/spotFavorite/spotFavorite";
+import { getUserOrders } from "@/api/hotel/orders";
 
 export default {
   components: {
@@ -179,17 +207,17 @@ export default {
   },
   data() {
     return {
-      activeIndex: '/personalRoute',
+      activeIndex: '/personalOrder',
       user: {},
-      routeList: null,
-      routePageList: null,
-      userComments: null,
-      favoriteTotal: 0,
+      orders: null,
+      ordersList: null,
+      ordersTotal: 0,
+      ordersPageNum: 0,
       routeTotal: 0,
-      routePageNum: 1,
-      commentsTotal: 0,
-      commentsPageNum: 1,
-      PageSize: 5,
+      favoriteTotal: 0,
+      showOrder: false,
+      showTel: false,
+
     }
   },
   mounted() {
@@ -200,15 +228,7 @@ export default {
       getUserProfile().then(response => {
         this.user = response.data;
         getUserRoute(this.user.userId).then((res) => {
-          this.routeList = res.data;
           this.routeTotal = res.data.length;
-          this.routePageList = res.data
-            .slice(( this.routePageNum - 1 ) * this.PageSize, this.routePageNum * this.PageSize);
-        })
-        getUserComments(this.user.userId).then((res) => {
-          this.commentsTotal = res.data.length;
-          this.userComments = res.data
-            .slice(( this.commentsPageNum - 1 ) * this.PageSize, this.commentsPageNum * this.PageSize);
         })
         getUserFavoriteRoute(this.user.userId).then((res) => {
           this.favoriteTotal = this.favoriteTotal + res.data.length;
@@ -216,44 +236,26 @@ export default {
         getUserFavoriteSpot(this.user.userId).then((res) => {
           this.favoriteTotal = this.favoriteTotal + res.data.length;
         })
+        getUserOrders(this.user.userId).then((res) => {
+          this.ordersTotal = res.data.length;
+          if (this.ordersTotal === 1) {
+            this.ordersList = res.data;
+          } else {
+            this.ordersList = res.data
+              .slice(( this.ordersPageNum - 1 ) * 5, this.ordersPageNum * 5);
+          }
+        })
       });
     },
-    handleRouteCurrentChange(val) {
-      this.routePageNum = val;
-      this.getUser();
+    formattedString(item) {
+      if (item.length > 7) {
+        return item.substring(0, 3) + '****' + item.substring(item.length - 4);
+      } else {
+        return '*******'
+      }
     },
-    handleCommentsCurrentChange(val) {
-      this.commentsPageNum = val;
-      this.getUser();
-    },
-    deleteRoute(id, title) {
-      this.$confirm('此操作将永久删除路线 "' + title + '" , 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        delRoute(id);
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-        this.getUser();
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
-    },
-    deleteComment(id) {
-      delRouteComments(id).then((res) => {
-        this.$notify({
-          title: '成功',
-          message: '成功删除评论！',
-          type: 'success'
-        });
-      })
+    handleCurrentChange(val) {
+      this.ordersPageNum = val;
       this.getUser();
     },
   }
@@ -437,6 +439,36 @@ export default {
         height: 140px;
         margin-bottom: 10px;
         cursor: pointer;
+        .orderInfo {
+          h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333333;
+            margin: 0 0 10px 0;
+          }
+          ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            margin-bottom: 5px;
+          }
+          li {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 10px;
+          }
+          .info {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333333;
+          }
+        }
+        ::v-deep .el-dialog__title {
+          font-weight: bold;
+        }
+        ::v-deep .el-dialog__body {
+          padding: 10px 20px;
+        }
       }
       .cardContent {
         display: flex;
@@ -448,11 +480,29 @@ export default {
           h1 {
             font-size: 24px;
             color: #333333;
-            margin: 10px 5px;
+            margin: 10px 5px 5px 5px;
+          }
+          h2 {
+            font-size: 18px;
+            color: #333333;
+            margin: 0 5px;
           }
           h1:hover {
             color: #1ab394;
           }
+        }
+        .orderPrice {
+          position: absolute;
+          bottom: 25px;
+          right: 10px;
+          font-size: 24px;
+          font-weight: bold;
+          color: #1ab394;
+        }
+        .viewOrder {
+          position: absolute;
+          bottom: 0;
+          right: 10px;
         }
       }
       .routeTag {
@@ -480,57 +530,6 @@ export default {
       ::v-deep .el-card:hover {
         box-shadow: 0 2px 5px 0 #999;
       }
-    }
-  }
-  .personalComments {
-    position: absolute;
-    top: 200px;
-    left: 435px;
-    width: 300px;
-    height: auto;
-    background-color: #FFFFFF;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #eeeeee;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    z-index: 2;
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #333333;
-    }
-    .userComment {
-      width: 280px;
-      height: auto;
-      margin-top: 10px;
-      border-bottom: 1px solid #eeeeee;
-      font-size: 14px;
-      color: #666666;
-      p {
-        margin: 0;
-      }
-      .releaseTime, .routeTitle {
-        font-size: 12px;
-        color: #999999;
-      }
-      .routeTitle {
-        cursor: pointer;
-      }
-      .routeTitle:hover {
-        color: #1ab394;
-      }
-    }
-  }
-  .nullUserComment {
-    width: 280px;
-    height: auto;
-    margin-top: 10px;
-    border-bottom: 1px solid #eeeeee;
-    font-size: 14px;
-    color: #666666;
-    span {
-      font-size: 16px;
-      font-weight: bold;
     }
   }
 }
