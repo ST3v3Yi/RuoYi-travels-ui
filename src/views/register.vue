@@ -1,10 +1,11 @@
 <template>
   <div class="register">
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">东京夢華</h3>
+      <h3 class="title">注册账号</h3>
+      <el-divider class="titleDivider" />
       <el-form-item prop="username">
         <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
+          <i slot="prefix" class="el-icon-user-solid el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -15,7 +16,7 @@
           placeholder="密码"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <i slot="prefix" class="el-icon-lock el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="confirmPassword">
@@ -26,7 +27,7 @@
           placeholder="确认密码"
           @keyup.enter.native="handleRegister"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
+          <i slot="prefix" class="el-icon-lock el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
@@ -160,11 +161,22 @@ export default {
   color: #707070;
 }
 
+.titleDivider {
+  margin-bottom: 20px;
+  height: 3px;
+  background-color: #2ec4b6;
+}
+
 .register-form {
-  border-radius: 6px;
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+  background: rgba( 255, 255, 255, 0.8 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 11px );
+  -webkit-backdrop-filter: blur( 11px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
   .el-input {
     height: 38px;
     input {

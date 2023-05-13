@@ -11,8 +11,7 @@
       <el-menu-item index="/spotList" @click="onClick('/spotList')" :class="{ active: activeIndex === '/spotList' }">景点</el-menu-item>
       <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
       <el-menu-item index="/hotelList" @click="onClick('/hotelList')" :class="{ active: activeIndex === '/hotelList' }">订酒店</el-menu-item>
-      <el-menu-item index="/announcement" @click="onClick('/announcement')" :class="{ active: activeIndex === '/announcement' }">通知公告</el-menu-item>
-      <el-menu-item index="/test" @click="onClick('/test')" :class="{ active: activeIndex === '/test' }">测试页面</el-menu-item>
+      <el-menu-item index="/personalCenter" @click="onClick('/personalCenter')" :class="{ active: activeIndex === '/personalCenter' }">个人中心</el-menu-item>
       <NavbarAvatar class="navbarAvatar" />
     </el-menu>
   </div>

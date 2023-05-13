@@ -97,21 +97,17 @@
 
     <el-table v-loading="loading" :data="routeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-<!--      <el-table-column label="主键" align="center" prop="id" />-->
-      <el-table-column label="标题" align="center" prop="title" />
-      <el-table-column label="封面图" align="center" prop="coverImg" width="100">
+      <el-table-column label="标题" align="center" prop="title" width="200" />
+      <el-table-column label="封面图" align="center" prop="coverImg" width="200">
         <template slot-scope="scope">
-          <image-preview :src="scope.row.coverImg" :width="50" :height="50"/>
+          <image-preview :src="scope.row.coverImg" :width="150" :height="150"/>
         </template>
       </el-table-column>
-      <el-table-column label="收藏数量" align="center" prop="counts" />
       <el-table-column label="发布时间" align="center" prop="releaseTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.releaseTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="路线时间" align="center" prop="day" />
-      <el-table-column label="路线花费" align="center" prop="cost" />
       <el-table-column label="用户昵称" align="center" prop="userName" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">

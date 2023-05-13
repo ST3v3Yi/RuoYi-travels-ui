@@ -152,9 +152,9 @@
 <script>
 import { getRooms } from "@/api/travels/rooms";
 import { getHotel } from "@/api/hotel/hotel";
-import {getHotelRating} from "@/api/hotel/hotelComments";
+import { getHotelRating } from "@/api/hotel/hotelComments";
 import Stickybits from 'stickybits'
-import {getUserProfile} from "@/api/system/user";
+import { getUserProfile } from "@/api/system/user";
 import { addOrders } from "@/api/hotel/orders";
 
 export default {

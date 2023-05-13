@@ -167,7 +167,10 @@ export const constantRoutes = [
   {
     path: '/register',
     component: () => import('@/views/register'),
-    hidden: true
+    hidden: true,
+    meta: {
+      hideHeader: true,
+    }
   },
   {
     path: '/404',
