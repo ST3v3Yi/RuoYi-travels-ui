@@ -52,6 +52,7 @@ export default {
         this.userName = window.localStorage.getItem('userName');
         this.userType = window.localStorage.getItem('userType');
         this.userProfile = window.localStorage.getItem('userProfile');
+        this.login();
     },
     data() {
         return {
@@ -70,13 +71,13 @@ export default {
     },
     methods: {
         login() {
-            console.log(this.userType)
+            // console.log(this.userType)
             if (this.userType === 'admin') {
                 this.$router.push('/manage')
             } else if (this.userType === 'user') {
-                this.$router.push('/personal')
+                this.$router.push('/home')
             } else {
-                this.$router.push('/login')
+                this.$router.push('/home')
             }
         },
         logout() {

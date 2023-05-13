@@ -242,7 +242,6 @@ export default {
       })
       listSpot().then((res) => {
         this.spotList = res.rows;
-        console.log(this.spotList, this.spotList[0]);
       })
     },
     scrollToMain(selector) {
@@ -328,7 +327,7 @@ export default {
   }
   .title {
     position: absolute;
-    top: 60px;
+    top: 75px;
     left: 435px;
     z-index: 10;
     font-family: "Microsoft Yahei";
