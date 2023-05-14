@@ -103,6 +103,8 @@
                 <h2>{{ item.roomName }}</h2>
               </div>
               <span class="orderPrice">￥{{ item.price }}</span>
+              <el-button type="text" class="commentButton" @click="showCommentDialog = true" v-if="item.status === 1 && !item.isCommented">点击评论</el-button>
+              <el-button type="text" class="commentButton" v-if="item.status === 1 && item.isCommented">我的评论</el-button>
               <el-button type="text" class="viewOrder" @click="showOrder = true">查看详情</el-button>
             </div>
             <el-tag
@@ -129,6 +131,65 @@
               v-if="item.isDeleted === 2">
               已取消
             </el-tag>
+            <el-dialog
+              :title="item.hotelName"
+              :visible.sync="showCommentDialog"
+              :modal="false"
+              width="30%"
+              class="commentDialog">
+              <el-form :form="commentForm" label-width="75px">
+                <el-form-item label="总评分" style="margin-bottom: 0;">
+                  <el-rate
+                    v-model="commentForm.mainRating"
+                    :colors="colors"
+                    allow-half
+                    show-score>
+                  </el-rate>
+                </el-form-item>
+                <el-form-item label="环境评分" style="margin-bottom: 0;">
+                  <el-rate
+                    v-model="commentForm.environmentRating"
+                    :colors="colors"
+                    allow-half
+                    show-score>
+                  </el-rate>
+                </el-form-item>
+                <el-form-item label="卫生评分" style="margin-bottom: 0;">
+                  <el-rate
+                    v-model="commentForm.hygieneRating"
+                    :colors="colors"
+                    allow-half
+                    show-score>
+                  </el-rate>
+                </el-form-item>
+                <el-form-item label="服务评分" style="margin-bottom: 0;">
+                  <el-rate
+                    v-model="commentForm.serviceRating"
+                    :colors="colors"
+                    allow-half
+                    show-score>
+                  </el-rate>
+                </el-form-item>
+                <el-form-item label="设施评分">
+                  <el-rate
+                    v-model="commentForm.facilityRating"
+                    :colors="colors"
+                    allow-half
+                    show-score>
+                  </el-rate>
+                </el-form-item>
+                <el-form-item label="评论内容">
+                  <el-input type="textarea" placeholder="请留下您的点评~" v-model="commentForm.content"></el-input>
+                </el-form-item>
+                <el-form-item label="图片上传">
+                  <uploadImg v-model="commentForm.img" />
+                </el-form-item>
+              </el-form>
+              <span slot="footer" class="dialog-footer">
+                  <el-button @click="showCommentDialog = false">取 消</el-button>
+                  <el-button type="primary" @click="confirmComment(item)">确 定</el-button>
+              </span>
+            </el-dialog>
             <el-dialog
               title="订单信息"
               :modal="false"
@@ -170,6 +231,12 @@
                     <span>订单价格：</span>
                     <span style="font-size: 24px; font-weight: bold; color: #1ab394;">￥{{ item.price }}</span>
                   </li>
+                  <li style="margin-bottom: 2px;">
+                    <span style="font-size: 14px; color: #999999">订单创建时间：{{ item.createTime }}</span>
+                  </li>
+                  <li v-if="item.status === 1">
+                    <span style="font-size: 14px; color: #999999">订单支付时间：{{ item.updateTime }}</span>
+                  </li>
                 </ul>
               </div>
               <span slot="footer" class="dialog-footer">
@@ -195,15 +262,18 @@
 
 <script>
 import Footer from "@/layout/components/Footer.vue";
+import uploadImg from "@/components/ImageUpload/spotImgUpload.vue"
 import { getUserProfile } from "@/api/system/user";
 import { getUserRoute } from "@/api/route/route";
 import {getUserFavoriteRoute} from "@/api/routeFavorite/routeFavorite";
 import {getUserFavoriteSpot} from "@/api/spotFavorite/spotFavorite";
 import { getUserOrders } from "@/api/hotel/orders";
+import {addHotelComments} from "@/api/hotel/hotelComments";
 
 export default {
   components: {
-    Footer
+    Footer,
+    uploadImg
   },
   data() {
     return {
@@ -215,8 +285,23 @@ export default {
       ordersPageNum: 0,
       routeTotal: 0,
       favoriteTotal: 0,
+      showCommentDialog: false,
       showOrder: false,
       showTel: false,
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+      commentForm: {
+        userId: null,
+        hotelId: null,
+        roomId: null,
+        orderId: null,
+        mainRating: 0,
+        environmentRating: 0,
+        hygieneRating: 0,
+        serviceRating: 0,
+        facilityRating: 0,
+        content: null,
+        img: null
+      },
 
     }
   },
@@ -257,6 +342,48 @@ export default {
     handleCurrentChange(val) {
       this.ordersPageNum = val;
       this.getUser();
+    },
+    // 重置表单
+    resetForm() {
+      this.commentForm = {
+        userId: null,
+        hotelId: null,
+        roomId: null,
+        orderId: null,
+        mainRating: null,
+        environmentRating: null,
+        hygieneRating: null,
+        serviceRating: null,
+        facilityRating: null,
+        content: null,
+        img: null
+      }
+    },
+    confirmComment(item) {
+      console.log(item)
+      this.commentForm.userId = this.user.userId;
+      this.commentForm.hotelId = item.hotelId;
+      this.commentForm.roomId = item.roomId;
+      this.commentForm.orderId = item.id;
+      addHotelComments(this.commentForm).then((res) => {
+        this.$notify({
+          title: '成功',
+          message: '点评提交成功~',
+          type: "success",
+          duration: 3000
+        });
+        console.log(this.commentForm);
+        this.showCommentDialog = false;
+        this.resetForm();
+        this.getUser();
+      }).catch(err => {
+        this.$notify.error({
+          title: '错误',
+          message: '点评提交失败~',
+          duration: 3000
+        });
+        console.log(err);
+      })
     },
   }
 }
@@ -463,6 +590,23 @@ export default {
             color: #333333;
           }
         }
+        .commentDialog {
+          ::v-deep .el-dialog__body {
+            padding: 0px 0px;
+          }
+          .el-rate {
+            margin-top: 8px;
+          }
+          ::v-deep .el-textarea__inner {
+            padding: 5px 5px;
+            width: 95%;
+          }
+          ::v-deep .el-rate__text {
+            font-size: 16px;
+            margin-left: 5px;
+            color: #ff9900 !important;
+          }
+        }
         ::v-deep .el-dialog__title {
           font-weight: bold;
         }
@@ -498,6 +642,12 @@ export default {
           font-size: 24px;
           font-weight: bold;
           color: #1ab394;
+        }
+        .commentButton {
+          position: absolute;
+          bottom: 0;
+          right: 80px;
+          color: #409EFF;
         }
         .viewOrder {
           position: absolute;

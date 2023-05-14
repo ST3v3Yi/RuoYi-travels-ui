@@ -62,7 +62,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <div style="margin: 10px auto; width: 1050px;">
+      <div style="margin: 10px auto; width: 1050px; background-color: #FFFFFF; padding: 10px; border-radius: 5px; border: 1px solid #eeeeee;">
         <div style="display: flex; align-items: center;">
           <span style="font-size: 24px; font-weight: bold; text-align: left;">评论</span>
         </div>
@@ -74,7 +74,7 @@
         </div>
       </div>
     </el-row>
-    <el-row>
+    <el-row style="background-color: #FFFFFF">
       <div style="margin: 5px auto; width: 1050px;">
         <span style="text-align: left; font-size: 20px; font-weight: bold;">评论列表</span>
         <div v-if="commentsList.length == 0" style="text-align: left; font-size: 16px; font-weight: bold; margin-left: 20px; margin-top: 20px;">暂无评论，期待您的评论~</div>
@@ -394,6 +394,7 @@ export default{
   background-color: #FFFFFF;
 }
 .row-title {
+  background-color: #FFFFFF;
   margin-top: -85px;
 }
 .headRight {

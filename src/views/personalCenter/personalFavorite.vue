@@ -17,7 +17,7 @@
         <span class="userName">{{ user.nickName }}</span>
         <div class="routeAndComment">
           <div class="route">
-            <p class="number">{{ routeTotal }}</p>
+            <p class="number">{{ ownRouteTotal }}</p>
             <p class="intro">路线</p>
           </div>
           <div class="comments">
@@ -150,6 +150,7 @@ import Footer from "@/layout/components/Footer.vue";
 import { getUserProfile } from "@/api/system/user";
 import {getUserFavoriteRoute} from "@/api/routeFavorite/routeFavorite";
 import {getUserFavoriteSpot} from "@/api/spotFavorite/spotFavorite";
+import {getUserRoute} from "@/api/route/route";
 
 export default {
   components: {
@@ -167,6 +168,7 @@ export default {
       routePageNum: 1,
       spotTotal: 0,
       spotPageNum: 1,
+      ownRouteTotal: 0,
     }
   },
   mounted() {
@@ -187,6 +189,9 @@ export default {
           this.spotList = res.data
             .slice(( this.spotPageNum - 1 ) * 2, this.spotPageNum * 2);
           this.favoriteNum = this.favoriteNum + this.spotTotal;
+        })
+        getUserRoute(this.user.userId).then((res) => {
+          this.ownRouteTotal = res.data.length;
         })
       });
     },

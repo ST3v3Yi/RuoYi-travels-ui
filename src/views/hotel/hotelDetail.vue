@@ -289,7 +289,7 @@
               <el-avatar shape="square" :src="'/dev-api' + item.avatar"></el-avatar>
               <span class="username">{{ item.nickName }}</span>
               <span style="display: block; margin-left: 10px; font-size: 14px; margin-top: 5px; color: #999999;"><i class="hotel-Bed" style="margin-right: 5px;"/>{{ item.roomName }}</span>
-              <span style="margin-left: 11px; margin-top: 5px; font-size: 14px; color: #999999;"><i class="el-icon-date" style="margin-right: 5px;" />2023年4月入住</span>
+              <span style="margin-left: 11px; margin-top: 5px; font-size: 14px; color: #999999;"><i class="el-icon-date" style="margin-right: 5px;" />{{ item.checkInDate }}入住</span>
             </div>
             <div class="rightPart">
               <!-- 用户评分 -->
@@ -441,6 +441,7 @@ import 'intl/locale-data/jsonp/en.js'
 import { getCommentsList, getHotelRating } from "@/api/hotel/hotelComments"
 import { getUserProfile } from "@/api/system/user";
 import { addUserRecords } from "@/api/userRecords/userRecords";
+import {getOrders} from "@/api/hotel/orders";
 
 export default {
   components: {
@@ -577,6 +578,11 @@ export default {
         this.commentsList.forEach((comment) => {
           comment.imgList = comment.img.split(',').map(img => `/dev-api${img}`);
           comment.createTime = this.formatDate(comment.createTime);
+          if (comment.orderId !== null) {
+            getOrders(comment.orderId).then((res) => {
+              comment.checkInDate = this.formatDateM(res.data.fromDate);
+            })
+          }
         })
       })
       getHotelRating(id).then((res) => {
@@ -599,6 +605,12 @@ export default {
       const month = date.getMonth() + 1;
       const day = date.getDate();
       return `${year}年${month}月${day}日`;
+    },
+    formatDateM(dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      return `${year}年${month}月`;
     },
     ratingText(score) {
       if (score >= 5) {
@@ -1063,6 +1075,7 @@ export default {
             height: 40px;
           }
           .commentContent {
+            position: relative;
             .content {
               font-size: 16px;
               color: #455873;
@@ -1072,9 +1085,12 @@ export default {
               margin: 10px 0 10px 0;
             }
             .commentDate {
+              position: absolute;
+              right: 0px;
               font-size: 14px;
               color: #999999;
-              margin: 0 0 10px 660px;
+              margin-top: 0;
+              margin-bottom: 10px;
             }
           }
         }

@@ -103,14 +103,13 @@
       </div>
       <el-divider></el-divider>
       <div class="mapWrapper">
-        <div class="mapContainer">
+        <div class="mapContainer" v-if="spotList && spotList.length !== 0">
           <baidu-map
             class="map"
             :center="center"
             :zoom="17"
             :scroll-wheel-zoom="false">
             <bm-traffic></bm-traffic>
-<!--            <bm-marker :position="center" animation="BMAP_ANIMATION_BOUNCE"></bm-marker>-->
             <bm-local-search
               :keyword="'景区'"
               :auto-viewport="true"
@@ -119,14 +118,21 @@
               :autoViewport="false"/>
           </baidu-map>
         </div>
-        <div class="aroundSpot">
+        <div class="mapContainerE" v-else>
+          <baidu-map
+            class="map"
+            :center="center"
+            :zoom="17"
+            :scroll-wheel-zoom="false">
+            <bm-traffic></bm-traffic>
+          </baidu-map>
+        </div>
+        <div class="aroundSpot" v-if="spotList && spotList.length !== 0">
           <div class="poiTitle">周边景区</div>
-          <ul style="height: 328px; overflow-y: auto; margin: 0; padding: 0; border: 1px solid #eee">
+          <ul style="height: 328px; overflow-y: auto; margin: 0; padding: 0;">
             <template v-for="(item, index) in spotList">
-              <li v-if="index !== 0" :key="index" style="list-style:none; background-color: #fafafa; display: flex; align-items: center; position:relative;">
-                <img style="width: 80px; height: 80px;" :src="require('@/assets/weatherIcons/100.png')">
+              <li v-if="index !== 0" :key="index" style="list-style:none; background-color: #fafafa; display: flex; align-items: center; position:relative; border-bottom: 1px solid #eeeeee">
                 <span @click="changeCenter(item.point.lng, item.point.lat)" class="spotTitle">{{ item.title }}</span>
-                <el-button type="text" style="position: absolute; top: 55px; right: 25px;" @click="">路线规划</el-button>
                 <el-divider style="position: absolute; margin: 5px 0; top: 80px;"></el-divider>
               </li>
             </template>
@@ -137,7 +143,8 @@
     <el-divider></el-divider>
     <div class="spotComments" id="spotComments">
       <div class="commentsWrapper">
-        <h3>景区点评</h3>
+        <h3 style="font-weight: bold">景区点评</h3>
+        <el-button type="primary" class="commentButton" @click="comment">评论</el-button>
         <el-divider></el-divider>
         <div style="display: flex; justify-content: center;">
           <div class="commentContainer">
@@ -261,11 +268,6 @@ export default {
       commentsList: [],
       value: 5,
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
-      imgList: [
-        { id:1, url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg' },
-        { id:2, url: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg' },
-        { id:3, url: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg' },
-      ],
       isTopMenuFixed: false,
       texts: ['不值门票', '略有不足', '还可以', '值得一看', '强烈推荐'],
       dialogVisible: false,
@@ -281,7 +283,7 @@ export default {
         lng: null,
         lat: null
       },
-      spotList: [],
+      spotList: null,
       replyInfo: {
         id: null,
         name: null,
@@ -710,6 +712,16 @@ export default {
       height: 100%;
     }
   }
+  .mapContainerE {
+    width: 1000px;
+    height: 360px;
+    margin-left: 25px;
+    margin-top: 20px;
+    .map {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .aroundSpot {
     width: 300px;
     height: 360px;
@@ -736,7 +748,14 @@ export default {
   display: flex;
   justify-content: center;
   .commentsWrapper {
+    position: relative;
     width: 1050px;
+    .commentButton {
+      position: absolute;
+      right: 20px;
+      top: 8px;
+      font-size: 16px;
+    }
     .el-divider--horizontal {
       margin: 5px 0;
       background-color: #DCDFE6;
@@ -800,6 +819,7 @@ export default {
 }
 .spotTitle {
   cursor: pointer;
+  padding: 10px 10px;
   color: #333333;
 }
 .spotTitle:hover {
