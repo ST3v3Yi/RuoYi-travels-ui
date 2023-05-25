@@ -87,17 +87,18 @@
           <span>{{ buttonValue }}</span>
           <i :class="isShowWin ? 'el-icon-arrow-up' : 'el-icon-arrow-down'" style="margin-left: 150px;"/>
         </el-button>
-        <el-button icon="el-icon-search" circle style="width: 36px" type="primary"></el-button>
+        <el-button icon="el-icon-search" circle style="width: 36px" type="primary" @click="searchRoom"></el-button>
         <!-- 价格 -->
         <div class="priceSlider">
           <span style="font-size: 17px;">价格范围：</span>
-          <span>￥{{priceRange[0]}} - </span>
-          <span v-if="priceRange[1] !== 2000">￥{{priceRange[1]}}</span>
+          <span>￥{{ priceRange[0] }} - </span>
+          <span v-if="priceRange[1] !== 2000">￥{{ priceRange[1] }}</span>
           <el-slider
             v-model="priceRange"
             range
             :step="100"
             :max="2000"
+            @change="searchByPrice"
             style="width: 800px; margin-left: 20px;">
           </el-slider>
         </div>
@@ -123,7 +124,7 @@
       </div>
       <el-card v-for="(item, index) in hotelRooms" :key="index">
         <div class="roomContainer">
-          <div class="roomImg">
+          <div class="roomImg" v-if="item.imgList">
             <el-image
               :src="item.imgList[0]"
               :preview-src-list="item.imgList"
@@ -134,7 +135,7 @@
               <el-divider direction="vertical"></el-divider>
               {{ item.size }}m²
             </span>
-            <el-button @click="showRoomInfo" type="text" style="margin-left: 5px;">查看客房信息</el-button>
+            <el-button @click="showRoomInfo(item.id)" type="text" style="margin-left: 5px;">查看客房信息</el-button>
           </div>
           <el-drawer
             :visible.sync="drawer"
@@ -145,43 +146,103 @@
               <p><i class="hotel-fangzi" />{{ item.size }}平方米</p>
               <p><i class="hotel-Bed" />{{ item.bed }}</p>
             </div>
-            <div class="facilities">
+            <div class="facilities" v-if="roomFacilities">
               <h1>全部设施</h1>
-              <div class="infoDOM">
+              <div class="infoDOM" v-if="roomFacilities.toiletries">
                 <h2>洗浴用品</h2>
                 <div class="showInfo">
-                  <span style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px" v-for="n in 5">
-                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>牙刷
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.toiletries"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
                   </span>
                 </div>
               </div>
               <div class="infoDOM">
                 <h2>客房布局和家具</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.furniture"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
               <div class="infoDOM">
                 <h2>网络与通讯</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.internet"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
               <div class="infoDOM">
                 <h2>卫浴设施</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.bathroom"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
               <div class="infoDOM">
                 <h2>客房设施</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.room"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
               <div class="infoDOM">
                 <h2>媒体科技</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.medium"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
               <div class="infoDOM">
                 <h2>便利设施</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.amenity"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
               <div class="infoDOM">
                 <h2>食品饮品</h2>
-                <div class="showInfo"></div>
+                <div class="showInfo">
+                  <span
+                    style="margin-left: 25px; font-size: 14px; color: #666666; flex-basis: 33%; margin-bottom: 10px"
+                    v-for="(item, index) in roomFacilities.foodAndDrink"
+                    :key="index">
+                    <i class="el-icon-circle-check" style="margin-right: 10px;"/>{{ item.description }}
+                    <strong v-if="item.isFree === 0" style="color: #1ab394">(不免费)</strong>
+                  </span>
+                </div>
               </div>
             </div>
           </el-drawer>
@@ -434,14 +495,15 @@ import axios from "axios";
 import Footer from "@/layout/components/Footer.vue";
 import RoomImagePreview from "@/components/RoomImagePreview/index.vue";
 import { getHotel } from "@/api/hotel/hotel";
-import { getHotelRooms } from "@/api/travels/rooms"
+import { getRoomFeasibility, getHotelRooms } from "@/api/travels/rooms"
 // 导入 Intl.NumberFormat
 import Intl from 'intl'
 import 'intl/locale-data/jsonp/en.js'
 import { getCommentsList, getHotelRating } from "@/api/hotel/hotelComments"
 import { getUserProfile } from "@/api/system/user";
 import { addUserRecords } from "@/api/userRecords/userRecords";
-import {getOrders} from "@/api/hotel/orders";
+import { getOrders } from "@/api/hotel/orders";
+import { getRoomFacilities } from "@/api/travels/roomFacilities";
 
 export default {
   components: {
@@ -454,6 +516,7 @@ export default {
       cityId: '101180801',
       weather: {},
       hotel: {},
+      trueHotelRooms: [],
       hotelRooms: [],
       hotelImg: [],
       ratingList: {
@@ -488,6 +551,7 @@ export default {
       },
       isTopMenuFixed: false,
       commentsList: [],
+      roomFacilities: null,
     }
   },
   props: {
@@ -565,8 +629,10 @@ export default {
       })
       getHotelRooms(id).then((res) => {
         this.hotelRooms = res.data;
+        this.trueHotelRooms = res.data;
         this.hotelRooms.forEach((room) => {
           room.imgList = room.img.split(',').map(img => `/dev-api${img}`);
+          room.truePrice = room.price;
           room.price = new Intl.NumberFormat('zh-CN', {
             style: 'currency',
             currency: 'CNY',
@@ -655,14 +721,93 @@ export default {
     },
     // 选择房型
     selectLayout(id) {
+      const roomList = this.trueHotelRooms;
+      const rooms = [];
       this.roomLayout = id;
+      if (id === 3) {
+        this.hotelRooms = roomList;
+      } else {
+        roomList.forEach((room) => {
+          if (room.type == id) {
+            rooms.push(room);
+          }
+        })
+        this.hotelRooms = rooms;
+      }
+    },
+    searchByPrice() {
+      const roomList = this.trueHotelRooms;
+      const rooms = [];
+      roomList.forEach((room) => {
+        if (this.priceRange[1] === 2000 && room.truePrice > this.priceRange[0]) {
+          rooms.push(room);
+        } else if (this.priceRange[1] !== 2000  && room.truePrice > this.priceRange[0] && room.truePrice < this.priceRange[1]) {
+          rooms.push(room);
+        }
+      })
+      this.hotelRooms = rooms;
+    },
+    searchRoom() {
+      const roomList = this.trueHotelRooms;
+      const rooms = [];
+      const data ={
+        hotelId: this.$route.query.id,
+        roomNumber: this.roomNum,
+        peopleNumber: this.peopleNum
+      };
+      getRoomFeasibility(data).then((res) => {
+        roomList.forEach((room) => {
+          if (res.data.includes(room.id)) {
+            rooms.push(room);
+          }
+        })
+      })
+      this.hotelRooms = rooms;
     },
     // 展示房间信息
-    showRoomInfo() {
+    showRoomInfo(id) {
+      const toiletries = [];
+      const furniture = [];
+      const internet = [];
+      const bathroom = [];
+      const room = [];
+      const medium = [];
+      const amenity = [];
+      const foodAndDrink = [];
+      getRoomFacilities(id).then((res) => {
+        res.data.forEach((info) => {
+          if (info.category === '洗浴用品') {
+            toiletries.push(info);
+          } else if (info.category === '客房布局和家具') {
+            furniture.push(info);
+          } else if (info.category === '网络与通讯') {
+            internet.push(info);
+          } else if (info.category === '卫浴设施') {
+            bathroom.push(info);
+          } else if (info.category === '客房设施') {
+            room.push(info);
+          } else if (info.category === '媒体科技') {
+            medium.push(info);
+          } else if (info.category === '便利设施') {
+            amenity.push(info);
+          } else if (info.category === '食品饮品') {
+            foodAndDrink.push(info);
+          }
+        })
+      })
+      this.roomFacilities = {
+        toiletries,
+        furniture,
+        internet,
+        bathroom,
+        room,
+        medium,
+        amenity,
+        foodAndDrink
+      }
       this.drawer = true;
     },
     showScore(percentage) {
-      // return score.toFixed(1);
       return (Math.round(percentage * 5) / 100).toFixed(1);
     }
   },

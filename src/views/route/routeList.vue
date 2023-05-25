@@ -9,7 +9,7 @@
             <!-- 图片下信息 -->
             <div class="imgInfo">
               <div class="date">
-                <span class="day">{{ item.day }}</span>
+                <span class="day">{{ item.dayTitle }}</span>
                 {{ item.date }}
               </div>
               <h1>{{ item.title }}</h1>
@@ -137,7 +137,7 @@
                   <i class="el-icon-money" />{{item.cost}}￥
                 </el-tag>
                 <div class="userInfo">
-                  <el-avatar size="small" :src="'/dev-api' + item.avatar"></el-avatar>
+                  <img :src="'/dev-api' + item.avatar" style="width: 30px; height: 30px; border-radius: 50%" />
                   <span style="margin-left: 5px; font-size: 14px; color: #666666;">{{ item.userName }}</span>
                 </div>
               </div>
@@ -145,8 +145,16 @@
           </el-col>
         </el-row>
       </div>
-      <div class="RecSpot">
-
+      <div class="RecSpot" v-if="spot">
+        <span style="font-size: 18px; font-weight: bold; color: #333333; margin-left: 5px; margin-top: 5px;">景点推荐</span>
+        <router-link :to="{ path: '/spotDetail/:id', query: { id: spot[0].id } }">
+        <div class="spotImg">
+          <img :src="spot[0].coverImg" style="width: 100%; height: 100%; border-radius: 5px;" />
+        </div>
+        <div class="spotName">
+          <span>{{ spot[0].spotName }}</span>
+        </div>
+        </router-link>
       </div>
     </div>
     <!-- 页脚 -->
@@ -155,6 +163,8 @@
 </template>
 
 <script>
+import {getRandomSpot} from "@/api/spot/spot";
+
 const axios = require('axios')
 const qs = require('qs')
 const ele = require('element-ui')
@@ -169,6 +179,7 @@ export default {
   data() {
     return {
       routeList: [],
+      spot: null,
       isSelected: {
         lower: '',
         upper: ''
@@ -185,6 +196,7 @@ export default {
   },
   mounted() {
     this.getList();
+    this.getSpot();
   },
   methods: {
     getList() {
@@ -195,12 +207,12 @@ export default {
           return getRouteAVGRating(id).then((res) => {
             const avgRating = res.data;
             const newDate = new Date(route.updateTime);
-            const day = `${newDate.getDate()}`;
+            const dayTitle = `${newDate.getDate()}`;
             const date = `/${newDate.toLocaleString('en-US', { month: 'short' })}. ${newDate.getFullYear()}`;
             return {
               ...route,
               avgRating,
-              day,
+              dayTitle,
               date
             };
           });
@@ -209,6 +221,14 @@ export default {
           this.routeList = results;
         });
       });
+    },
+    getSpot() {
+      getRandomSpot().then((res) => {
+        res.data.forEach((spot) => {
+          spot.coverImg = '/dev-api' + spot.coverImg;
+        })
+        this.spot = res.data;
+      })
     },
     changeSelected(lower, upper) {
       this.isSelected.lower = lower;
@@ -359,12 +379,29 @@ export default {
     }
   }
   .RecSpot {
+    position: relative;
     width: 330px;
     margin-left: 50px;
     margin-top: 10px;
     height: 200px;
     border-radius: 5px;
-    background-color: #1ab394;
+    background-color: #ffffff;
+    border: 1px solid #eeeeee;
+    .spotImg {
+      width: 310px;
+      height: 150px;
+      margin: 10px 10px;
+    }
+    .spotName {
+      position: absolute;
+      right: 20px;
+      top: 150px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #FFFFFF;
+      text-shadow: 0 2px 5px #333333;
+      font-family: "Microsoft YaHei UI";
+    }
   }
 }
 ::v-deep .el-rate__icon{

@@ -53,7 +53,8 @@
           <div class="routeRec">
             <span class="routeRecTitle">热门路线推荐</span>
             <el-divider></el-divider>
-            <ul style="margin: 0; padding: 0;">
+            <ul style="margin: 0; padding: 0;" v-if="routeList">
+              <router-link :to="{ path: '/routeDetail/:id', query: { id: routeList[0].id } }">
               <li style="list-style:none; position: relative; border-bottom: 1px dashed #ccc;">
                 <span
                   style="position: absolute;
@@ -62,16 +63,19 @@
                   font-size: 18px;
                   font-weight: bold;
                   font-family: 华文隶书;">Top <strong style="color: #F44336">1</strong></span>
-                <img :src="require('@/assets/banner1.jpeg')" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" />
+                <img :src="routeList[0].coverImg" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" v-if="routeList[0].coverImg"/>
                 <span
                   style="display: block;
-                  margin-left: 50px;
+                  text-align: center;
+                  margin-left: 40px;
                   font-size: 18px;
                   font-weight: bold;
                   color: #333333;
                   text-shadow: 2px 2px 2px #CCCCCC;
-                  font-family: 华文行楷;">从百草园到三味书屋最多十五字啊</span>
+                  font-family: 华文行楷;">{{ routeList[0].title }}</span>
               </li>
+              </router-link>
+              <router-link :to="{ path: '/routeDetail/:id', query: { id: routeList[1].id } }">
               <li style="list-style:none; position: relative; border-bottom: 1px dashed #ccc; margin-top: 5px;">
                 <span
                   style="position: absolute;
@@ -80,16 +84,19 @@
                   font-size: 18px;
                   font-weight: bold;
                   font-family: 华文隶书;">Top <strong style="color: #FFC107">2</strong></span>
-                <img :src="require('@/assets/banner2.jpeg')" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" />
+                <img :src="routeList[1].coverImg" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;"  v-if="routeList[1].coverImg"/>
                 <span
                   style="display: block;
-                  margin-left: 50px;
+                  text-align: center;
+                  margin-left: 40px;
                   font-size: 18px;
                   font-weight: bold;
                   color: #333333;
                   text-shadow: 2px 2px 2px #CCCCCC;
-                  font-family: 华文行楷;">从百草园到三味书屋最多十五字啊</span>
+                  font-family: 华文行楷;">{{ routeList[1].title }}</span>
               </li>
+              </router-link>
+              <router-link :to="{ path: '/routeDetail/:id', query: { id: routeList[2].id } }">
               <li style="list-style:none; position: relative; border-bottom: 1px dashed #ccc; margin-top: 5px;">
                 <span
                   style="position: absolute;
@@ -98,16 +105,19 @@
                   font-size: 18px;
                   font-weight: bold;
                   font-family: 华文隶书;">Top <strong style="color: #4CAF50">3</strong></span>
-                <img :src="require('@/assets/banner3.jpeg')" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" />
+                <img :src="routeList[2].coverImg" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;"  v-if="routeList[2].coverImg"/>
                 <span
                   style="display: block;
-                  margin-left: 50px;
+                  text-align: center;
+                  margin-left: 40px;
                   font-size: 18px;
                   font-weight: bold;
                   color: #333333;
                   text-shadow: 2px 2px 2px #CCCCCC;
-                  font-family: 华文行楷;">从百草园到三味书屋最多十五字啊</span>
+                  font-family: 华文行楷;">{{ routeList[2].title }}</span>
               </li>
+              </router-link>
+              <router-link :to="{ path: '/routeDetail/:id', query: { id: routeList[3].id } }">
               <li style="list-style:none; position: relative; border-bottom: 1px dashed #ccc; margin-top: 5px;">
                 <span
                   style="position: absolute;
@@ -116,34 +126,18 @@
                   font-size: 18px;
                   font-weight: bold;
                   font-family: 华文隶书;">Top <strong style="color: #2196F3">4</strong></span>
-                <img :src="require('@/assets/banner4.jpeg')" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" />
+                <img :src="routeList[3].coverImg" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" v-if="routeList[3].coverImg"/>
                 <span
                   style="display: block;
-                  margin-left: 50px;
+                  text-align: center;
+                  margin-left: 40px;
                   font-size: 18px;
                   font-weight: bold;
                   color: #333333;
                   text-shadow: 2px 2px 2px #CCCCCC;
-                  font-family: 华文行楷;">从百草园到三味书屋最多十五字啊</span>
+                  font-family: 华文行楷;">{{ routeList[3].title }}</span>
               </li>
-              <li style="list-style:none; position: relative; border-bottom: 1px dashed #ccc; margin-top: 5px;">
-                <span
-                  style="position: absolute;
-                  left: 5px;
-                  top: 35px;
-                  font-size: 18px;
-                  font-weight: bold;
-                  font-family: 华文隶书;">Top <strong style="color: #9C27B0">5</strong></span>
-                <img :src="require('@/assets/banner5.jpeg')" style="width: 270px; height: 90px; margin-left: 50px; border-radius: 5px;" />
-                <span
-                  style="display: block;
-                  margin-left: 50px;
-                  font-size: 18px;
-                  font-weight: bold;
-                  color: #333333;
-                  text-shadow: 2px 2px 2px #CCCCCC;
-                  font-family: 华文行楷;">从百草园到三味书屋最多十五字啊</span>
-              </li>
+              </router-link>
             </ul>
           </div>
         </div>
@@ -158,8 +152,15 @@
 import {listSpot} from "@/api/spot/spot";
 import Navbar from "@/layout/components/Navbar.vue";
 import Footer from "@/layout/components/Footer.vue";
+import {getRecRoute} from "@/api/route/route";
+import route from "../route/route/index.vue";
 
 export default {
+  computed: {
+    route() {
+      return route
+    }
+  },
   components: {
     Navbar,
     Footer,
@@ -167,6 +168,7 @@ export default {
   data() {
     return {
       spotList: [],
+      routeList: [],
       screenWidth: 0,
       bannerHeight: 0,
       randomId: null,
@@ -186,6 +188,7 @@ export default {
       this.bannerHeight = 640 / 1920 * this.screenWidth
     }
     this.getList();
+    this.getRoute();
   },
   methods: {
     getList() {
@@ -198,6 +201,14 @@ export default {
         this.randomId = randomIndex;
       });
     },
+    getRoute() {
+      getRecRoute().then((res) => {
+        res.data.forEach((route) => {
+          route.coverImg = '/dev-api' + route.coverImg;
+        })
+        this.routeList = res.data;
+      })
+    }
   }
 }
 </script>

@@ -17,6 +17,13 @@ export function getFacilities(id) {
   })
 }
 
+export function getRoomFacilities(roomId) {
+  return request({
+    url: '/travels/roomFacilities/roomId/' + roomId,
+    method: 'get'
+  })
+}
+
 // 新增房间设施
 export function addFacilities(data) {
   return request({

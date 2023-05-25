@@ -12,13 +12,21 @@
       <el-menu-item index="/routeList" @click="onClick('/routeList')" :class="{ active: activeIndex === '/routeList' }">路线攻略</el-menu-item>
       <el-menu-item index="/hotelList" @click="onClick('/hotelList')" :class="{ active: activeIndex === '/hotelList' }">订酒店</el-menu-item>
       <el-menu-item index="/personalCenter" @click="onClick('/personalCenter')" :class="{ active: activeIndex === '/personalCenter' }">个人中心</el-menu-item>
-      <NavbarAvatar class="navbarAvatar" />
+      <NavbarAvatar class="navbarAvatar" v-if="isLogin"/>
+      <div v-if="!isLogin" class="loginButton">
+        <el-button type="text" @click="goToLogin">登录</el-button>
+        <span>|</span>
+        <el-button type="text" @click="goToRegister">注册</el-button>
+      </div>
     </el-menu>
   </div>
 </template>
 
 <script>
 import NavbarAvatar from "@/layout/components/Navbar-avatar.vue";
+import {getInfo} from "@/api/login";
+import axios from "axios";
+import service from "@/utils/request";
 export default {
   data() {
     return {
@@ -33,7 +41,8 @@ export default {
         border: "1px solid #eee",
         marginBottom: "2px",
         // scrollSnapAlign: "start"
-      }
+      },
+      isLogin: false,
     }
   },
   components: {
@@ -45,11 +54,28 @@ export default {
       const newWidth = window.innerWidth;
       this.menuContainer.width = `${newWidth}px`;
     })
+    this.checkLogin();
   },
   methods: {
     onClick(index) {
       this.activeIndex = index;
     },
+    // 判断是否登录
+    checkLogin() {
+      getInfo().then(res => {
+        if (res && res.code === 200) {
+          this.isLogin = true;
+        } else if (!res) {
+          this.isLogin = false;
+        }
+      })
+    },
+    goToLogin() {
+      this.$router.push('/login');
+    },
+    goToRegister() {
+      this.$router.push('/register');
+    }
   },
 }
 </script>
@@ -110,5 +136,25 @@ export default {
   margin-top: 5px;
   min-width: 100px;
   display: inline-block;
+}
+.loginButton {
+  display: flex;
+  align-items: end;
+  margin-bottom: 5px;
+  margin-left: 30px;
+  color: #666;
+  font-size: 16px;
+  font-weight: bold;
+  .el-button--text {
+    color: #2a9d8f;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .el-button--medium {
+    padding: 0;
+  }
+  .el-button:hover {
+    color: #1ab394;
+  }
 }
 </style>

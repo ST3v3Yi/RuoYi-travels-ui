@@ -9,10 +9,18 @@ export function listRouteTag(query) {
   })
 }
 
-// 查询路线Tag详细
+// 查询路线Tag信息
 export function getRouteTag(id) {
   return request({
     url: '/route/routeTag/' + id,
+    method: 'get'
+  })
+}
+
+// 查询路线Tags
+export function getTags(id) {
+  return request({
+    url: '/route/routeTag/tags/' + id,
     method: 'get'
   })
 }

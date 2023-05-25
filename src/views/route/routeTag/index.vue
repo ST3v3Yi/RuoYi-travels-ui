@@ -17,6 +17,22 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="tag类型" prop="type">
+        <el-input
+          v-model="queryParams.type"
+          placeholder="请输入tag类型"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="目标id" prop="targetId">
+        <el-input
+          v-model="queryParams.targetId"
+          placeholder="请输入目标id"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -71,9 +87,10 @@
 
     <el-table v-loading="loading" :data="routeTagList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="路线id" align="center" prop="routeId" />
       <el-table-column label="路线tag" align="center" prop="tag" />
+      <el-table-column label="tag类型" align="center" prop="type" />
+      <el-table-column label="目标id" align="center" prop="targetId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -93,7 +110,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -110,6 +127,12 @@
         </el-form-item>
         <el-form-item label="路线tag" prop="tag">
           <el-input v-model="form.tag" placeholder="请输入路线tag" />
+        </el-form-item>
+        <el-form-item label="tag类型" prop="type">
+          <el-input v-model="form.type" placeholder="请输入tag类型" />
+        </el-form-item>
+        <el-form-item label="目标id" prop="targetId">
+          <el-input v-model="form.targetId" placeholder="请输入目标id" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -150,7 +173,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         routeId: null,
-        tag: null
+        tag: null,
+        type: null,
+        targetId: null
       },
       // 表单参数
       form: {},
@@ -182,7 +207,9 @@ export default {
       this.form = {
         id: null,
         routeId: null,
-        tag: null
+        tag: null,
+        type: null,
+        targetId: null
       };
       this.resetForm("form");
     },

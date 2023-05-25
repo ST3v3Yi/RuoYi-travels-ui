@@ -50,6 +50,15 @@ export function getRooms(id) {
   })
 }
 
+// 获取可行房间
+export function getRoomFeasibility(data) {
+  return request({
+    url: '/travels/rooms/roomFeasibility',
+    method: 'post',
+    data: data
+  })
+}
+
 // 新增酒店房间
 export function addRooms(data) {
   return request({

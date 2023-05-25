@@ -1,10 +1,12 @@
 <template>
   <div class="container">
-    <el-breadcrumb separator-class="el-icon-arrow-right" style="font-size: 16px; margin-left: 430px; margin-top: 20px">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/routeList' }">路线推荐</el-breadcrumb-item>
-      <el-breadcrumb-item>{{ route.title }}</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div class="breadcrumb">
+      <el-breadcrumb separator-class="el-icon-arrow-right" style="font-size: 16px; margin-left: 430px; padding: 10px 0">
+        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/routeList' }">路线推荐</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ route.title }}</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-row type="flex" class="row-bg" justify="center">
       <el-col class="bgCol">
         <div class="coverImg-container bg-purple">
@@ -12,55 +14,58 @@
         </div>
       </el-col>
     </el-row>
-    <el-row type="flex" class="row-title" justify="center">
-      <el-col style="width: 550px; height: 105px" class="bg-trans">
-        <div style="position: relative">
-          <span style="margin-left: 15px;margin-top: 25px;">更新时间：{{ parseTime(route.updateTime, '{y}-{m}-{d}') }}</span>
-          <div style="display: flex;">
-            <h1 style="margin-left: 15px; font-size: 40px; line-height: 50px;">{{ route.title }}</h1>
-            <el-rate
-              v-model="avgRating"
-              allow-half
-              disabled
-              show-score
-              text-color="#ff9900"
-              :colors="colors"
-              style="margin-left: 35px; margin-top: 53px; transform: scale(1.2);"
-              @change="submitRating">
-            </el-rate>
-          </div>
-        </div>
-      </el-col>
-      <el-col style="width: 500px; height: 105px" class="bg-trans">
-        <div class="headRight">
-          <a href="/">
-            <img :src="avatarUrl" class="user-avatar">
-          </a>
-          <a style="margin-left: 10px;">{{ route.userName }}</a>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row type="flex" class="row-title" justify="center" style="margin-top: 0px;">
-      <el-col style="width: 800px;" class="bg-purple">
-        <div class="routeContent" v-html="route.content"></div>
-      </el-col>
-      <el-col style="width: 250px;" class="bg-purple">
-          <div style="display: flex; align-items: center; margin-right: 20px;">
+    <div class="routeInfoContainer">
+      <div class="routeInfo">
+        <img :src="avatarUrl" style="width: 120px; height: 120px" class="avatar"/>
+        <span class="routeTitle">{{ route.title }}</span>
+        <span class="userName">{{ route.userName }}</span>
+        <span class="updateTime">更新时间：{{ parseTime(route.updateTime, '{y}-{m}-{d}') }}</span>
+        <el-rate
+          v-model="avgRating"
+          allow-half
+          disabled
+          show-score
+          text-color="#ff9900"
+          :colors="colors"
+          class="titleRate">
+        </el-rate>
+      </div>
+    </div>
+    <div class="routeContentContainer">
+      <div class="routeContent">
+        <div v-html="route.content"></div>
+      </div>
+      <div class="RecContent">
+        <div>
+          <div class="favoritePart">
             <i :class="iconClass" @click="toggleFavorite" style="margin-right: 5px;"/>
             <span @click="toggleFavorite" style="cursor: pointer; transform: scale(1.1);">{{ isFavorite ? '已收藏' : '收藏' }}</span>
-            <el-rate
-              v-model="value"
-              allow-half
-              show-score
-              text-color="#ff9900"
-              :colors="colors"
-              style="margin-left: 30px;"
-              @change="submitRating">
-            </el-rate>
           </div>
-        <el-divider style="height: 2px;"></el-divider>
-      </el-col>
-    </el-row>
+          <el-rate
+            v-model="value"
+            allow-half
+            show-score
+            text-color="#ff9900"
+            :colors="colors"
+            class="routeRate"
+            @change="submitRating">
+          </el-rate>
+          <el-divider style="height: 1px; background-color: #eeeeee"></el-divider>
+        </div>
+        <div class="textContent" v-if="tags">
+          <span style="font-size: 18px; font-weight: bold; color: #333333;">文中提及</span>
+          <div v-for="(item, index) in tags" :key="index" style="position: relative; margin-top: 10px;">
+            <img :src="'/dev-api' + item.coverImg" style="width: 100%; height: 100px; border-radius: 5px;" />
+            <router-link :to="{ path: '/spotDetail/:id', query: { id: item.id } }">
+              <span v-if="item.spotName" class="name">{{ item.spotName }}</span>
+            </router-link>
+            <router-link :to="{ path: '/hotelDetail/:id', query: { id: item.id } }">
+              <span v-if="item.hotelName" class="name">{{ item.hotelName }}</span>
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
     <el-row>
       <div style="margin: 10px auto; width: 1050px; background-color: #FFFFFF; padding: 10px; border-radius: 5px; border: 1px solid #eeeeee;">
         <div style="display: flex; align-items: center;">
@@ -138,6 +143,7 @@ import { getRouteCommentsList } from "@/api/routeComments/routeComments";
 import {addRouteReply, getReplyList} from "@/api/routeReply/routeReply";
 import { getIsFavorite, delFavorite, addRouteFavorite } from "@/api/routeFavorite/routeFavorite";
 import { addUserRecords } from "@/api/userRecords/userRecords";
+import { getTags } from "@/api/route/routeTag";
 import Footer from "@/layout/components/Footer.vue";
 
 export default{
@@ -165,7 +171,8 @@ export default{
         userId: '',
         routeId: '',
       },
-      colors: ['#99A9BF', '#F7BA2A', '#FF9900']
+      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+      tags: null,
     };
   },
   computed: {
@@ -203,6 +210,10 @@ export default{
           // console.log(response.data);
           // console.log(this.createUser.userId);
         }
+      })
+      getTags(id).then((res) => {
+        this.tags = res.data;
+        console.log(this.tags)
       })
     },
     getRouteRating() {
@@ -359,8 +370,13 @@ export default{
 .container {
   height: 100%;
 }
+.breadcrumb {
+  width: 100%;
+  height: auto;
+  background-color: #FFFFFF;
+}
 .el-row {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   &:last-child {
     margin-bottom: 0;
   }
@@ -369,15 +385,13 @@ export default{
   border-radius: 4px;
 }*/
 .bgCol {
-  width: 1050px;
-  height: 450px;
+  width: 100%;
+  height: 640px;
   margin: 0 auto;
 }
 .coverImg-container {
-  border-radius: 4px;
-  width: 1050px;
-  height: 450px;
-  margin-top: 40px;
+  width: 100%;
+  height: 100%;
   text-align: center;
 }
 .bg-purple {
@@ -389,13 +403,113 @@ export default{
   //background-color: #cccccc;
   //opacity: 60%;
 }
+.routeInfoContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  background-color: #f5f7fa;
+  .routeInfo {
+    position: relative;
+    width: 1050px;
+    height: 100%;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 5px;
+    .avatar {
+      position: absolute;
+      border: 1px solid #eeeeee;
+      top: -80px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+    .routeTitle {
+      position: absolute;
+      top: -50px;
+      left: 150px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #FFFFFF;
+      text-shadow: 0 2px 5px #333333;
+    }
+    .userName {
+      position: absolute;
+      top: 5px;
+      left: 120px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333333;
+    }
+    .updateTime {
+      position: absolute;
+      top: 28px;
+      left: 120px;
+      font-size: 14px;
+      color: #999999;
+    }
+    .titleRate {
+      position: absolute;
+      top: -20px;
+      right: 20px;
+      transform: scale(1.2);
+    }
+  }
+}
+.routeContentContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  .routeContent {
+    width: 790px;
+    height: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #eeeeee;
+    background-color: #FFFFFF;
+  }
+  .RecContent {
+    width: 250px;
+    height: 100%;
+    margin-left: 10px;
+    border-radius: 5px;
+    border: 1px solid #eeeeee;
+    background-color: #FFFFFF;
+    .favoritePart {
+      margin: 5px 10px;
+    }
+    .routeRate {
+      margin: 5px 28px;
+    }
+    .el-divider {
+      margin-left: 5%;
+      width: 90%;
+    }
+    .textContent {
+      width: 100%;
+      height: auto;
+      padding: 10px;
+      .name {
+        position: absolute;
+        top: 75px;
+        right: 5px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #FFFFFF;
+        text-shadow: 0 2px 5px #333333;
+      }
+    }
+  }
+}
 .row-bg {
-  padding: 10px 0;
   background-color: #FFFFFF;
 }
 .row-title {
-  background-color: #FFFFFF;
-  margin-top: -85px;
+  background-color: #f5f7fa;
+  margin-top: -80px;
 }
 .headRight {
   margin-left: 330px;
@@ -425,7 +539,7 @@ export default{
 }
 .el-divider {
   margin: 5px 0;
-  background-color: #cccccc;
+  background-color: #eeeeee;
 }
 ::v-deep .el-rate__icon{
   margin-right: 0;
